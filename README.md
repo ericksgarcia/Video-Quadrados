@@ -20,6 +20,17 @@ npm install
 npx playwright install chromium
 ```
 
+### Jeito mais rápido: um vídeo novo com um comando
+
+```bash
+npm run novo -- --handle "@seucanal"
+```
+
+Sorteia fase, categoria (alterna seleções/clubes), times, cor da água e a corrida mais emocionante,
+sem repetir o que já está em `historico.json`. Gera `videos/<data>-<fase>.mp4` e uma legenda pronta
+em `.txt`. Dá para fixar qualquer coisa: `--category clubes`, `--level caracol`,
+`--teams fla,cor,pal,sao`, `--theme lava`, `--no-music`.
+
 ### 1. Jogar e testar no navegador
 
 ```bash
