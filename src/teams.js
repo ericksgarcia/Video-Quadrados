@@ -219,9 +219,22 @@ function drawCrest(g, w, h, c) {
 }
 
 // ---------------------------------------------------------------- catálogo
-export const CATEGORIES = { selecoes: 'Seleções', clubes: 'Times (clubes)', custom: 'Personalizados' };
+// Quadrados só de cor (estilo dos vídeos de referência) — padrão do canal
+export const COLORS = {
+  vermelho: { name: 'Vermelho', color: '#d50000' },
+  azul: { name: 'Azul', color: '#265ef3' },
+  amarelo: { name: 'Amarelo', color: '#ffd839' },
+  verde: { name: 'Verde', color: '#007d53' },
+  ciano: { name: 'Ciano', color: '#19b5d1' },
+  laranja: { name: 'Laranja', color: '#ff8a00' },
+  roxo: { name: 'Roxo', color: '#8e44ff' },
+  rosa: { name: 'Rosa', color: '#ff4fa3' },
+};
+
+export const CATEGORIES = { cores: 'Cores', selecoes: 'Seleções', clubes: 'Times (clubes)', custom: 'Personalizados' };
 
 export const TEAMS = {};
+for (const [id, c] of Object.entries(COLORS)) TEAMS[id] = { id, type: 'color', category: 'cores', name: c.name, color: c.color };
 for (const [id, f] of Object.entries(FLAGS)) TEAMS[id] = { id, type: 'flag', category: 'selecoes', name: f.name, color: f.color };
 for (const [id, c] of Object.entries(CLUBS)) TEAMS[id] = { id, type: 'crest', category: 'clubes', name: c.name, color: c.color };
 
@@ -236,6 +249,10 @@ export const teamsIn = (category) => Object.values(TEAMS).filter((t) => t.catego
 
 // Atalhos separados por categoria
 export const PRESETS = {
+  cores: {
+    'Clássicas': ['vermelho', 'azul', 'amarelo', 'verde'],
+    '8 cores': Object.keys(COLORS),
+  },
   selecoes: {
     'Favoritas': ['br', 'ar', 'fr', 'pt'],
     'Europa': ['es', 'de', 'it', 'en'],
@@ -256,9 +273,10 @@ export const PRESETS = {
 };
 
 export const CATEGORY_DEFAULTS = {
-  selecoes: { teams: PRESETS.selecoes['8 seleções'], title: 'QUAL SELEÇÃO VENCE?' },
-  clubes: { teams: PRESETS.clubes['8 times'], title: 'QUAL TIME VENCE?' },
-  custom: { teams: CUSTOM_TEAMS.map((t) => t.id), title: 'QUEM VENCE?' },
+  cores: { teams: Object.keys(COLORS), title: 'QUAL COR VENCE?', cta: 'COMENTE SUA COR!' },
+  selecoes: { teams: PRESETS.selecoes['8 seleções'], title: 'QUAL SELEÇÃO VENCE?', cta: 'COMENTE SEU TIME!' },
+  clubes: { teams: PRESETS.clubes['8 times'], title: 'QUAL TIME VENCE?', cta: 'COMENTE SEU TIME!' },
+  custom: { teams: CUSTOM_TEAMS.map((t) => t.id), title: 'QUEM VENCE?', cta: 'COMENTE SEU PALPITE!' },
 };
 
 // cores bem distintas para trilhas/tijolos quando dois times têm a mesma cor
@@ -279,6 +297,7 @@ export function resolveTeams(ids) {
     const base = TEAMS[id] || { id, type: 'crest', name: String(id).toUpperCase(), color: FALLBACK[i % FALLBACK.length] };
     let color = base.color;
     const l = luminance(color);
+    if (base.type === 'color') { out.push({ ...base }); return; }
     if (l > 0.9 || l < 0.08 || out.some((o) => colorDist(o.color, color) < 90)) {
       color = FALLBACK.find((c) => !out.some((o) => colorDist(o.color, c) < 90)) || FALLBACK[i % FALLBACK.length];
     }
@@ -303,6 +322,7 @@ export function makeBadge(team, size, { flat = false } = {}) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const g = c.getContext('2d');
+  if (team.type === 'color') { g.fillStyle = team.color; g.fillRect(0, 0, size, size); return c; }
   if (team.type === 'flag' && FLAGS[team.id]) FLAGS[team.id].draw(g, size, size);
   else if (team.type === 'crest' && CLUBS[team.id]) drawCrest(g, size, size, CLUBS[team.id]);
   else if (team.type === 'image' && team.img) {

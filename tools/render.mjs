@@ -4,8 +4,8 @@
 //   npm run render -- --level subida --teams br,ar,fr,pt --best 40 --out videos/corrida.mp4
 //
 // Opções:
-//   --level <id|n>       fase (tunel, caracol, arena8 ou 1..3)
-//   --category selecoes|clubes   categoria (padrão: selecoes)
+//   --level <id|n>       fase (derby, serpente, arena8 ou 1..3)
+//   --category cores|selecoes|clubes   categoria (padrão: cores)
 //   --teams a,b,c,d      ids dos times (veja src/teams.js) — ou --preset "Grandes do Rio"
 //   --count n            quantos competidores (quando não passa --teams)
 //   --seed <n>           seed da corrida (mesma seed = mesma corrida)
@@ -95,12 +95,12 @@ await page.goto(`http://127.0.0.1:${port}/index.html?render=1`);
 await page.waitForFunction(() => window.__studio);
 
 const { PRESETS, CATEGORY_DEFAULTS } = await import('../src/teams.js');
-const category = args.category || (args.teams ? undefined : 'selecoes'); // com --teams, a categoria é deduzida dos times
+const category = args.category || (args.teams ? undefined : 'cores'); // com --teams, a categoria é deduzida dos times
 const base = {
-  level: args.level || 'tunel',
+  level: args.level || 'derby',
   category,
   teams: args.teams ? String(args.teams).split(',') : args.preset ? (PRESETS[category] || {})[args.preset] : CATEGORY_DEFAULTS[category].teams.slice(0, Number(args.count || 4)),
-  theme: args.theme, title: args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined), subtitle: args.subtitle, handle: args.handle, cta: args.cta,
+  theme: args.theme, title: args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined), subtitle: args.subtitle, handle: args.handle, cta: args.cta ?? (category ? CATEGORY_DEFAULTS[category].cta : undefined),
   music: args.music !== false,
   floodKills: !!args.kill,
 };

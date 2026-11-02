@@ -24,57 +24,78 @@ class M:
         s.carve(r0, c, r1, c + thick - 1, '#'); s.carve(open0, c, open1, c + thick - 1, '.'); return s
     def lines(s): return [''.join(r) for r in s.g]
 
-# Paredes GIGANTES com túneis cavados dentro (estilo dos vídeos de referência).
-# Túneis de 4 blocos (112px); passagens que estreitam para 2-3 blocos de vez em quando.
-# Só tijolos (raias coloridas + chegada) e UMA faca escondida num nicho.
+# Estilo dos vídeos de referência: corredores largos (5 blocos = 140px) em serpentina, paredes de
+# 2 blocos, tijolos coloridos ALTOS que prendem todo mundo na largada, chegada quadriculada atrás
+# de tijolos escuros e UMA faca num nicho de entrada estreita.
 
-def tunnel(m, pts, w=4):
-    """cava um túnel de largura w passando pelos pontos (linha, coluna) — canto superior esquerdo"""
-    for (r0, c0), (r1, c1) in zip(pts, pts[1:]):
-        m.carve(min(r0, r1), min(c0, c1), max(r0, r1) + w - 1, max(c0, c1) + w - 1)
-    return m
-
-def tunel():
+def derby():
+    """Largada em corrente (igual ao 2º vídeo): cada raia é presa à direita pelo tijolo da SUA cor;
+    quebrou, junta com a raia vizinha. A última raia abre a saída. Todo mundo começa preso."""
     m = M()
-    m.lanes([2, 10, 18, 26], 5, [36, 37], (38, 45), 46, 42)
-    m.carve(31, 2, 35, 30)                                   # coletor sobre as raias
-    tunnel(m, [(31, 30), (21, 30), (21, 6), (11, 6), (11, 27), (2, 27), (2, 12)])
-    m.carve(2, 2, 5, 9, 'F'); m.carve(2, 10, 5, 11, 'B')     # chegada (esquerda/topo)
-    m.carve(16, 6, 17, 7, '#')                               # estreitamento (fica 2)
-    m.carve(11, 18, 14, 18, '#'); m.carve(12, 18, 13, 18, '.')  # fresta
-    m.carve(25, 17, 28, 20); m.carve(25, 17, 25, 17, '#'); m.carve(25, 20, 25, 20, '#')  # nicho da faca (entrada 2)
-    m.put(27, 18, '!')
+    lanes = [1, 8, 15, 22]
+    for i, c0 in enumerate(lanes):
+        m.carve(29, c0, 45, c0 + 4)                 # baia (salão + raia)
+        m.carve(29, c0 + 5, 37, c0 + 6, str(i + 1)) # coluna de tijolo da cor (lado direito)
+        m.carve(46, c0, 46, c0 + 4, '~')
+        m.put(41, c0 + 2, 'S')
+    m.carve(1, 29, 44, 33)                          # corredor de saída (sobe pela direita)
+    m.carve(40, 29, 41, 30, '#')                    # nicho da faca no fundo do corredor (entrada de 3)
+    m.put(43, 31, '!')
+    m.carve(1, 1, 6, 33)                            # A: topo, para a esquerda
+    m.carve(1, 1, 15, 6)                            # desce
+    m.carve(10, 1, 15, 26)                          # B: para a direita
+    m.carve(10, 21, 24, 26)                         # desce
+    m.carve(19, 1, 24, 26)                          # C: para a esquerda até a chegada
+    m.carve(19, 9, 24, 10, 'B'); m.carve(19, 1, 24, 8, 'F')
+    m.carve(1, 14, 2, 15, 'B'); m.carve(5, 14, 6, 15, 'B')   # tijolinhos escuros no caminho
+    m.carve(14, 13, 15, 14, 'B')
     return m.lines()
 
-def caracol():
+def serpente():
+    """Baias empilhadas à esquerda (igual ao 3º vídeo), cada uma fechada pelo tijolo da sua cor;
+    depois três curvas em U bem altas até a chegada embaixo, à direita."""
     m = M()
-    m.lanes([6, 13, 20, 27], 5, [36, 37], (38, 45), 46, 42)
-    m.carve(31, 1, 35, 31)                                   # coletor
-    tunnel(m, [(31, 1), (1, 1), (1, 31), (23, 31), (23, 9), (9, 9), (9, 23), (15, 23)])
-    m.carve(16, 15, 19, 20, 'F'); m.carve(16, 21, 19, 22, 'B')  # chegada no centro
-    m.carve(15, 15, 15, 22, '#')
-    m.carve(12, 1, 13, 2, '#')                               # estreitamento na subida
-    m.carve(1, 25, 4, 25, '#'); m.carve(2, 25, 3, 25, '.')   # fresta no topo
-    m.carve(5, 16, 7, 19); m.carve(5, 16, 5, 16, '#'); m.carve(5, 19, 5, 19, '#')  # nicho da faca (entrada 2)
-    m.put(7, 17, '!')
+    for i, r0 in enumerate([20, 27, 34, 41]):
+        m.carve(r0, 1, r0 + 4, 6)                   # baia
+        m.carve(r0, 7, r0 + 4, 8, str(i + 1))       # porta da cor
+        m.carve(r0, 1, r0 + 4, 1, '~')
+        m.put(r0 + 2, 4, 'S')
+    m.carve(1, 9, 45, 13)                           # sobe
+    m.carve(1, 9, 5, 20)                            # vira
+    m.carve(1, 16, 45, 20)                          # desce
+    m.carve(41, 16, 45, 27)                         # vira embaixo
+    m.carve(1, 23, 45, 27)                          # sobe
+    m.carve(1, 23, 5, 34)                           # vira
+    m.carve(1, 30, 45, 34)                          # desce até a chegada
+    m.carve(38, 30, 40, 34, 'B'); m.carve(41, 30, 45, 34, 'F')
+    m.carve(9, 1, 14, 6); m.carve(11, 7, 12, 8)     # nicho da faca (entrada de 2)
+    m.put(11, 3, '!')
+    m.carve(6, 14, 7, 15, 'B'); m.carve(39, 21, 40, 22, 'B'); m.carve(6, 28, 7, 29, 'B')  # pontas escuras
     return m.lines()
 
 def arena8():
+    """8 raias, cada uma tampada por uma coluna alta da sua cor; sobe pelos lados, volta pelo meio
+    e termina em duas chegadas (esquerda e direita) no alto."""
     m = M()
-    m.lanes([2 + 4 * i for i in range(8)], 3, [36, 37], (38, 45), 46, 42)
-    m.carve(31, 1, 35, 34)                                   # coletor
-    tunnel(m, [(31, 1), (14, 1), (14, 15)])                  # ramo esquerdo
-    tunnel(m, [(31, 31), (14, 31), (14, 17)])                # ramo direito
-    m.carve(6, 15, 17, 20)                                   # subida central
-    m.carve(1, 11, 3, 24, 'F'); m.carve(4, 11, 5, 24, 'B')   # chegada
-    m.carve(6, 11, 6, 14, '#'); m.carve(6, 21, 6, 24, '#')
-    m.carve(22, 1, 23, 2, '#'); m.carve(22, 33, 23, 34, '#') # estreitamentos
-    m.carve(25, 16, 30, 19); m.carve(25, 16, 26, 16, '#'); m.carve(25, 19, 26, 19, '#')  # nicho da faca
-    m.put(26, 17, '!')
+    for i in range(8):
+        c0 = 1 + 4 * i
+        m.carve(31, c0, 45, c0 + 2)
+        m.carve(31, c0, 34, c0 + 2, str(i + 1))     # tampa alta da cor
+        m.carve(46, c0, 46, c0 + 2, '~')
+        m.put(41, c0 + 1, 'S')
+    m.carve(25, 1, 30, 33)                          # coletor
+    m.carve(1, 1, 30, 5); m.carve(1, 29, 30, 33)    # sobe pelos dois lados
+    m.carve(1, 1, 5, 33)                            # topo
+    m.carve(6, 15, 17, 19)                          # desce pelo meio
+    m.carve(13, 8, 17, 26)                          # abre para os lados
+    m.carve(8, 8, 17, 12); m.carve(8, 22, 17, 26)   # sobe de novo
+    m.carve(8, 8, 10, 12, 'F'); m.carve(11, 8, 12, 12, 'B')
+    m.carve(8, 22, 10, 26, 'F'); m.carve(11, 22, 12, 26, 'B')
+    m.carve(18, 15, 21, 19); m.carve(18, 15, 18, 15, '#'); m.carve(18, 19, 18, 19, '#')  # nicho da faca
+    m.put(20, 17, '!')
     return m.lines()
 
 if __name__ == '__main__':
-    import json
-    for name, fn in [('tunel', tunel), ('caracol', caracol), ('arena8', arena8)]:
+    for name, fn in [('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

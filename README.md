@@ -1,8 +1,9 @@
 # 🟥 Corrida dos Quadrados
 
 Gerador de vídeos verticais (1080x1920) de **corrida de quadrados** para TikTok / Reels / Shorts.
-Cada competidor é uma **bandeira** ou **escudo de time** que quica por um labirinto de corredores
-estreitos enquanto uma onda sobe atrás dele. Quem chegar primeiro na bandeira quadriculada vence.
+Cada competidor é um **quadrado de cor** (ou, opcionalmente, bandeira/escudo) que começa **preso
+atrás de tijolos da sua cor**, quebra a saída e quica por um labirinto em serpentina enquanto a
+água avança atrás dele. Visual flat, igual aos vídeos de referência. Quem chegar primeiro na bandeira quadriculada vence.
 A onda não elimina: ela arrasta quem ficou para trás (dá para ligar o modo "água elimina").
 
 Tudo é desenhado em código (Canvas) e **todo o áudio é sintetizado** (Web Audio): não precisa
@@ -26,10 +27,10 @@ npx playwright install chromium
 npm run novo -- --handle "@seucanal"
 ```
 
-Sorteia fase, categoria (alterna seleções/clubes), times e a corrida mais emocionante (água índigo por padrão),
+Sorteia fase, ordem das cores nas baias e a corrida mais emocionante,
 sem repetir o que já está em `historico.json`. Gera `videos/<data>-<fase>.mp4` e uma legenda pronta
-em `.txt`. Dá para fixar qualquer coisa: `--category clubes`, `--level caracol`,
-`--teams fla,cor,pal,sao`, `--theme lava`, `--no-music`.
+em `.txt`. Dá para fixar qualquer coisa: `--level serpente`, `--teams verde,azul,vermelho,amarelo`,
+`--category clubes` (bandeiras/escudos), `--theme lava`, `--no-music`.
 
 ### 1. Jogar e testar no navegador
 
@@ -51,17 +52,17 @@ O renderizador gera o vídeo **quadro a quadro** a 60fps, com o áudio sincroniz
 independente da velocidade do seu computador:
 
 ```bash
-npm run render -- --category selecoes --level tunel --teams br,ar,fr,pt --best 40
+npm run render -- --level derby --teams vermelho,azul,amarelo,verde --best 40
 ```
 
 O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as suas configurações.
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `tunel`, `caracol`, `arena8` (ou `1`..`3`) |
-| `--category` | `selecoes` ou `clubes` (sem `--teams`, usa os times padrão da categoria) |
+| `--level` | `derby`, `serpente`, `arena8` (ou `1`..`3`) |
+| `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
-| `--teams` | ids separados por vírgula (ex.: `fla,cor,pal,sao`) |
+| `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
 | `--preset` | atalho da categoria, ex.: `--category clubes --preset "Grandes do Rio"` |
 | `--seed` | número da corrida (mesma seed = mesma corrida, sempre) |
 | `--best N` | testa N seeds e renderiza a mais emocionante |
@@ -76,14 +77,15 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 Exemplo de lote para a semana inteira:
 
 ```bash
-npm run render -- --level arena8 --category clubes --count 8 --best 30 --batch 7 --theme lava
+npm run render -- --level arena8 --count 8 --best 30 --batch 7
 ```
 
 ## Como funciona
 
-- **Paredes gigantes com túneis**: cada fase é um bloco maciço com túneis estreitos cavados dentro.
-  Os bonecos quicam, batem e voltam até acertar as passagens.
-- **Raias de largada**: cada boneco começa na sua raia e só ele quebra o tijolo da sua cor.
+- **Corredores largos em serpentina** (5 blocos = 140px), paredes de 2 blocos, como nas referências.
+- **Todo mundo começa preso**: cada quadrado fica numa baia fechada por tijolos altos e só ele
+  quebra o tijolo da sua cor. No `derby` é em corrente: a baia de cada um é fechada pelo tijolo da
+  sua cor e, quebrando, junta com a vizinha — a última abre a saída.
 - **Correnteza**: a água nasce nas raias e **avança pelo caminho dos túneis**, atrás dos bonecos.
   Ela não elimina: arrasta para a frente quem alcança (dá para ligar o modo "água elimina").
 - **Chegada**: protegida por tijolos bem duros, então o pelotão alcança o líder no final.
@@ -91,8 +93,9 @@ npm run render -- --level arena8 --category clubes --count 8 --best 30 --batch 7
 - **Faca**: só uma por fase, escondida num nicho de entrada estreita. Quem pega elimina o
   primeiro boneco que encostar (a faca é gasta).
 
-Fases: `tunel` (serpentina), `caracol` (espiral até o centro) e `arena8` (8 competidores, dois
-caminhos que se juntam). Todas dão vídeos de ~60s.
+Fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
+à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e
+volta pelo meio até duas chegadas). Todas dão vídeos de ~60s.
 
 Elementos extras (portões, bumpers, hélices, portais, raio, caixa surpresa, aceleradores) ainda
 existem no motor — a legenda está no topo de `src/levels.js` — mas as fases padrão não usam.
@@ -124,8 +127,8 @@ categoria ficam em `PRESETS` no `src/teams.js`.
 
 As fases ficam em `src/levels.js`, como mapas de texto de 36 colunas x 48 linhas (cada caractere
 é um bloco de 28px; a legenda está no topo do arquivo). O jeito mais fácil é usar o
-`tools/levelgen.py`: o mapa começa todo como parede e você cava túneis com `tunnel(m, [pontos])`
-(largura 4 = 112px) e estreitamentos de 2-3 blocos. Rode `python3 tools/levelgen.py` e cole o
+`tools/levelgen.py`: o mapa começa todo como parede e você cava retângulos com `m.carve(...)`
+(corredores de 5 blocos, paredes de 2). Rode `python3 tools/levelgen.py` e cole o
 mapa gerado no `src/levels.js`. Cada fase também ajusta:
 
 ```js
@@ -150,7 +153,7 @@ index.html          interface (painel + canvas)
 src/game.js         simulação determinística (física, elementos, inundação)
 src/render.js       todo o visual, estilo flat (arena, tijolos, água, rastros, zoom final, tela de vencedor)
 src/audio.js        efeitos sonoros e música procedural (Web Audio)
-src/teams.js        bandeiras, escudos e times personalizados
+src/teams.js        cores, bandeiras, escudos e times personalizados
 src/levels.js       fases em ASCII
 tools/render.mjs    exportação MP4 quadro a quadro (Playwright + ffmpeg)
 tools/simtest.mjs   simulação em massa para balancear fases

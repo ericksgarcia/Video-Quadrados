@@ -10,9 +10,9 @@ const params = new URLSearchParams(location.search);
 const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
-  level: 'tunel', count: 4, category: 'selecoes', teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
+  level: 'derby', count: 4, category: 'cores', teams: ['vermelho', 'azul', 'amarelo', 'verde', 'ciano', 'laranja', 'roxo', 'rosa'],
   theme: 'roxo', seed: 7, music: true, floodKills: false,
-  title: 'QUAL SELEÇÃO VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SEU TIME!',
+  title: 'QUAL COR VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SUA COR!',
 };
 
 // ------------------------------------------------------------------ config
@@ -35,7 +35,7 @@ function makeGame(cfg) {
   const level = getLevel(cfg.level);
   const count = Math.max(2, Math.min(level.maxRacers, cfg.count || 4));
   const teams = resolveTeams(cfg.teams.slice(0, count));
-  const pool = teamsIn(cfg.category || 'selecoes').filter((id) => !teams.some((t) => t.id === id));
+  const pool = teamsIn(cfg.category || 'cores').filter((id) => !teams.some((t) => t.id === id));
   while (teams.length < count) teams.push(...resolveTeams([...teams.map((t) => t.id), pool.shift() || Object.keys(TEAMS)[teams.length]]).slice(-1));
   return { level, teams, game: new Game({ level, teams, seed: cfg.seed, floodKills: !!cfg.floodKills }) };
 }
@@ -62,7 +62,7 @@ if (RENDER_MODE) {
     async setup(cfg) {
       const first = TEAMS[(cfg.teams || [])[0]];
       const category = cfg.category || first?.category || DEFAULTS.category;
-      cfg = { ...DEFAULTS, title: CATEGORY_DEFAULTS[category]?.title || DEFAULTS.title, ...cfg, category };
+      cfg = { ...DEFAULTS, title: CATEGORY_DEFAULTS[category]?.title || DEFAULTS.title, cta: CATEGORY_DEFAULTS[category]?.cta || DEFAULTS.cta, ...cfg, category };
       if (cfg.best) cfg.seed = findBestSeed(cfg, cfg.best).seed;
       const made = makeGame(cfg);
       await loadTeamImages(made.teams);

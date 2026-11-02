@@ -1,7 +1,8 @@
 # Corrida dos Quadrados — instruções para o Claude
 
 Projeto do canal de TikTok do usuário: vídeos verticais (1080x1920, 60fps, ~60s) de corrida de
-quadrados com bandeiras de seleções ou escudos de clubes. Fale sempre em **português do Brasil**.
+quadrados **só de cor** (vermelho, azul, amarelo, verde...), no estilo flat dos vídeos de
+referência que o usuário mandou. Bandeiras/escudos ainda existem como opção (`--category`). Fale sempre em **português do Brasil**.
 
 ## Quando o usuário pedir "um vídeo novo" (ou "faz outro vídeo", "gera mais um"...)
 
@@ -9,12 +10,12 @@ quadrados com bandeiras de seleções ou escudos de clubes. Fale sempre em **por
    `node -e "require('playwright')"`. Se o Playwright faltar: `npm install` e
    `npx playwright install chromium`.
 2. Rode **`npm run novo -- --handle "@seucanal"`** (rode em segundo plano; leva ~6 min). Ele sorteia
-   fase, categoria (alterna seleções/clubes em relação ao último vídeo), times e a
+   fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Se o usuário pedir algo específico, repasse: `--category clubes|selecoes`,
-     `--level tunel|caracol|arena8`, `--teams fla,cor,pal,sao`, `--theme roxo|agua|lava|acido`,
-     `--no-music`.
+   - Se o usuário pedir algo específico, repasse: `--level derby|serpente|arena8`,
+     `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
+     `--theme roxo|agua|lava|acido`, `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
    (sem revelar o vencedor). Ofereça 2–3 variações de legenda se ele pedir.
 4. Faça commit **só do `historico.json`** (os vídeos ficam fora do git) e dê push na branch da sessão.
@@ -24,9 +25,14 @@ iteração. Se ele pedir mudança, atualize esta lista.
 
 ## Regras do jogo (decididas com o usuário)
 
-- **Paredes gigantes com túneis**: cada fase é um bloco maciço de parede com túneis estreitos
-  (4 blocos = 112px) cavados dentro, com estreitamentos de 2–3 blocos. Nada de áreas abertas.
-- **Raias de largada** no fundo; cada boneco só quebra o tijolo da sua cor.
+- **Quadrados só de cor** (categoria `cores`, título "QUAL COR VENCE?"). 4 cores clássicas
+  (vermelho, azul, amarelo, verde) nas fases de 4; 8 cores na Arena 8.
+- **Mapas no estilo das referências**: corredores largos (5 blocos = 140px) em serpentina/U,
+  paredes de 2 blocos, alguns tijolos escuros comuns no caminho.
+- **As cores começam prendendo todo mundo**: cada quadrado nasce numa baia fechada por tijolos
+  ALTOS da sua cor; cada boneco só quebra o tijolo da sua cor. Derby = largada em corrente (a baia
+  de cada um é fechada à direita pelo tijolo da sua cor; quebrando, junta com a vizinha; a última
+  abre a saída).
 - **Água (correnteza)**: nasce nas raias e **avança pelo caminho dos túneis** atrás dos bonecos
   (`flood.mode: 'path'`). **Não elimina** — só empurra/arrasta quem alcança.
 - **Sem elementos extras** nas fases (sem bumpers, hélices, portais, raio, caixa, portões,
@@ -38,7 +44,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - **O vídeo termina assim que o 1º chega** (~1,3s de comemoração + 3,8s de tela de vencedor).
   Ninguém fica esperando os outros.
 - **Duração alvo ~60s**. Quadrados lentos (~210 px/s; 170 na Arena 8).
-- **Categorias separadas**: Seleções x Times (clubes), cada uma com título próprio
+- Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
 
@@ -49,8 +55,9 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - Tijolos: cor sólida + desenho de "tijolinho" em linhas escuras, contorno preto. Tijolo comum/da
   chegada é cinza-escuro `#2e2e2e`. Chegada quadriculada preto/branco.
 - Água chapada índigo `#3d328c` (sem gradiente, espuma ou bolhas), frente reta de parede a parede.
-- Quadrados: bandeira/escudo chapado com contorno preto, sem sombra/brilho; rastro em cunha
-  semitransparente na cor do time (cores parecidas são trocadas pela paleta das referências).
+- Quadrados: cor chapada com contorno preto, sem sombra/brilho; rastro em cunha semitransparente
+  da mesma cor. Paleta: vermelho `#d50000`, azul `#265ef3`, amarelo `#ffd839`, verde `#007d53`,
+  ciano, laranja, roxo, rosa.
 - Eliminado fica parado com um X. Faca: lâmina ciano + cabo roxo.
 - Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. Só o
   título discreto em cima (texto escuro, sem contorno).
@@ -60,9 +67,9 @@ iteração. Se ele pedir mudança, atualize esta lista.
 ## Como o projeto funciona
 
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
-  `src/audio.js` sons/música; `src/teams.js` bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
+  `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera mapas cavando túneis (`tunnel()`).
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos.
 - Ao mexer em fases/física, rode `npm test` (simula corridas) e mire: 100% com vencedor e vídeo
   médio de ~60s. Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.

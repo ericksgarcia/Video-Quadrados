@@ -108,6 +108,7 @@ export class Renderer {
     const used = [];
     this.colors = game.racers.map((r) => {
       let col = r.team.color || PALETTE[r.i % PALETTE.length];
+      if (r.team.type === 'color') { used.push(col); return col; } // quadrado só de cor: usa a cor exata
       if (used.some((u) => colorDist(u, col) < 95)) col = PALETTE.find((p) => !used.some((u) => colorDist(u, p) < 95)) || col;
       used.push(col);
       return col;
