@@ -1,6 +1,6 @@
 import { Game, SIM_HZ, dramaScore } from './game.js';
 import { LEVELS, getLevel } from './levels.js';
-import { TEAMS, FLAGS, CLUBS, CUSTOM_TEAMS, PRESETS, resolveTeams, loadTeamImages } from './teams.js';
+import { TEAMS, CATEGORIES, CATEGORY_DEFAULTS, PRESETS, teamsIn, resolveTeams, loadTeamImages } from './teams.js';
 import { Renderer, THEMES } from './render.js';
 import { AudioEngine, Music, renderOffline } from './audio.js';
 import { seedFrom } from './rng.js';
@@ -10,9 +10,9 @@ const params = new URLSearchParams(location.search);
 const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
-  level: 'subida', count: 4, teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
+  level: 'zigue', count: 4, category: 'selecoes', teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
   theme: 'roxo', seed: 7, music: true,
-  title: 'QUAL TIME VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SEU TIME!',
+  title: 'QUAL SELEÇÃO VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SEU TIME!',
 };
 
 // ------------------------------------------------------------------ config
@@ -20,7 +20,7 @@ function loadCfg() {
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem('quadrados.cfg') || '{}'); } catch { /* sem storage */ }
   const cfg = { ...DEFAULTS, ...saved };
-  for (const k of ['level', 'theme', 'title', 'subtitle', 'handle', 'cta']) if (params.has(k)) cfg[k] = params.get(k);
+  for (const k of ['level', 'category', 'theme', 'title', 'subtitle', 'handle', 'cta']) if (params.has(k)) cfg[k] = params.get(k);
   if (params.has('teams')) cfg.teams = params.get('teams').split(',').map((s) => s.trim()).filter(Boolean);
   if (params.has('count')) cfg.count = Number(params.get('count'));
   if (params.has('seed')) cfg.seed = seedFrom(params.get('seed'));
@@ -34,7 +34,8 @@ function makeGame(cfg) {
   const level = getLevel(cfg.level);
   const count = Math.max(2, Math.min(level.maxRacers, cfg.count || 4));
   const teams = resolveTeams(cfg.teams.slice(0, count));
-  while (teams.length < count) teams.push(...resolveTeams([Object.keys(TEAMS)[teams.length]]));
+  const pool = teamsIn(cfg.category || 'selecoes').filter((id) => !teams.some((t) => t.id === id));
+  while (teams.length < count) teams.push(...resolveTeams([...teams.map((t) => t.id), pool.shift() || Object.keys(TEAMS)[teams.length]]).slice(-1));
   return { level, teams, game: new Game({ level, teams, seed: cfg.seed }) };
 }
 
@@ -58,7 +59,9 @@ if (RENDER_MODE) {
   let cur = null;
   window.__studio = {
     async setup(cfg) {
-      cfg = { ...DEFAULTS, ...cfg };
+      const first = TEAMS[(cfg.teams || [])[0]];
+      const category = cfg.category || first?.category || DEFAULTS.category;
+      cfg = { ...DEFAULTS, title: CATEGORY_DEFAULTS[category]?.title || DEFAULTS.title, ...cfg, category };
       if (cfg.best) cfg.seed = findBestSeed(cfg, cfg.best).seed;
       const made = makeGame(cfg);
       await loadTeamImages(made.teams);
@@ -100,26 +103,28 @@ function initApp() {
   // ---- preencher controles
   $('level').innerHTML = LEVELS.map((l) => `<option value="${l.id}">${l.name} (até ${l.maxRacers})</option>`).join('');
   $('theme').innerHTML = Object.entries(THEMES).map(([k, t]) => `<option value="${k}">${t.name}</option>`).join('');
-  $('preset').innerHTML = '<option value="">— escolher —</option>' + Object.keys(PRESETS).map((k) => `<option>${k}</option>`).join('');
-  const teamOptions = [
-    ['Seleções', Object.keys(FLAGS)], ['Clubes', Object.keys(CLUBS)], ['Personalizados', CUSTOM_TEAMS.map((t) => t.id)],
-  ].filter(([, ids]) => ids.length).map(([label, ids]) => `<optgroup label="${label}">${ids.map((id) => `<option value="${id}">${TEAMS[id].name}</option>`).join('')}</optgroup>`).join('');
+  $('category').innerHTML = Object.entries(CATEGORIES).filter(([k]) => teamsIn(k).length).map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
+  const teamOptions = () => teamsIn(cfg.category).map((id) => `<option value="${id}">${TEAMS[id].name}</option>`).join('');
+  const presetOptions = () => '<option value="">— escolher —</option>' + Object.keys(PRESETS[cfg.category] || {}).map((k) => `<option>${k}</option>`).join('');
 
   function renderSlots() {
     const level = getLevel(cfg.level);
     const max = level.maxRacers;
     cfg.count = Math.max(2, Math.min(max, cfg.count));
     $('count').innerHTML = Array.from({ length: max - 1 }, (_, i) => i + 2).map((n) => `<option ${n === cfg.count ? 'selected' : ''}>${n}</option>`).join('');
-    $('slots').innerHTML = Array.from({ length: cfg.count }, (_, i) => `<label class="slot"><span>${i + 1}</span><select data-slot="${i}">${teamOptions}</select></label>`).join('');
+    const opts = teamOptions();
+    $('preset').innerHTML = presetOptions();
+    $('slots').innerHTML = Array.from({ length: cfg.count }, (_, i) => `<label class="slot"><span>${i + 1}</span><select data-slot="${i}">${opts}</select></label>`).join('');
     $('slots').querySelectorAll('select').forEach((sel) => {
       const i = Number(sel.dataset.slot);
-      sel.value = cfg.teams[i] || Object.keys(TEAMS)[i];
+      sel.value = cfg.teams[i]; if (!sel.value) { cfg.teams[i] = teamsIn(cfg.category)[i]; sel.value = cfg.teams[i]; }
       sel.onchange = () => { cfg.teams[i] = sel.value; reset(); };
     });
   }
 
   function syncInputs() {
     $('level').value = getLevel(cfg.level).id;
+    $('category').value = cfg.category;
     $('theme').value = cfg.theme;
     $('seed').value = cfg.seed;
     $('music').checked = cfg.music;
@@ -194,7 +199,14 @@ function initApp() {
   // ---- eventos de UI
   $('level').onchange = (e) => { cfg.level = e.target.value; renderSlots(); reset(); };
   $('count').onchange = (e) => { cfg.count = Number(e.target.value); renderSlots(); reset(); };
-  $('preset').onchange = (e) => { const p = PRESETS[e.target.value]; if (p) { cfg.teams = [...p, ...cfg.teams.filter((t) => !p.includes(t))]; cfg.count = Math.min(p.length, getLevel(cfg.level).maxRacers); renderSlots(); reset(); } e.target.value = ''; };
+  $('category').onchange = (e) => {
+    const old = cfg.category; cfg.category = e.target.value;
+    const d = CATEGORY_DEFAULTS[cfg.category];
+    cfg.teams = [...d.teams];
+    if (!cfg.title || cfg.title === CATEGORY_DEFAULTS[old]?.title) { cfg.title = d.title; $('title').value = d.title; }
+    renderSlots(); reset();
+  };
+  $('preset').onchange = (e) => { const p = (PRESETS[cfg.category] || {})[e.target.value]; if (p) { cfg.teams = [...p, ...cfg.teams.filter((t) => !p.includes(t))]; cfg.count = Math.min(p.length, getLevel(cfg.level).maxRacers); renderSlots(); reset(); } e.target.value = ''; };
   $('theme').onchange = (e) => { cfg.theme = e.target.value; reset(); };
   $('seed').onchange = (e) => { cfg.seed = seedFrom(e.target.value); reset(); };
   $('music').onchange = (e) => { cfg.music = e.target.checked; saveCfg(cfg); };

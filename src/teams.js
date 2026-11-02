@@ -219,24 +219,46 @@ function drawCrest(g, w, h, c) {
 }
 
 // ---------------------------------------------------------------- catálogo
+export const CATEGORIES = { selecoes: 'Seleções', clubes: 'Times (clubes)', custom: 'Personalizados' };
+
 export const TEAMS = {};
-for (const [id, f] of Object.entries(FLAGS)) TEAMS[id] = { id, type: 'flag', name: f.name, color: f.color };
-for (const [id, c] of Object.entries(CLUBS)) TEAMS[id] = { id, type: 'crest', name: c.name, color: c.color };
+for (const [id, f] of Object.entries(FLAGS)) TEAMS[id] = { id, type: 'flag', category: 'selecoes', name: f.name, color: f.color };
+for (const [id, c] of Object.entries(CLUBS)) TEAMS[id] = { id, type: 'crest', category: 'clubes', name: c.name, color: c.color };
 
 // Times com imagem própria: adicione aqui (coloque os arquivos em assets/badges/).
+// category: 'clubes', 'selecoes' ou 'custom' — define em qual lista ele aparece.
 export const CUSTOM_TEAMS = [
-  // { id: 'meutime', name: 'Meu Time', type: 'image', src: 'assets/badges/meutime.png', color: '#e11d48' },
+  // { id: 'meutime', name: 'Meu Time', type: 'image', category: 'clubes', src: 'assets/badges/meutime.png', color: '#e11d48' },
 ];
-for (const t of CUSTOM_TEAMS) TEAMS[t.id] = t;
+for (const t of CUSTOM_TEAMS) TEAMS[t.id] = { category: 'custom', ...t };
 
+export const teamsIn = (category) => Object.values(TEAMS).filter((t) => t.category === category).map((t) => t.id);
+
+// Atalhos separados por categoria
 export const PRESETS = {
-  'Seleções': ['br', 'ar', 'fr', 'pt'],
-  'Seleções (Europa)': ['es', 'de', 'it', 'en'],
-  'Sul-Americanos': ['br', 'ar', 'uy', 'co'],
-  'Clássicos BR': ['fla', 'cor', 'pal', 'sao'],
-  'Rio x SP': ['fla', 'flu', 'bot', 'vas'],
-  'Clubes (8)': ['fla', 'cor', 'pal', 'sao', 'gre', 'int', 'cam', 'cru'],
-  'Seleções (8)': ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
+  selecoes: {
+    'Favoritas': ['br', 'ar', 'fr', 'pt'],
+    'Europa': ['es', 'de', 'it', 'en'],
+    'América do Sul': ['br', 'ar', 'uy', 'co'],
+    'Clássicos mundiais': ['br', 'de', 'ar', 'en'],
+    'África': ['ma', 'sn', 'ng', 'gh'],
+    '8 seleções': ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
+  },
+  clubes: {
+    'Grandes de SP': ['cor', 'pal', 'sao', 'san'],
+    'Grandes do Rio': ['fla', 'flu', 'bot', 'vas'],
+    'Clássicos BR': ['fla', 'cor', 'pal', 'sao'],
+    'Sul + Minas': ['gre', 'int', 'cam', 'cru'],
+    'Nordeste': ['bah', 'for', 'vit', 'spt'],
+    '8 times': ['fla', 'cor', 'pal', 'sao', 'gre', 'int', 'cam', 'cru'],
+  },
+  custom: {},
+};
+
+export const CATEGORY_DEFAULTS = {
+  selecoes: { teams: PRESETS.selecoes['8 seleções'], title: 'QUAL SELEÇÃO VENCE?' },
+  clubes: { teams: PRESETS.clubes['8 times'], title: 'QUAL TIME VENCE?' },
+  custom: { teams: CUSTOM_TEAMS.map((t) => t.id), title: 'QUEM VENCE?' },
 };
 
 // cores bem distintas para trilhas/tijolos quando dois times têm a mesma cor

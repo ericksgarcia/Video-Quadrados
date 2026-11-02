@@ -4,8 +4,10 @@
 //   npm run render -- --level subida --teams br,ar,fr,pt --best 40 --out videos/corrida.mp4
 //
 // Opções:
-//   --level <id|n>       fase (subida, pinball, serpente, arena8 ou 1..4)
-//   --teams a,b,c,d      ids dos times (veja src/teams.js) — ou --preset "Clássicos BR"
+//   --level <id|n>       fase (zigue, colunas, labirinto, arena8 ou 1..4)
+//   --category selecoes|clubes   categoria (padrão: selecoes)
+//   --teams a,b,c,d      ids dos times (veja src/teams.js) — ou --preset "Grandes do Rio"
+//   --count n            quantos competidores (quando não passa --teams)
 //   --seed <n>           seed da corrida (mesma seed = mesma corrida)
 //   --best <n>           testa n seeds e escolhe a mais emocionante (ignora --seed)
 //   --theme roxo|agua|lava|acido
@@ -91,11 +93,13 @@ page.on('pageerror', (e) => console.error('Erro na página:', e.message));
 await page.goto(`http://127.0.0.1:${port}/index.html?render=1`);
 await page.waitForFunction(() => window.__studio);
 
-const { PRESETS } = await import('../src/teams.js');
+const { PRESETS, CATEGORY_DEFAULTS } = await import('../src/teams.js');
+const category = args.category || (args.teams ? undefined : 'selecoes'); // com --teams, a categoria é deduzida dos times
 const base = {
-  level: args.level || 'subida',
-  teams: args.teams ? String(args.teams).split(',') : args.preset ? PRESETS[args.preset] : undefined,
-  theme: args.theme, title: args.title, subtitle: args.subtitle, handle: args.handle, cta: args.cta,
+  level: args.level || 'zigue',
+  category,
+  teams: args.teams ? String(args.teams).split(',') : args.preset ? (PRESETS[category] || {})[args.preset] : CATEGORY_DEFAULTS[category].teams.slice(0, Number(args.count || 4)),
+  theme: args.theme, title: args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined), subtitle: args.subtitle, handle: args.handle, cta: args.cta,
   music: args.music !== false,
 };
 if (base.teams) base.count = base.teams.length;

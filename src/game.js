@@ -2,9 +2,11 @@
 // Tudo é determinístico a partir da seed: mesma seed = mesma corrida.
 import { makeRng } from './rng.js';
 
-export const TILE = 56;
-export const COLS = 18;
-export const ROWS = 24;
+// Grid fino: células de 28px (paredes finas, corredores estreitos como nos vídeos de referência)
+export const TILE = 28;
+export const COLS = 36;
+export const ROWS = 48;
+export const U = 56; // unidade de tamanho dos elementos (px)
 export const SIM_HZ = 120;
 
 const INTRO = 0.5;          // s antes da contagem
@@ -63,8 +65,8 @@ export class Game {
         else if (ch >= '1' && ch <= '8') { cell.k = 'brick'; cell.owner = Number(ch) - 1; }
         else if (ch === 'D') { cell.k = 'door'; const d = { cell, r, c, open: 0, target: 0, idx: this.doors.length }; cell.door = d; this.doors.push(d); }
         else if (DIRS[ch]) cell.pad = ch;
-        else if (ch === 'O') this.bumpers.push({ x: cx, y: cy, R: TILE * 0.34, flash: 0 });
-        else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: TILE * 1.32, a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
+        else if (ch === 'O') this.bumpers.push({ x: cx, y: cy, R: U * 0.34, flash: 0 });
+        else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 1.15), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
         else if ('PpQq'.includes(ch)) { const p = { x: cx, y: cy, key: ch.toUpperCase(), primary: ch === ch.toUpperCase(), pulse: 0 }; this.portals.push(p); (portalMap[p.key] ||= []).push(p); }
         else if (ch === '!') this.pickups.push({ kind: 'sword', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });
@@ -90,14 +92,26 @@ export class Game {
         }
       }
       const base = cl.owner == null ? (this.level.brickHp ?? 4) : (this.level.colorBrickHp ?? 4);
-      cl.hp = cl.maxHp = Math.max(1, Math.round(base + (cl.cells.length > 6 ? 1 : 0)));
+      cl.hp = cl.maxHp = Math.max(1, Math.round(base + (cl.cells.length > 24 ? 1 : 0)));
       this.clusters.push(cl);
     }
     this.buildDistField();
     for (const list of Object.values(portalMap)) if (list.length === 2) { list[0].pair = list[1]; list[1].pair = list[0]; }
+    let group = 0;
     for (const d of this.doors) {
       const L = this.cell(d.r, d.c - 1), R = this.cell(d.r, d.c + 1);
-      d.horizontal = (L?.k === 'wall' || !L) && (R?.k === 'wall' || !R); // bloqueia passagem vertical
+      const solidish = (k) => !k || k.k === 'wall' || k.k === 'door';
+      d.horizontal = solidish(L) && solidish(R); // bloqueia passagem vertical
+      if (d.group != null) continue;
+      const st = [d]; d.group = group;
+      while (st.length) {
+        const x = st.pop();
+        for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const n = this.cell(x.r + dr, x.c + dc);
+          if (n?.door && n.door.group == null) { n.door.group = group; st.push(n.door); }
+        }
+      }
+      group++;
     }
   }
 
@@ -211,10 +225,13 @@ export class Game {
     const period = this.level.doors?.period ?? 4.2;
     const rt = this.raceTime;
     for (const d of this.doors) {
-      const phase = ((rt + d.idx * 1.37) % period) / period;
+      const phase = ((rt + d.group * 1.37) % period) / period;
       let target = phase > 0.45 ? 1 : 0;
-      if (target === 0 && d.open > 0.4 && this.racers.some((r) => r.state === 'alive' && this.overlapsCell(r, d.r, d.c))) target = 1;
-      if (target !== d.target) { d.target = target; this.emit('door', { open: !!target, x: (d.c + 0.5) * TILE, y: (d.r + 0.5) * TILE }); }
+      if (target === 0 && d.open > 0.4 && this.racers.some((r) => r.state === 'alive' && this.doors.some((o) => o.group === d.group && this.overlapsCell(r, o.r, o.c)))) target = 1;
+      if (target !== d.target) {
+        d.target = target;
+        if (!this._doorSnd || this._doorSnd[d.group] !== target) { (this._doorSnd ||= {})[d.group] = target; this.emit('door', { open: !!target, x: (d.c + 0.5) * TILE, y: (d.r + 0.5) * TILE }); }
+      }
       d.open += Math.sign(d.target - d.open) * Math.min(Math.abs(d.target - d.open), dt * 3.5);
     }
   }
@@ -240,7 +257,7 @@ export class Game {
       F.started = true;
       this.emit('floodStart');
     }
-    const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale;
+    const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale * (U / TILE);
     const L = F.level;
     const full = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS && L[r * COLS + c] >= 1;
     let targetRow = -1;
@@ -279,7 +296,7 @@ export class Game {
 
   // ------------------------------------------------------------ racers
   speedOf(r) {
-    let s = (this.level.racerSpeed ?? 270) * this.speedScale * (1 + r.boost + (r.zap > 0 ? 0.45 : 0));
+    let s = (this.level.racerSpeed ?? 320) * this.speedScale * (1 + r.boost + (r.zap > 0 ? 0.45 : 0));
     if (r.frozen > 0) s *= 0.4;
     return s;
   }
@@ -380,7 +397,9 @@ export class Game {
     let diff = Math.atan2(d[1], d[0]) - a;
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
-    const na = a + Math.max(-amt, Math.min(amt, diff)) * this.rng.range(0.3, 1);
+    // às vezes o quadrado "acerta a mira" e segue o caminho; senão só puxa um pouco
+    const snap = this.rng() < (this.level.snap ?? 0.4);
+    const na = snap ? a + diff + this.rng.range(-0.5, 0.5) : a + Math.max(-amt, Math.min(amt, diff)) * this.rng.range(0.3, 1);
     const vx = Math.cos(na), vy = Math.sin(na);
     if (Math.sign(vx) !== sx || Math.sign(vy) !== sy) return;
     r.vx = vx; r.vy = vy;
@@ -487,8 +506,8 @@ export class Game {
     // portais
     if (r.portalCd <= 0) {
       for (const p of this.portals) {
-        if (!p.pair) continue;
-        if (Math.hypot(r.x - p.x, r.y - p.y) < T * 0.38) {
+        if (!p.pair || !p.primary) continue; // portais são de mão única: P -> p, Q -> q
+        if (Math.hypot(r.x - p.x, r.y - p.y) < U * 0.38) {
           const q = p.pair;
           this.emit('portal', { x: p.x, y: p.y, x2: q.x, y2: q.y, i: r.i });
           r.x = q.x; r.y = q.y; r.portalCd = 0.9; r.trailReset++;
@@ -504,13 +523,13 @@ export class Game {
       const [dx, dy] = DIRS[cell.pad];
       const a = Math.atan2(dy, dx) + this.rng.range(-0.45, 0.45);
       r.vx = Math.cos(a); r.vy = Math.sin(a); this.jitter(r, 0);
-      r.boost = Math.min(1.8, r.boost + 1.0); r.padCd = 0.4;
+      r.boost = Math.min(1.8, r.boost + 1.0); r.padCd = 0.12;
       this.emit('boost', { x: r.x, y: r.y, i: r.i });
     }
     // power-ups
     for (const p of this.pickups) {
       if (!p.active) { p.respawn -= dt; if (p.respawn <= 0) { p.active = true; this.emit('pickupSpawn', { x: p.x, y: p.y }); } continue; }
-      if (Math.hypot(r.x - p.x, r.y - p.y) < T * 0.55) {
+      if (Math.hypot(r.x - p.x, r.y - p.y) < U * 0.55) {
         p.active = false; p.respawn = 12;
         let kind = p.kind;
         if (kind === 'mystery') kind = this.rng.pick(['sword', 'zap', 'freeze']);
@@ -544,7 +563,7 @@ export class Game {
     const alive = this.racers.filter((r) => r.state === 'alive');
     let lvl = 1;
     if (this.flood.started) lvl = 2;
-    if (this.winner || (alive.length && alive.some((r) => r.y / TILE > this.flood.topRow - 3))) lvl = 3;
+    if (this.winner || (alive.length && alive.some((r) => r.y / TILE > this.flood.topRow - 6))) lvl = 3;
     if (lvl !== this.intensity) { this.intensity = lvl; this.emit('intensity', { level: lvl }); }
   }
 

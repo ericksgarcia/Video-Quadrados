@@ -34,7 +34,7 @@ export class AudioEngine {
     const c = ctx;
     this.master = c.createGain(); this.master.gain.value = volume;
     this.limiter = c.createDynamicsCompressor();
-    this.limiter.threshold.value = -3; this.limiter.knee.value = 0; this.limiter.ratio.value = 20;
+    this.limiter.threshold.value = -1.5; this.limiter.knee.value = 0; this.limiter.ratio.value = 20;
     this.limiter.attack.value = 0.002; this.limiter.release.value = 0.12;
     this.comp = c.createDynamicsCompressor();
     this.comp.threshold.value = -18; this.comp.knee.value = 8; this.comp.ratio.value = 3.5;
@@ -51,7 +51,9 @@ export class AudioEngine {
     this.musicBus.connect(this.duck); this.duck.connect(this.comp);
     this.musicBus.connect(this.revSend);
     this.revSend.connect(this.reverb); this.reverb.connect(this.revReturn); this.revReturn.connect(this.comp);
-    this.comp.connect(this.limiter); this.limiter.connect(this.master); this.master.connect(c.destination);
+    // ganho de compensação: deixa o áudio final perto de -14 LUFS (padrão do TikTok)
+    this.makeup = c.createGain(); this.makeup.gain.value = 2.0;
+    this.comp.connect(this.makeup); this.makeup.connect(this.limiter); this.limiter.connect(this.master); this.master.connect(c.destination);
     this.noise = makeNoise(c);
     this.voices = 0;
   }

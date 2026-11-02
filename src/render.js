@@ -1,6 +1,6 @@
 // Desenho de tudo: arena, elementos, inundação, competidores, partículas e HUD.
 // Canvas vertical 1080x1920 (formato TikTok/Reels/Shorts).
-import { TILE, COLS, ROWS, RACE_START } from './game.js';
+import { TILE, COLS, ROWS, RACE_START, U } from './game.js';
 import { makeBadge } from './teams.js';
 
 export const W = 1080;
@@ -127,23 +127,23 @@ export class Renderer {
       if (cell.k === 'wall') continue;
       const x = cc * TILE, y = r * TILE;
       if (cell.k === 'finish') {
-        const n = 4, s = TILE / n;
+        const n = 2, s = TILE / n;
         for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { g.fillStyle = (i + j) % 2 ? '#101321' : '#f8fafc'; g.fillRect(x + i * s, y + j * s, s, s); }
       } else {
-        g.fillStyle = (r + cc) % 2 ? FLOOR : FLOOR2; g.fillRect(x, y, TILE, TILE);
+        g.fillStyle = ((r >> 1) + (cc >> 1)) % 2 ? FLOOR : FLOOR2; g.fillRect(x, y, TILE, TILE);
         if (cell.src) { g.fillStyle = 'rgba(80,90,120,.12)'; g.fillRect(x, y, TILE, TILE); }
       }
     }
     // sombra das paredes projetada no chão
     g.fillStyle = 'rgba(15,20,40,.22)';
-    for (let r = 0; r < ROWS; r++) for (let cc = 0; cc < COLS; cc++) if (isWall(r, cc)) g.fillRect(cc * TILE + 7, r * TILE + 10, TILE, TILE);
+    for (let r = 0; r < ROWS; r++) for (let cc = 0; cc < COLS; cc++) if (isWall(r, cc)) g.fillRect(cc * TILE + 5, r * TILE + 7, TILE, TILE);
     // paredes
     for (let r = 0; r < ROWS; r++) for (let cc = 0; cc < COLS; cc++) {
       if (!isWall(r, cc)) continue;
       const x = cc * TILE, y = r * TILE;
       g.fillStyle = WALL; g.fillRect(x, y, TILE, TILE);
-      if (!isWall(r + 1, cc)) { g.fillStyle = WALL_FACE; g.fillRect(x, y + TILE - 10, TILE, 10); }
-      if (!isWall(r - 1, cc)) { g.fillStyle = WALL_TOP; g.fillRect(x, y, TILE, 4); }
+      if (!isWall(r + 1, cc)) { g.fillStyle = WALL_FACE; g.fillRect(x, y + TILE - 7, TILE, 7); }
+      if (!isWall(r - 1, cc)) { g.fillStyle = WALL_TOP; g.fillRect(x, y, TILE, 3); }
       if (!isWall(r, cc - 1)) { g.fillStyle = 'rgba(255,255,255,.06)'; g.fillRect(x, y, 3, TILE); }
     }
     // contorno arredondado da arena
@@ -319,8 +319,8 @@ export class Renderer {
       const cell = game.grid[r][c];
       if (!cell.pad) continue;
       const x = c * TILE, y = r * TILE;
-      g.fillStyle = 'rgba(14,165,233,.16)'; g.fillRect(x + 3, y + 3, TILE - 6, TILE - 6);
-      g.save(); g.translate(x + TILE / 2, y + TILE / 2); g.rotate(ang[cell.pad]);
+      g.fillStyle = 'rgba(14,165,233,.16)'; g.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
+      g.save(); g.translate(x + TILE / 2, y + TILE / 2); g.rotate(ang[cell.pad]); g.scale(TILE / 56, TILE / 56);
       for (let k = 0; k < 2; k++) {
         const ph = ((this.time * 2.2 + k * 0.5) % 1);
         const px = -14 + ph * 26;
@@ -337,13 +337,13 @@ export class Renderer {
       const col = p.primary ? ['#a855f7', '#e9d5ff'] : ['#f97316', '#fed7aa'];
       g.save(); g.translate(p.x, p.y);
       const pul = 1 + p.pulse * 0.35;
-      const rg = g.createRadialGradient(0, 0, 2, 0, 0, TILE * 0.55 * pul);
+      const rg = g.createRadialGradient(0, 0, 2, 0, 0, U * 0.55 * pul);
       rg.addColorStop(0, col[1]); rg.addColorStop(0.45, col[0]); rg.addColorStop(1, 'rgba(0,0,0,0)');
-      g.fillStyle = rg; g.beginPath(); g.arc(0, 0, TILE * 0.55 * pul, 0, Math.PI * 2); g.fill();
+      g.fillStyle = rg; g.beginPath(); g.arc(0, 0, U * 0.55 * pul, 0, Math.PI * 2); g.fill();
       g.rotate(this.time * (p.primary ? 3 : -3));
       g.strokeStyle = col[1]; g.lineWidth = 3.5;
-      for (let k = 0; k < 3; k++) { g.rotate((Math.PI * 2) / 3); g.beginPath(); g.arc(0, 0, TILE * 0.3, 0, Math.PI * 0.7); g.stroke(); }
-      g.fillStyle = '#0b0b17'; g.beginPath(); g.arc(0, 0, TILE * 0.12, 0, Math.PI * 2); g.fill();
+      for (let k = 0; k < 3; k++) { g.rotate((Math.PI * 2) / 3); g.beginPath(); g.arc(0, 0, U * 0.3, 0, Math.PI * 0.7); g.stroke(); }
+      g.fillStyle = '#0b0b17'; g.beginPath(); g.arc(0, 0, U * 0.12, 0, Math.PI * 2); g.fill();
       g.restore();
     }
   }
@@ -360,38 +360,42 @@ export class Renderer {
         const x = cell.c * TILE + ox, y = cell.r * TILE + oy;
         g.fillStyle = shade(base, -0.25); g.fillRect(x, y, TILE, TILE);
         // tijolinhos
-        const rowsB = 3, bh = TILE / rowsB;
+        const rowsB = 2, bh = TILE / rowsB;
         for (let i = 0; i < rowsB; i++) {
           const off = i % 2 ? TILE / 4 : 0;
           for (let j = -1; j < 2; j++) {
-            const bx = x + off + j * (TILE / 2) + 2, by = y + i * bh + 2;
-            const x0 = Math.max(x + 2, bx), x1 = Math.min(x + TILE - 2, bx + TILE / 2 - 4);
+            const bx = x + off + j * (TILE / 2) + 1, by = y + i * bh + 1;
+            const x0 = Math.max(x + 1, bx), x1 = Math.min(x + TILE - 1, bx + TILE / 2 - 2);
             if (x1 <= x0) continue;
             g.fillStyle = (i + j) % 2 ? base : shade(base, 0.08);
-            g.fillRect(x0, by, x1 - x0, bh - 4);
-            g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x0, by, x1 - x0, 2);
+            g.fillRect(x0, by, x1 - x0, bh - 2);
+            g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x0, by, x1 - x0, 1.5);
           }
         }
         // rachaduras conforme o dano
         if (dmg > 0) {
           g.strokeStyle = `rgba(10,10,20,${0.35 + dmg * 0.5})`; g.lineWidth = 2.5;
           const seed = cell.r * 31 + cell.c * 17;
-          const n = Math.ceil(dmg * 4);
+          const n = Math.ceil(dmg * 2);
           for (let k = 0; k < n; k++) {
-            const sx0 = x + ((seed * (k + 3)) % 40) + 8, sy0 = y + ((seed * (k + 7)) % 40) + 8;
+            const sx0 = x + ((seed * (k + 3)) % 18) + 4, sy0 = y + ((seed * (k + 7)) % 14) + 3;
             g.beginPath(); g.moveTo(sx0, sy0);
-            g.lineTo(sx0 + ((seed + k * 13) % 20) - 10, sy0 + 12);
-            g.lineTo(sx0 + ((seed + k * 29) % 24) - 12, sy0 + 22);
+            g.lineTo(sx0 + ((seed + k * 13) % 10) - 5, sy0 + 7);
+            g.lineTo(sx0 + ((seed + k * 29) % 12) - 6, sy0 + 13);
             g.stroke();
           }
         }
-        // escudo/bandeira do dono no tijolo colorido
-        if (cl.owner != null && this.smallBadges[cl.owner]) {
-          g.save();
-          g.globalAlpha = 0.95;
-          g.fillStyle = '#fff'; roundRect(g, x + TILE / 2 - 13, y + TILE / 2 - 13, 26, 26, 4); g.fill();
-          g.drawImage(this.smallBadges[cl.owner], x + TILE / 2 - 11, y + TILE / 2 - 11, 22, 22);
-          g.restore();
+      }
+      // escudo/bandeira do dono (um a cada bloco 2x2 do tijolo colorido)
+      if (cl.owner != null && this.smallBadges[cl.owner]) {
+        const inCl = (r, c) => game.cell(r, c)?.cluster === cl;
+        if (cl.r0 == null) { cl.r0 = Math.min(...cl.cells.map((k) => k.r)); cl.c0 = Math.min(...cl.cells.map((k) => k.c)); }
+        for (const cell of cl.cells) {
+          if ((cell.r - cl.r0) % 2 || (cell.c - cl.c0) % 2) continue;
+          if (!inCl(cell.r + 1, cell.c + 1) || !inCl(cell.r, cell.c + 1) || !inCl(cell.r + 1, cell.c)) continue;
+          const cx = (cell.c + 1) * TILE + ox, cy = (cell.r + 1) * TILE + oy;
+          g.fillStyle = '#fff'; roundRect(g, cx - 14, cy - 14, 28, 28, 5); g.fill();
+          g.drawImage(this.smallBadges[cl.owner], cx - 12, cy - 12, 24, 24);
         }
       }
       // contorno do bloco
@@ -419,16 +423,14 @@ export class Renderer {
       if (k <= 0.01) continue;
       g.save();
       g.beginPath();
-      if (d.horizontal) g.rect(x, y + 6, TILE * k, TILE - 12); else g.rect(x + 6, y, TILE - 12, TILE * k);
+      if (d.horizontal) g.rect(x, y + 3, TILE * k, TILE - 6); else g.rect(x + 3, y, TILE - 6, TILE * k);
       g.clip();
       g.fillStyle = '#374151'; g.fillRect(x, y, TILE, TILE);
       // listras de perigo
       g.fillStyle = '#facc15';
-      for (let i = -2; i < 4; i++) { g.beginPath(); g.moveTo(x + i * 22, y + TILE); g.lineTo(x + i * 22 + 11, y + TILE); g.lineTo(x + i * 22 + 11 + TILE, y); g.lineTo(x + i * 22 + TILE, y); g.closePath(); g.fill(); }
-      g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x, y + TILE - 6, TILE, 6);
+      for (let i = -2; i < 3; i++) { const sx = x + i * 14 + (d.c % 2) * 7; g.beginPath(); g.moveTo(sx, y + TILE); g.lineTo(sx + 7, y + TILE); g.lineTo(sx + 7 + TILE, y); g.lineTo(sx + TILE, y); g.closePath(); g.fill(); }
+      g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x, y + TILE - 4, TILE, 4);
       g.restore();
-      g.strokeStyle = '#111827'; g.lineWidth = 3;
-      if (d.horizontal) g.strokeRect(x + 1.5, y + 7.5, TILE * k - 3, TILE - 15); else g.strokeRect(x + 7.5, y + 1.5, TILE - 15, TILE * k - 3);
     }
   }
 
@@ -505,7 +507,7 @@ export class Renderer {
       const top = y + (1 - lv) * TILE;
       // superfície ondulada
       g.moveTo(x - 0.5, y + TILE + 0.5);
-      for (let k = 0; k <= 8; k++) { const xx = x + (k / 8) * TILE; g.lineTo(xx + (k === 8 ? 0.5 : k === 0 ? -0.5 : 0), Math.min(y + TILE, top + wave(xx) * Math.min(1, lv * 3))); }
+      for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; g.lineTo(xx + (k === 4 ? 0.5 : k === 0 ? -0.5 : 0), Math.min(y + TILE, top + wave(xx) * Math.min(1, lv * 3))); }
       g.lineTo(x + TILE + 0.5, y + TILE + 0.5);
       g.closePath();
       surfaces.push([x, top, lv]);
@@ -517,7 +519,7 @@ export class Renderer {
     g.beginPath();
     for (const [x, top, lv] of surfaces) {
       if (lv < 0.06) continue;
-      for (let k = 0; k <= 8; k++) { const xx = x + (k / 8) * TILE; const yy = top + wave(xx) * Math.min(1, lv * 3); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+      for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; const yy = top + wave(xx) * Math.min(1, lv * 3); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
     }
     g.stroke();
     g.restore();
