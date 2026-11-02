@@ -19,102 +19,102 @@ class M:
             s.carve(src_row, c0, src_row, c1, '~')
             s.put(spawn_row, (c0 + c1) // 2, 'S')
         return s
-    def slit_v(s, c, r0, r1, open0, open1):
-        """divisória vertical (coluna c, linhas r0..r1) com uma fresta em open0..open1"""
-        s.carve(r0, c, r1, c, '#'); s.carve(open0, c, open1, c, '.'); return s
+    def slit_v(s, c, r0, r1, open0, open1, thick=2):
+        """divisória vertical (colunas c..c+thick-1, linhas r0..r1) com uma fresta em open0..open1"""
+        s.carve(r0, c, r1, c + thick - 1, '#'); s.carve(open0, c, open1, c + thick - 1, '.'); return s
     def lines(s): return [''.join(r) for r in s.g]
 
-# Passagens de propósito estreitas (2-3 blocos = 56-84px para um quadrado de 44px):
-# os quadrados batem, voltam e só passam "de vez em quando".
+# Paredes internas GROSSAS (2 blocos = 56px, ~ a largura de um quadrado) como nos vídeos,
+# corredores de 4-5 blocos e passagens estreitas de 2-3 blocos (os quadrados batem e voltam).
 
 def zigue():
     m = M()
-    m.lanes([1, 9, 17, 25], 7, [38, 39], (40, 45), 46, 43)
-    m.carve(33, 1, 37, 34)                 # A
-    m.carve(32, 32, 32, 34)                # A->B (3, direita)
-    m.carve(27, 1, 31, 34)                 # B
-    m.slit_v(18, 27, 31, 28, 29)           # divisória com fresta
-    m.carve(26, 1, 26, 2)                  # B->C (2, esquerda)
-    m.carve(21, 1, 25, 34)                 # C
-    m.carve(20, 31, 20, 34, 'D')           # portão C->D
-    m.carve(15, 1, 19, 34)                 # D
-    m.slit_v(16, 15, 19, 18, 19)
-    m.carve(14, 1, 14, 3)                  # D->E (3, esquerda)
-    m.carve(9, 1, 13, 34)                  # E
-    m.carve(9, 17, 13, 18, 'B')            # barreira de tijolos
-    m.carve(8, 33, 8, 34)                  # E->F (2, direita)
-    m.carve(1, 1, 7, 34)                   # F
-    m.carve(1, 1, 7, 5, 'F'); m.carve(1, 6, 7, 7, 'B')
-    m.slit_v(20, 1, 7, 2, 4)
-    m.put(37, 10, 'O'); m.put(33, 22, 'O')
-    m.put(29, 9, '*'); m.put(29, 27, 'z'); m.put(31, 30, 'P'); m.put(17, 29, 'p')
-    m.put(21, 12, 'O'); m.put(25, 22, 'O'); m.put(23, 26, '?')
-    m.put(17, 8, '!'); m.put(19, 24, 'O')
-    m.put(13, 26, 'O'); m.put(11, 6, '?')
-    m.put(1, 14, 'O'); m.put(7, 26, 'O'); m.put(4, 29, '*')
+    m.lanes([1, 9, 17, 25], 6, [37, 38], (39, 45), 46, 42)
+    m.carve(32, 1, 36, 30)                 # A
+    m.carve(30, 28, 31, 30)                # A->B (3, direita)
+    m.carve(26, 1, 29, 34)                 # B
+    m.slit_v(17, 26, 29, 27, 28)           # divisória com fresta
+    m.carve(24, 1, 25, 3)                  # B->C (3, esquerda)
+    m.carve(20, 1, 23, 34)                 # C
+    m.carve(18, 31, 19, 34, 'D')           # portão C->D
+    m.carve(14, 1, 17, 34)                 # D
+    m.slit_v(15, 14, 17, 16, 17)
+    m.carve(12, 1, 13, 3)                  # D->E (3, esquerda)
+    m.carve(8, 1, 11, 34)                  # E
+    m.carve(8, 18, 11, 19, 'B')            # barreira de tijolos
+    m.carve(6, 32, 7, 34)                  # E->F (3, direita)
+    m.carve(1, 1, 5, 34)                   # F
+    m.carve(1, 1, 5, 5, 'F'); m.carve(1, 6, 5, 7, 'B')
+    m.slit_v(20, 1, 5, 2, 3)
+    m.put(36, 10, 'O'); m.put(32, 22, 'O')
+    m.put(27, 9, '*'); m.put(28, 26, 'z'); m.put(27, 32, 'P'); m.put(15, 29, 'p')
+    m.put(20, 12, 'O'); m.put(23, 22, 'O'); m.put(21, 27, '?')
+    m.put(16, 8, '!'); m.put(17, 24, 'O')
+    m.put(11, 26, 'O'); m.put(9, 8, '?')
+    m.put(1, 13, 'O'); m.put(5, 26, 'O'); m.put(3, 29, 'z')
     return m.lines()
 
 def colunas():
     m = M()
-    m.lanes([1, 6, 11, 16], 4, [36, 37], (38, 45), 46, 42)
+    m.lanes([1, 7, 13, 19], 4, [36, 37], (38, 45), 46, 42)
     m.carve(31, 1, 35, 34)                 # corredor de baixo
-    m.carve(30, 1, 30, 3)                  # sobe pela coluna 1 (3)
-    cols = [(1, 6), (8, 13), (15, 20), (22, 27), (29, 34)]
-    for c0, c1 in cols: m.carve(1, c0, 29, c1)
-    m.carve(1, 7, 3, 7, 'D')               # c1 -> c2 (portão, 3)
-    m.carve(27, 14, 28, 14)                # c2 -> c3 (2)
-    m.carve(1, 21, 2, 21)                  # c3 -> c4 (2)
-    m.carve(26, 28, 28, 28)                # c4 -> c5 (3)
+    m.carve(29, 1, 30, 3)                  # sobe pela coluna 1 (3)
+    cols = [(1, 5), (8, 12), (15, 19), (22, 26), (29, 34)]
+    for c0, c1 in cols: m.carve(1, c0, 28, c1)
+    m.carve(1, 6, 3, 7, 'D')               # c1 -> c2 (portão, 3)
+    m.carve(25, 13, 26, 14)                # c2 -> c3 (2)
+    m.carve(1, 20, 2, 21)                  # c3 -> c4 (2)
+    m.carve(24, 27, 26, 28)                # c4 -> c5 (3)
     m.carve(1, 29, 4, 34, 'F'); m.carve(5, 29, 6, 34, 'B')
-    m.carve(14, 1, 14, 6, '#'); m.carve(14, 3, 14, 4, '.')      # fresta na coluna 1
-    m.carve(18, 29, 18, 34, '#'); m.carve(18, 33, 18, 34, '.')  # fresta na coluna 5
+    m.carve(14, 1, 15, 5, '#'); m.carve(14, 3, 15, 4, '.')      # fresta na coluna 1
+    m.carve(17, 29, 18, 34, '#'); m.carve(17, 32, 18, 34, '.')  # fresta na coluna 5
     m.put(35, 9, 'O'); m.put(33, 26, '*'); m.put(33, 17, 'z'); m.put(31, 31, 'O')
-    m.put(20, 1, 'O'); m.put(8, 4, '?')
-    m.put(20, 13, 'O'); m.put(27, 11, 'P')
-    m.carve(14, 15, 15, 20, 'B'); m.put(22, 17, '!'); m.put(8, 20, 'O')
-    m.put(4, 25, 'p'); m.put(16, 22, 'O')
-    m.put(10, 34, 'O'); m.put(24, 31, 'z')
+    m.put(21, 1, 'O'); m.put(8, 3, '?')
+    m.put(19, 12, 'O'); m.put(26, 10, 'P')
+    m.carve(13, 15, 14, 19, 'B'); m.put(21, 17, '!'); m.put(7, 19, 'O')
+    m.put(5, 24, 'p'); m.put(15, 22, 'O')
+    m.put(10, 34, 'O'); m.put(23, 31, 'z')
     return m.lines()
 
 def labirinto():
     m = M()
-    m.lanes([1, 9, 17, 25], 7, [38, 39], (40, 45), 46, 43)
-    m.carve(33, 1, 37, 34)                 # A
-    m.carve(22, 1, 31, 5); m.carve(22, 30, 31, 34)   # subidas laterais
-    m.carve(32, 4, 32, 5); m.carve(32, 30, 32, 31)   # entradas estreitas (2)
-    m.carve(22, 1, 26, 34)                 # H2
-    m.carve(28, 13, 31, 22); m.carve(27, 16, 27, 19, 'D')
-    m.put(30, 17, '!')
-    m.carve(16, 16, 21, 19); m.carve(18, 16, 18, 19, 'D')  # conector central com portão
-    m.carve(16, 32, 21, 34); m.carve(18, 32, 19, 34, 'B')  # conector direito com tijolos
-    m.carve(11, 1, 15, 34)                 # H3
-    m.slit_v(10, 11, 15, 13, 14); m.slit_v(25, 11, 15, 11, 12)
-    m.carve(8, 1, 10, 2); m.carve(8, 33, 10, 34)          # subidas finais (2)
-    m.carve(1, 1, 7, 34)                   # H4
-    m.carve(1, 14, 3, 21, 'F'); m.carve(4, 14, 4, 21, 'B')
-    m.carve(4, 13, 4, 13, '#'); m.carve(4, 22, 4, 22, '#'); m.carve(1, 13, 3, 13, '#'); m.carve(1, 22, 3, 22, '#')
-    m.put(37, 9, 'O'); m.put(33, 26, 'O'); m.put(35, 17, 'z')
-    m.put(24, 17, '*'); m.put(22, 8, 'O'); m.put(26, 27, 'O')
-    m.put(13, 17, '?'); m.put(15, 6, 'O'); m.put(11, 29, 'O')
-    m.put(7, 8, 'O'); m.put(7, 27, 'O'); m.put(5, 4, 'z'); m.put(5, 31, '?')
+    m.lanes([1, 9, 17, 25], 6, [37, 38], (39, 45), 46, 42)
+    m.carve(32, 1, 36, 34)                 # A
+    m.carve(20, 1, 29, 4); m.carve(20, 31, 29, 34)   # subidas laterais
+    m.carve(30, 3, 31, 4); m.carve(30, 31, 31, 32)   # entradas estreitas (2)
+    m.carve(20, 1, 24, 34)                 # H2
+    m.carve(27, 13, 29, 22); m.carve(25, 16, 26, 19, 'D')  # sala da espada
+    m.put(28, 17, '!')
+    m.carve(18, 16, 19, 19, 'D')           # portão central
+    m.carve(18, 31, 19, 34, 'B')           # tijolos à direita
+    m.carve(13, 1, 17, 34)                 # H3
+    m.slit_v(10, 13, 17, 15, 16); m.slit_v(24, 13, 17, 13, 14)
+    m.carve(11, 1, 12, 3); m.carve(11, 32, 12, 34)        # subidas finais (3)
+    m.carve(1, 1, 10, 34)                  # H4
+    m.carve(1, 14, 3, 21, 'F'); m.carve(4, 14, 5, 21, 'B')
+    m.carve(1, 12, 5, 13, '#'); m.carve(1, 22, 5, 23, '#')
+    m.put(36, 9, 'O'); m.put(32, 26, 'O'); m.put(34, 17, 'z')
+    m.put(22, 17, '*'); m.put(20, 8, 'O'); m.put(24, 27, 'O')
+    m.put(15, 17, '?'); m.put(17, 6, 'O'); m.put(13, 29, 'O')
+    m.put(9, 8, 'O'); m.put(9, 27, 'O'); m.put(3, 5, 'z'); m.put(3, 30, '?')
     return m.lines()
 
 def arena8():
     m = M()
-    m.lanes([2 + 4 * i for i in range(8)], 3, [37, 38], (39, 45), 46, 42)
-    m.carve(31, 1, 36, 34)                 # A
-    m.carve(30, 1, 30, 2); m.carve(30, 33, 30, 34)
-    m.carve(23, 1, 29, 34)                 # B
-    m.carve(22, 16, 22, 19, 'D')
-    m.carve(14, 1, 21, 34)                 # C
-    m.carve(13, 1, 13, 3, 'B'); m.carve(13, 32, 13, 34, 'B'); m.carve(13, 17, 13, 18)
-    m.carve(1, 1, 12, 34)                  # D
+    m.lanes([2 + 4 * i for i in range(8)], 3, [36, 37], (38, 45), 46, 42)
+    m.carve(31, 1, 35, 34)                 # A
+    m.carve(29, 1, 30, 3); m.carve(29, 32, 30, 34)
+    m.carve(22, 1, 28, 34)                 # B
+    m.carve(20, 16, 21, 19, 'D')
+    m.carve(13, 1, 19, 34)                 # C
+    m.carve(11, 1, 12, 3, 'B'); m.carve(11, 32, 12, 34, 'B'); m.carve(11, 17, 12, 18, 'B')
+    m.carve(1, 1, 10, 34)                  # D
     m.carve(1, 12, 3, 23, 'F'); m.carve(4, 12, 5, 23, 'B')
-    m.carve(1, 11, 5, 11, '#'); m.carve(1, 24, 5, 24, '#')
+    m.carve(1, 10, 5, 11, '#'); m.carve(1, 24, 5, 25, '#')
     m.put(33, 9, 'O'); m.put(33, 26, 'O'); m.put(33, 17, '?')
-    m.put(26, 8, '*'); m.put(26, 27, '*'); m.put(26, 17, 'z'); m.put(26, 3, 'P'); m.put(17, 32, 'p')
-    m.put(17, 9, 'O'); m.put(17, 26, 'O'); m.put(18, 17, '!')
-    m.put(8, 6, 'O'); m.put(8, 29, 'O'); m.put(9, 17, '*'); m.put(4, 4, '?'); m.put(4, 31, 'z')
+    m.put(25, 8, '*'); m.put(25, 27, '*'); m.put(25, 17, 'z'); m.put(27, 3, 'O')
+    m.put(16, 9, 'O'); m.put(16, 26, 'O'); m.put(17, 17, '!')
+    m.put(7, 6, 'O'); m.put(7, 29, 'O'); m.put(8, 17, '*'); m.put(3, 4, '?'); m.put(3, 31, 'z')
     return m.lines()
 
 if __name__ == '__main__':

@@ -70,7 +70,7 @@ export class Game {
         else if (ch === 'D') { cell.k = 'door'; const d = { cell, r, c, open: 0, target: 0, idx: this.doors.length }; cell.door = d; this.doors.push(d); }
         else if (DIRS[ch]) cell.pad = ch;
         else if (ch === 'O') this.bumpers.push({ x: cx, y: cy, R: U * 0.34, flash: 0 });
-        else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 1.15), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
+        else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 0.9), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
         else if ('PpQq'.includes(ch)) { const p = { x: cx, y: cy, key: ch.toUpperCase(), primary: ch === ch.toUpperCase(), pulse: 0 }; this.portals.push(p); (portalMap[p.key] ||= []).push(p); }
         else if (ch === '!') this.pickups.push({ kind: 'sword', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });

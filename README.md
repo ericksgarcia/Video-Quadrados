@@ -114,8 +114,9 @@ categoria ficam em `PRESETS` no `src/teams.js`.
 ### Criar fases
 
 As fases ficam em `src/levels.js`, como mapas de texto de 36 colunas x 48 linhas (cada caractere
-é um bloco de 28px; a legenda está no topo do arquivo). Corredores de 5 blocos de largura com
-paredes de 1 bloco dão o visual "estreito" dos vídeos de referência. O `tools/levelgen.py`
+é um bloco de 28px; a legenda está no topo do arquivo). Paredes internas de 2 blocos (56px, ~ a
+largura de um quadrado), corredores de 4-5 blocos e passagens de 2-3 blocos dão o visual dos vídeos
+de referência. O `tools/levelgen.py`
 monta mapas a partir de retângulos (`carve`), o que é bem mais fácil que editar à mão. Cada fase também ajusta:
 
 ```js
