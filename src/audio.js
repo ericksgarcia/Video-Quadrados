@@ -258,6 +258,15 @@ export const SFX = {
     e.osc(t, { type: 'sine', f: 300 + Math.random() * 300, f2: 900 + Math.random() * 600, glide: 0.06, dur: 0.07, peak: 0.05 });
   },
 
+  // a onda alcançou o quadrado (modo "empurra")
+  splash(e, t, { x = 500 }) {
+    const dest = e.out((x / 1008) * 1.2 - 0.6);
+    e.noiseHit(t, { dur: 0.45, peak: 0.3, type: 'lowpass', f: 2600, f2: 300, dest });
+    e.noiseHit(t + 0.01, { dur: 0.15, peak: 0.12, type: 'bandpass', f: 1400, Q: 3, dest });
+    e.osc(t, { type: 'sine', f: 380, f2: 900, glide: 0.12, dur: 0.16, peak: 0.16, dest });
+    for (let i = 0; i < 4; i++) SFX.bubble(e, t + 0.08 + Math.random() * 0.35);
+  },
+
   eliminate(e, t, { x = 500 }) {
     const dest = e.out((x / 1008) * 1.2 - 0.6);
     // splash

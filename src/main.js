@@ -11,7 +11,7 @@ const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
   level: 'zigue', count: 4, category: 'selecoes', teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
-  theme: 'roxo', seed: 7, music: true,
+  theme: 'roxo', seed: 7, music: true, floodKills: false,
   title: 'QUAL SELEÇÃO VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SEU TIME!',
 };
 
@@ -25,6 +25,7 @@ function loadCfg() {
   if (params.has('count')) cfg.count = Number(params.get('count'));
   if (params.has('seed')) cfg.seed = seedFrom(params.get('seed'));
   if (params.has('music')) cfg.music = params.get('music') !== '0';
+  if (params.has('kill')) cfg.floodKills = params.get('kill') !== '0';
   if (params.has('teams') && !params.has('count')) cfg.count = cfg.teams.length;
   return cfg;
 }
@@ -36,7 +37,7 @@ function makeGame(cfg) {
   const teams = resolveTeams(cfg.teams.slice(0, count));
   const pool = teamsIn(cfg.category || 'selecoes').filter((id) => !teams.some((t) => t.id === id));
   while (teams.length < count) teams.push(...resolveTeams([...teams.map((t) => t.id), pool.shift() || Object.keys(TEAMS)[teams.length]]).slice(-1));
-  return { level, teams, game: new Game({ level, teams, seed: cfg.seed }) };
+  return { level, teams, game: new Game({ level, teams, seed: cfg.seed, floodKills: !!cfg.floodKills }) };
 }
 
 // Simula N seeds sem desenhar e devolve a mais "emocionante"
@@ -128,6 +129,7 @@ function initApp() {
     $('theme').value = cfg.theme;
     $('seed').value = cfg.seed;
     $('music').checked = cfg.music;
+    $('kill').checked = !!cfg.floodKills;
     for (const k of ['title', 'subtitle', 'handle', 'cta']) $(k).value = cfg[k];
     renderSlots();
   }
@@ -149,7 +151,7 @@ function initApp() {
       if (n === 'done') onDone();
     };
     $('cli').textContent = `npm run render -- --level ${getLevel(cfg.level).id} --teams ${cfg.teams.slice(0, cfg.count).join(',')} --seed ${cfg.seed} --theme ${cfg.theme}` +
-      ` --title "${cfg.title}" --subtitle "${cfg.subtitle}"${cfg.handle ? ` --handle "${cfg.handle}"` : ''}${cfg.music ? '' : ' --no-music'}`;
+      ` --title "${cfg.title}" --subtitle "${cfg.subtitle}"${cfg.handle ? ` --handle "${cfg.handle}"` : ''}${cfg.music ? '' : ' --no-music'}${cfg.floodKills ? ' --kill' : ''}`;
   }
 
   function ensureAudio() {
@@ -210,6 +212,7 @@ function initApp() {
   $('theme').onchange = (e) => { cfg.theme = e.target.value; reset(); };
   $('seed').onchange = (e) => { cfg.seed = seedFrom(e.target.value); reset(); };
   $('music').onchange = (e) => { cfg.music = e.target.checked; saveCfg(cfg); };
+  $('kill').onchange = (e) => { cfg.floodKills = e.target.checked; reset(); };
   for (const k of ['title', 'subtitle', 'handle', 'cta']) $(k).oninput = (e) => { cfg[k] = e.target.value; renderer.opts[k] = e.target.value; saveCfg(cfg); };
   $('dice').onclick = () => { cfg.seed = Math.floor(Math.random() * 1e6); $('seed').value = cfg.seed; reset(); };
   $('best').onclick = () => {

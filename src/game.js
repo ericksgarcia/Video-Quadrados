@@ -13,7 +13,7 @@ const INTRO = 0.5;          // s antes da contagem
 const BEAT = 0.6;           // s entre 3, 2, 1, VAI
 export const RACE_START = INTRO + BEAT * 3;
 const RESULTS_HOLD = 5.0;   // s de tela de resultado no final
-const AFTER_WIN_LIMIT = 22; // s máx. após o vencedor até encerrar
+const AFTER_WIN_LIMIT = 15; // s máx. após o vencedor até encerrar
 const TIME_LIMIT = 150;     // s máx. de corrida
 
 const PENTA = [0, 2, 4, 7, 9]; // escala pentatônica (soa "satisfatório")
@@ -21,7 +21,7 @@ const PENTA = [0, 2, 4, 7, 9]; // escala pentatônica (soa "satisfatório")
 const DIRS = { '^': [0, -1], v: [0, 1], '<': [-1, 0], '>': [1, 0] };
 
 export class Game {
-  constructor({ level, teams, seed = 1, speed = 1 }) {
+  constructor({ level, teams, seed = 1, speed = 1, floodKills = false }) {
     this.level = level;
     this.teams = teams;
     this.seed = seed;
@@ -35,13 +35,17 @@ export class Game {
     this.winner = null;
     this.endT = null;
     this.speedScale = speed;
+    this.floodKills = level.floodKills ?? floodKills; // false = a onda só empurra
+    this.leader = null; this.leadChanges = 0; this._leadT = 0;
     this.intensity = 0;
     this._countStep = 0;
     this.parse(level.map);
     this.spawnRacers();
     const f = level.flood || {};
+    // no modo "água elimina" a onda vem mais devagar (senão ninguém sobrevive)
+    const k = this.floodKills ? (level.killFloodScale ?? 0.3) : 1;
     this.flood = {
-      delay: f.delay ?? 4, rate: f.rate ?? 0.5, accel: f.accel ?? 0.012,
+      delay: (f.delay ?? 4) + (this.floodKills ? 4 : 0), rate: (f.rate ?? 0.5) * k, accel: (f.accel ?? 0.012) * k,
       level: new Float32Array(ROWS * COLS), started: false, topRow: ROWS,
     };
   }
@@ -203,6 +207,7 @@ export class Game {
       for (const r of this.racers) if (r.state === 'alive') this.interact(r, dt);
       this.checkEnd();
       this.updateIntensity();
+      this.trackLeader(dt);
     } else if (this.phase === 'results') {
       this.updateFlood(dt);
       if (this.t - this.endT > RESULTS_HOLD) { this.phase = 'done'; this.emit('done'); }
@@ -217,7 +222,7 @@ export class Game {
     for (const b of this.bumpers) b.flash = Math.max(0, b.flash - dt * 4);
     for (const cl of this.clusters) if (cl.shake) cl.shake = Math.max(0, cl.shake - dt * 5);
     for (const p of this.portals) p.pulse = Math.max(0, p.pulse - dt * 2);
-    for (const r of this.racers) r.squash *= Math.exp(-dt * 10);
+    for (const r of this.racers) { r.squash *= Math.exp(-dt * 10); if (r.wet) r.wet = Math.max(0, r.wet - dt * 0.8); }
   }
 
   // ------------------------------------------------------------ doors
@@ -374,7 +379,7 @@ export class Game {
 
   // curva contínua e suave em direção à chegada (o "instinto")
   home(r, dt) {
-    const rate = this.level.homing ?? 0.5;
+    const rate = this.level.homing ?? 0.15;
     if (rate <= 0) return;
     const d = this.desiredDir(r.x, r.y);
     if (!d) return;
@@ -383,14 +388,23 @@ export class Game {
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
     const na = a + Math.max(-rate * dt, Math.min(rate * dt, diff));
-    r.vx = Math.cos(na); r.vy = Math.sin(na);
+    this.turnTo(r, na, d[0], d[1]);
+  }
+
+  // aplica um novo ângulo; se cair perto de um eixo, cruza para o lado do alvo
+  // (sem isso a curva "trava" no eixo e nunca chega na direção desejada)
+  turnTo(r, ang, tx, ty) {
     const MIN = 0.24;
-    if (Math.abs(r.vx) < MIN || Math.abs(r.vy) < MIN) this.jitter(r, 0);
+    let vx = Math.cos(ang), vy = Math.sin(ang);
+    if (Math.abs(vx) < MIN) vx = (Math.sign(tx) || Math.sign(vx) || 1) * MIN;
+    if (Math.abs(vy) < MIN) vy = (Math.sign(ty) || Math.sign(vy) || 1) * MIN;
+    const m = Math.hypot(vx, vy);
+    r.vx = vx / m; r.vy = vy / m;
   }
 
   // puxa levemente o ângulo na direção da chegada sem desfazer o quique
   steer(r, sx, sy) {
-    const amt = this.level.steer ?? 0.3;
+    const amt = this.level.steer ?? 0.25;
     const d = amt > 0 && this.desiredDir(r.x, r.y);
     if (!d) return;
     const a = Math.atan2(r.vy, r.vx);
@@ -398,7 +412,7 @@ export class Game {
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
     // às vezes o quadrado "acerta a mira" e segue o caminho; senão só puxa um pouco
-    const snap = this.rng() < (this.level.snap ?? 0.4);
+    const snap = this.rng() < (this.level.snap ?? 0.1);
     const na = snap ? a + diff + this.rng.range(-0.5, 0.5) : a + Math.max(-amt, Math.min(amt, diff)) * this.rng.range(0.3, 1);
     const vx = Math.cos(na), vy = Math.sin(na);
     if (Math.sign(vx) !== sx || Math.sign(vy) !== sy) return;
@@ -552,11 +566,46 @@ export class Game {
     // inundação
     if (this.flood.started) {
       const surf = this.waterSurfaceAt(r.x, r.y);
-      if (r.y > surf) {
+      const under = r.y > surf;
+      if (under && this.floodKills) {
         r.state = 'dead'; r.deathT = this.raceTime;
         this.emit('eliminate', { i: r.i, x: r.x, y: r.y });
-      }
+      } else if (under) {
+        // a onda empurra: arrasta o quadrado para a frente/para cima, sem eliminar
+        if (!r.inWater) { r.inWater = true; this.emit('splash', { i: r.i, x: r.x, y: r.y }); }
+        const d = this.desiredDir(r.x, r.y) || [0, -1];
+        let tx = d[0] * 0.8, ty = d[1] * 0.8 - 0.6;
+        const m = Math.hypot(tx, ty) || 1; tx /= m; ty /= m;
+        const a = Math.atan2(r.vy, r.vx);
+        let diff = Math.atan2(ty, tx) - a;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        const push = this.level.floodPush ?? 5;
+        const na = a + Math.max(-push * dt, Math.min(push * dt, diff));
+        this.turnTo(r, na, tx, ty);
+        r.boost = Math.max(r.boost, 0.35);
+        r.wet = 1;
+      } else if (r.inWater && r.y < surf - r.size) r.inWater = false;
     }
+  }
+
+  distOf(r) {
+    const c = Math.floor(r.x / TILE), rr = Math.floor(r.y / TILE);
+    const d = this.dist[rr * COLS + c];
+    return Number.isFinite(d) ? d : 9999;
+  }
+
+  // quem está na frente (para medir viradas de liderança = emoção)
+  trackLeader(dt) {
+    this._leadT += dt;
+    if (this._leadT < 0.5) return;
+    this._leadT = 0;
+    if (this.winner) return;
+    const alive = this.racers.filter((r) => r.state === 'alive');
+    if (!alive.length) return;
+    const lead = alive.reduce((a, b) => (this.distOf(b) < this.distOf(a) ? b : a));
+    if (this.leader && lead !== this.leader && this.distOf(this.leader) - this.distOf(lead) > 2) { this.leadChanges++; this.leader = lead; }
+    else if (!this.leader) this.leader = lead;
   }
 
   updateIntensity() {
@@ -580,7 +629,7 @@ export class Game {
 
   ranking() {
     const fin = this.racers.filter((r) => r.state === 'finished').sort((a, b) => a.place - b.place);
-    const alive = this.racers.filter((r) => r.state === 'alive').sort((a, b) => a.y - b.y);
+    const alive = this.racers.filter((r) => r.state === 'alive').sort((a, b) => this.distOf(a) - this.distOf(b));
     const dead = this.racers.filter((r) => r.state === 'dead').sort((a, b) => b.deathT - a.deathT);
     return [...fin, ...alive, ...dead];
   }
@@ -596,6 +645,7 @@ export class Game {
       finished: fin.length,
       eliminated: this.racers.filter((r) => r.state === 'dead').length,
       margin: fin.length > 1 ? fin[1].finishT - fin[0].finishT : null,
+      leadChanges: this.leadChanges,
       firstFinish: fin.length ? fin[0].finishT : null,
     };
   }
@@ -605,11 +655,10 @@ export class Game {
 export function dramaScore(s, racerCount) {
   if (!s.winner) return -100;
   let score = 0;
-  const d = s.raceTime;
-  score -= Math.abs(d - 50) * 0.4;                       // ~50s é um ótimo tamanho
-  if (s.eliminated >= 1) score += 8;
-  if (s.eliminated >= 1 && s.eliminated < racerCount - 1) score += 4;
+  score -= Math.abs(s.raceTime - 55) * 0.35;                 // ~55s é um ótimo tamanho
+  score += Math.min(8, (s.leadChanges || 0) * 2);           // viradas na liderança
   if (s.margin != null) score += Math.max(0, 10 - s.margin * 2.5); // chegada colada
-  if (s.firstFinish != null && s.firstFinish > 20) score += 4;
+  if (s.firstFinish != null && s.firstFinish > 25) score += 4;
+  if (s.eliminated >= 1 && s.eliminated < racerCount - 1) score += 4;
   return score;
 }

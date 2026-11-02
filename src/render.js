@@ -198,6 +198,13 @@ export class Renderer {
       }
       case 'swordHit': this.popup(p.x, p.y - 40, 'PANCADA!', '#f87171'); this.ring(p.x, p.y, '#fff', 80); this.shake = Math.max(this.shake, 10); this.burst(p.x, p.y, 16, { color: '#fff', speed: 380, life: 0.4, size: 4, type: 'spark' }); break;
       case 'floodStart': this.banner = { text: this.theme.verb, t: 0, dur: 2.4 }; this.shake = Math.max(this.shake, 6); break;
+      case 'splash': {
+        const th = this.theme;
+        this.burst(p.x, p.y, 14, { color: th.surface, speed: 300, life: 0.7, size: 5, type: 'drop', gy: 900 });
+        this.ring(p.x, p.y, th.surface, 50);
+        if (!this._splashPop || this.time - this._splashPop > 3) { this._splashPop = this.time; this.popup(p.x, p.y - 40, 'SPLASH!', th.surface); }
+        break;
+      }
       case 'eliminate': {
         const th = this.theme;
         this.burst(p.x, p.y, 24, { color: th.surface, speed: 380, life: 0.9, size: 6, type: 'drop', gy: 900 });
@@ -590,6 +597,7 @@ export class Renderer {
     }
     g.save();
     g.translate(r.x, r.y + sink);
+    if (r.inWater && r.state === 'alive') g.rotate(Math.sin(this.time * 9 + r.i) * 0.18); // boiando
     g.globalAlpha = alpha;
     if (r.state === 'dead') g.filter = 'grayscale(1) brightness(.8)';
     // aura de power-up

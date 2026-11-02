@@ -14,6 +14,7 @@
 //   --title "..." --subtitle "..." --handle "@canal" --cta "..."
 //   --fps 60             quadros por segundo (30 ou 60)
 //   --no-music           sem música de fundo (bom para usar som em alta do TikTok)
+//   --kill               a água elimina quem encosta (padrão: a onda só empurra)
 //   --out arquivo.mp4    saída (padrão: videos/<fase>-<seed>.mp4)
 //   --batch <n>          gera n vídeos com seeds diferentes de uma vez
 import { spawn } from 'node:child_process';
@@ -101,6 +102,7 @@ const base = {
   teams: args.teams ? String(args.teams).split(',') : args.preset ? (PRESETS[category] || {})[args.preset] : CATEGORY_DEFAULTS[category].teams.slice(0, Number(args.count || 4)),
   theme: args.theme, title: args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined), subtitle: args.subtitle, handle: args.handle, cta: args.cta,
   music: args.music !== false,
+  floodKills: !!args.kill,
 };
 if (base.teams) base.count = base.teams.length;
 for (const k of Object.keys(base)) if (base[k] === undefined) delete base[k];

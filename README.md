@@ -1,9 +1,9 @@
 # 🟥 Corrida dos Quadrados
 
 Gerador de vídeos verticais (1080x1920) de **corrida de quadrados** para TikTok / Reels / Shorts.
-Cada competidor é uma **bandeira** ou **escudo de time** que quica pelo labirinto enquanto uma
-inundação sobe atrás dele. Quem chegar primeiro na bandeira quadriculada vence; quem encostar
-na água é eliminado.
+Cada competidor é uma **bandeira** ou **escudo de time** que quica por um labirinto de corredores
+estreitos enquanto uma onda sobe atrás dele. Quem chegar primeiro na bandeira quadriculada vence.
+A onda não elimina: ela arrasta quem ficou para trás (dá para ligar o modo "água elimina").
 
 Tudo é desenhado em código (Canvas) e **todo o áudio é sintetizado** (Web Audio): não precisa
 de nenhum arquivo de imagem ou som.
@@ -57,6 +57,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 | `--theme` | `roxo`, `agua`, `lava`, `acido` |
 | `--title` `--subtitle` `--cta` `--handle` | textos na tela |
 | `--no-music` | sem música (para usar um som em alta do TikTok) |
+| `--kill` | modo difícil: a água elimina quem encosta |
 | `--fps` | `60` (padrão) ou `30` |
 | `--batch N` | gera N vídeos diferentes de uma vez |
 | `--out` | caminho do arquivo de saída |
@@ -81,10 +82,11 @@ npm run render -- --level arena8 --category clubes --count 8 --best 30 --batch 7
 | ⚔️ Espada (`!`) | quebra qualquer tijolo em 1 batida e arremessa rivais |
 | ⚡ Raio (`z`) | turbo de velocidade |
 | ❓ Caixa surpresa (`?`) | espada, raio ou **gelo** (congela todos os rivais) |
-| 🌊 Inundação (`~`) | sobe como água de verdade: sempre enche o ponto mais baixo alcançável |
+| 🌊 Onda (`~`) | sobe como água de verdade (enche o ponto mais baixo alcançável) e arrasta quem alcança |
 
-Os quadrados quicam de forma imprevisível, mas têm um leve "instinto" de ir em direção à
-chegada — assim a corrida sempre progride e o resultado continua imprevisível.
+Os quadrados quicam de forma imprevisível, batendo e voltando até acertar as passagens
+estreitas. Eles têm só um leve "instinto" de ir para a chegada, e a onda empurra os atrasados,
+então a corrida sempre termina e a liderança vira várias vezes.
 
 ## Personalizar
 
@@ -117,10 +119,12 @@ paredes de 1 bloco dão o visual "estreito" dos vídeos de referência. O `tools
 monta mapas a partir de retângulos (`carve`), o que é bem mais fácil que editar à mão. Cada fase também ajusta:
 
 ```js
-flood: { delay: 6, rate: 0.28, accel: 0.012 }, // quando começa, velocidade e aceleração
+flood: { delay: 4, rate: 0.3, accel: 0.01 }, // quando começa, velocidade e aceleração
+floodKills: false, // true = a água elimina
+floodPush: 5,      // força do empurrão da onda
 racerSpeed: 320,   // velocidade dos quadrados (px/s)
-homing: 0.5,       // força do "instinto" (0 = totalmente aleatório)
-snap: 0.4,         // chance de, num quique, mirar no caminho certo
+homing: 0.15,      // força do "instinto" (0 = totalmente aleatório)
+snap: 0.1,         // chance de, num quique, mirar no caminho certo
 brickHp: 4,        // batidas para quebrar um bloco de tijolos
 ```
 
