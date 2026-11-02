@@ -2,3 +2,4 @@ node_modules/
 videos/
 *.tmp.mp4
 *.tmp.wav
+__pycache__/
