@@ -120,10 +120,12 @@ de referência. O `tools/levelgen.py`
 monta mapas a partir de retângulos (`carve`), o que é bem mais fácil que editar à mão. Cada fase também ajusta:
 
 ```js
-flood: { delay: 4, rate: 0.3, accel: 0.01 }, // quando começa, velocidade e aceleração
+flood: { delay: 4, rate: 0.42, accel: 0.014 }, // quando começa, velocidade e aceleração
+finishBrickHp: 10, // batidas para abrir a chegada
+endOnWin: true,    // o vídeo acaba quando o 1º chega
 floodKills: false, // true = a água elimina
 floodPush: 5,      // força do empurrão da onda
-racerSpeed: 320,   // velocidade dos quadrados (px/s)
+racerSpeed: 210,   // velocidade dos quadrados (px/s)
 homing: 0.15,      // força do "instinto" (0 = totalmente aleatório)
 snap: 0.1,         // chance de, num quique, mirar no caminho certo
 brickHp: 4,        // batidas para quebrar um bloco de tijolos

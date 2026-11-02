@@ -305,7 +305,7 @@ export class Game {
 
   // ------------------------------------------------------------ racers
   speedOf(r) {
-    let s = (this.level.racerSpeed ?? 320) * this.speedScale * (1 + r.boost + (r.zap > 0 ? 0.45 : 0));
+    let s = (this.level.racerSpeed ?? 210) * this.speedScale * (1 + r.boost + (r.zap > 0 ? 0.45 : 0));
     if (r.frozen > 0) s *= 0.4;
     return s;
   }
