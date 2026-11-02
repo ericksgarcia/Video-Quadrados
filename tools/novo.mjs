@@ -15,7 +15,6 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { LEVELS } from '../src/levels.js';
 import { TEAMS, CLUBS, CATEGORY_DEFAULTS } from '../src/teams.js';
-import { THEMES } from '../src/render.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HIST = path.join(ROOT, 'historico.json');
@@ -48,7 +47,7 @@ function sortear() {
   const count = Number(args.count) || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
   const pool = category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);
-  const theme = args.theme || pick(Object.keys(THEMES));
+  const theme = args.theme || 'roxo'; // água índigo, igual às referências
   return { category, level: level.id, levelName: level.name, teams, theme };
 }
 

@@ -9,7 +9,7 @@ quadrados com bandeiras de seleções ou escudos de clubes. Fale sempre em **por
    `node -e "require('playwright')"`. Se o Playwright faltar: `npm install` e
    `npx playwright install chromium`.
 2. Rode **`npm run novo -- --handle "@seucanal"`** (rode em segundo plano; leva ~6 min). Ele sorteia
-   fase, categoria (alterna seleções/clubes em relação ao último vídeo), times, cor da água e a
+   fase, categoria (alterna seleções/clubes em relação ao último vídeo), times e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Se o usuário pedir algo específico, repasse: `--category clubes|selecoes`,
@@ -41,6 +41,21 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - **Categorias separadas**: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
+
+## Visual (estilo flat, copiado dos 3 vídeos de referência que o usuário mandou)
+
+- Fundo cinza chapado `#adadad`; paredes têm a mesma cor do fundo (não são desenhadas).
+- Corredores `#e0e0d9` com contorno preto fino (~3,5px). Mapa centralizado na tela.
+- Tijolos: cor sólida + desenho de "tijolinho" em linhas escuras, contorno preto. Tijolo comum/da
+  chegada é cinza-escuro `#2e2e2e`. Chegada quadriculada preto/branco.
+- Água chapada índigo `#3d328c` (sem gradiente, espuma ou bolhas), frente reta de parede a parede.
+- Quadrados: bandeira/escudo chapado com contorno preto, sem sombra/brilho; rastro em cunha
+  semitransparente na cor do time (cores parecidas são trocadas pela paleta das referências).
+- Eliminado fica parado com um X. Faca: lâmina ciano + cabo roxo.
+- Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. Só o
+  título discreto em cima (texto escuro, sem contorno).
+- Quando o 1º chega, a câmera dá zoom (1,9x) no vencedor; depois, tela de vencedor no mesmo
+  estilo chapado.
 
 ## Como o projeto funciona
 

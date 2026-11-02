@@ -26,7 +26,7 @@ npx playwright install chromium
 npm run novo -- --handle "@seucanal"
 ```
 
-Sorteia fase, categoria (alterna seleções/clubes), times, cor da água e a corrida mais emocionante,
+Sorteia fase, categoria (alterna seleções/clubes), times e a corrida mais emocionante (água índigo por padrão),
 sem repetir o que já está em `historico.json`. Gera `videos/<data>-<fase>.mp4` e uma legenda pronta
 em `.txt`. Dá para fixar qualquer coisa: `--category clubes`, `--level caracol`,
 `--teams fla,cor,pal,sao`, `--theme lava`, `--no-music`.
@@ -148,7 +148,7 @@ quantos chegam e quantos são eliminados — ótimo para balancear.
 ```
 index.html          interface (painel + canvas)
 src/game.js         simulação determinística (física, elementos, inundação)
-src/render.js       todo o visual (arena, efeitos, partículas, HUD, tela de vencedor)
+src/render.js       todo o visual, estilo flat (arena, tijolos, água, rastros, zoom final, tela de vencedor)
 src/audio.js        efeitos sonoros e música procedural (Web Audio)
 src/teams.js        bandeiras, escudos e times personalizados
 src/levels.js       fases em ASCII

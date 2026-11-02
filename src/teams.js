@@ -299,7 +299,7 @@ export function loadTeamImages(teams) {
 }
 
 // Desenha o badge quadrado num canvas offscreen (cache por tamanho)
-export function makeBadge(team, size) {
+export function makeBadge(team, size, { flat = false } = {}) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const g = c.getContext('2d');
@@ -310,6 +310,7 @@ export function makeBadge(team, size) {
     const img = team.img, s = Math.min(size / img.width, size / img.height) * 0.9;
     g.drawImage(img, (size - img.width * s) / 2, (size - img.height * s) / 2, img.width * s, img.height * s);
   } else drawCrest(g, size, size, { colors: [team.color], short: (team.name || '?').slice(0, 3).toUpperCase() });
+  if (flat) return c; // estilo chapado (sem brilho)
   // leve brilho por cima (dá volume)
   const grd = g.createLinearGradient(0, 0, 0, size);
   grd.addColorStop(0, 'rgba(255,255,255,0.22)'); grd.addColorStop(0.5, 'rgba(255,255,255,0)'); grd.addColorStop(1, 'rgba(0,0,0,0.18)');
