@@ -808,8 +808,9 @@ export class Renderer {
       g.drawImage(this.badges[r.i], 265, y - bs / 2, bs, bs);
       g.fillStyle = '#fff'; fitText(g, r.team.name, 420, Math.min(42, rowH * 0.45), 800); g.textAlign = 'left'; g.textBaseline = 'middle';
       g.fillText(r.team.name, 350, y);
-      const info = r.state === 'finished' ? `${r.finishT.toFixed(1)}s` : r.state === 'dead' ? 'ELIMINADO' : 'NÃO CHEGOU';
-      g.fillStyle = r.state === 'finished' ? '#86efac' : '#fca5a5'; g.font = `800 ${Math.min(30, rowH * 0.34)}px ${FONT}`; g.textAlign = 'right';
+      const d = r.state === 'alive' ? game.distOf(r) : 0;
+      const info = r.state === 'finished' ? `${r.finishT.toFixed(1)}s` : r.state === 'dead' ? 'ELIMINADO' : d < 12 ? 'POR POUCO!' : `faltou ${Math.round(d * 0.28)}m`;
+      g.fillStyle = r.state === 'finished' ? '#86efac' : r.state === 'alive' && d < 12 ? '#fde047' : '#fca5a5'; g.font = `800 ${Math.min(30, rowH * 0.34)}px ${FONT}`; g.textAlign = 'right';
       g.fillText(info, W - 170, y);
       g.restore();
     });

@@ -12,8 +12,9 @@ export const SIM_HZ = 120;
 const INTRO = 0.5;          // s antes da contagem
 const BEAT = 0.6;           // s entre 3, 2, 1, VAI
 export const RACE_START = INTRO + BEAT * 3;
-const RESULTS_HOLD = 5.0;   // s de tela de resultado no final
-const AFTER_WIN_LIMIT = 15; // s máx. após o vencedor até encerrar
+const RESULTS_HOLD = 3.8;   // s de tela de resultado no final
+const AFTER_WIN_LIMIT = 15; // s máx. após o vencedor (só quando endOnWin = false)
+const WIN_CELEBRATE = 1.3;  // s de comemoração antes da tela de vencedor
 const TIME_LIMIT = 150;     // s máx. de corrida
 
 const PENTA = [0, 2, 4, 7, 9]; // escala pentatônica (soa "satisfatório")
@@ -95,8 +96,11 @@ export class Game {
           if (n && n.k === 'brick' && !n.cluster && n.owner === cell.owner) { n.cluster = cl; stack.push(n); }
         }
       }
-      const base = cl.owner == null ? (this.level.brickHp ?? 4) : (this.level.colorBrickHp ?? 4);
-      cl.hp = cl.maxHp = Math.max(1, Math.round(base + (cl.cells.length > 24 ? 1 : 0)));
+      // tijolos que protegem a chegada são bem mais duros: o pelotão alcança o líder na reta final
+      const guardsFinish = cl.owner == null && cl.cells.some((k) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dr, dc]) => this.cell(k.r + dr, k.c + dc)?.k === 'finish'));
+      const base = guardsFinish ? (this.level.finishBrickHp ?? 14) : cl.owner == null ? (this.level.brickHp ?? 4) : (this.level.colorBrickHp ?? 4);
+      cl.hp = cl.maxHp = Math.max(1, Math.round(base + (!guardsFinish && cl.cells.length > 24 ? 1 : 0)));
+      cl.finish = guardsFinish;
       this.clusters.push(cl);
     }
     this.buildDistField();
@@ -619,7 +623,9 @@ export class Game {
   checkEnd() {
     const alive = this.racers.filter((r) => r.state === 'alive').length;
     const rt = this.raceTime;
-    const timeout = rt > TIME_LIMIT || (this.winner && rt - this.winner.finishT > AFTER_WIN_LIMIT);
+    // por padrão o vídeo acaba logo que alguém chega (ninguém fica esperando o resto)
+    const endOnWin = this.level.endOnWin ?? true;
+    const timeout = rt > TIME_LIMIT || (this.winner && rt - this.winner.finishT > (endOnWin ? WIN_CELEBRATE : AFTER_WIN_LIMIT));
     if (alive === 0 || timeout) {
       this.phase = 'results'; this.endT = this.t;
       this.emit('music', { on: false });
@@ -646,6 +652,9 @@ export class Game {
       eliminated: this.racers.filter((r) => r.state === 'dead').length,
       margin: fin.length > 1 ? fin[1].finishT - fin[0].finishT : null,
       leadChanges: this.leadChanges,
+      // quão perto os outros estavam quando o vencedor chegou (em blocos)
+      chaseGap: this.winner ? Math.min(999, ...this.racers.filter((r) => r !== this.winner && r.state !== 'dead').map((r) => (r.state === 'finished' ? 0 : this.distOf(r))), 999) : null,
+      nearFinish: this.racers.filter((r) => r !== this.winner && r.state !== 'dead' && (r.state === 'finished' || this.distOf(r) < 25)).length,
       firstFinish: fin.length ? fin[0].finishT : null,
     };
   }
@@ -655,9 +664,10 @@ export class Game {
 export function dramaScore(s, racerCount) {
   if (!s.winner) return -100;
   let score = 0;
-  score -= Math.abs(s.raceTime - 55) * 0.35;                 // ~55s é um ótimo tamanho
+  score -= Math.abs(s.raceTime - 50) * 0.35;                 // ~50s é um ótimo tamanho
   score += Math.min(8, (s.leadChanges || 0) * 2);           // viradas na liderança
-  if (s.margin != null) score += Math.max(0, 10 - s.margin * 2.5); // chegada colada
+  if (s.chaseGap != null) score += Math.max(0, 10 - s.chaseGap * 0.4); // 2º colado no vencedor
+  score += (s.nearFinish || 0) * 3;                          // pelotão perto da chegada
   if (s.firstFinish != null && s.firstFinish > 25) score += 4;
   if (s.eliminated >= 1 && s.eliminated < racerCount - 1) score += 4;
   return score;
