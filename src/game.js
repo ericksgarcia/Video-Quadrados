@@ -48,6 +48,9 @@ export class Game {
     this.flood = {
       delay: (f.delay ?? 4) + (this.floodKills ? 4 : 0), rate: (f.rate ?? 0.5) * k, accel: (f.accel ?? 0.012) * k,
       level: new Float32Array(ROWS * COLS), started: false, topRow: ROWS,
+      // 'path' (padrão): a água avança pelos túneis atrás dos bonecos, como uma correnteza
+      // 'gravity': enche sempre o ponto mais baixo (sobe como uma piscina)
+      mode: f.mode ?? 'path', from: new Int8Array(ROWS * COLS).fill(-1),
     };
   }
 
@@ -73,7 +76,7 @@ export class Game {
         else if (ch === 'O') this.bumpers.push({ x: cx, y: cy, R: U * 0.34, flash: 0 });
         else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 0.9), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
         else if ('PpQq'.includes(ch)) { const p = { x: cx, y: cy, key: ch.toUpperCase(), primary: ch === ch.toUpperCase(), pulse: 0 }; this.portals.push(p); (portalMap[p.key] ||= []).push(p); }
-        else if (ch === '!') this.pickups.push({ kind: 'sword', x: cx, y: cy, active: true, respawn: 0 });
+        else if (ch === '!') this.pickups.push({ kind: 'knife', x: cx, y: cy, active: true, respawn: Infinity });
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === '?') this.pickups.push({ kind: 'mystery', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === 'S') this.spawns.push(cell);
@@ -266,6 +269,7 @@ export class Game {
       F.started = true;
       this.emit('floodStart');
     }
+    if (F.mode === 'path') return this.updatePathFlood(dt, rt);
     const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale * (U / TILE);
     const L = F.level;
     const full = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS && L[r * COLS + c] >= 1;
@@ -295,11 +299,37 @@ export class Game {
     F.rate_now = rate;
   }
 
+  // correnteza: cada célula vizinha de água enche em 1/rate segundos -> a frente anda "rate" blocos/s
+  updatePathFlood(dt, rt) {
+    const F = this.flood, L = F.level;
+    const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale;
+    const full = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS && L[r * COLS + c] >= 1;
+    const grow = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const i = r * COLS + c;
+      if (L[i] >= 1) continue;
+      const cell = this.grid[r][c];
+      if (!this.floodPassable(cell)) continue;
+      let from = -1;
+      if (full(r - 1, c)) from = 0; else if (full(r + 1, c)) from = 1; else if (full(r, c - 1)) from = 2; else if (full(r, c + 1)) from = 3;
+      else if (cell.src) from = 1;
+      if (from < 0) continue;
+      if (F.from[i] < 0) F.from[i] = from;
+      grow.push(i);
+    }
+    for (const i of grow) L[i] = Math.min(1, L[i] + rate * dt);
+    let top = ROWS;
+    for (let i = 0; i < L.length; i++) if (L[i] > 0) { top = (i / COLS) | 0; break; }
+    F.topRow = top;
+    F.rate_now = rate;
+  }
+
   waterSurfaceAt(x, y) {
     const c = Math.floor(x / TILE), r = Math.floor(y / TILE);
     if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return Infinity;
     const lv = this.flood.level[r * COLS + c];
     if (lv <= 0) return Infinity;
+    if (this.flood.mode === 'path') return lv >= 0.5 ? r * TILE : Infinity;
     return (r + 1) * TILE - lv * TILE;
   }
 
@@ -449,6 +479,7 @@ export class Game {
     const rs = this.racers.filter((r) => r.state === 'alive');
     for (let a = 0; a < rs.length; a++) for (let b = a + 1; b < rs.length; b++) {
       const A = rs[a], B = rs[b];
+      if (A.state !== 'alive' || B.state !== 'alive') continue;
       const dx = B.x - A.x, dy = B.y - A.y;
       const ox = (A.size + B.size) / 2 - Math.abs(dx), oy = (A.size + B.size) / 2 - Math.abs(dy);
       if (ox <= 0 || oy <= 0) continue;
@@ -466,8 +497,16 @@ export class Game {
       A.squash = B.squash = 1;
       const x = (A.x + B.x) / 2, y = (A.y + B.y) / 2;
       // espada: quem está armado arremessa o rival
+      // faca: quem está com ela elimina quem encostar (e a faca é gasta)
+      const kn = A.knife && !B.knife ? [A, B] : B.knife && !A.knife ? [B, A] : null;
       const sw = A.sword > 0 && !(B.sword > 0) ? [A, B] : B.sword > 0 && !(A.sword > 0) ? [B, A] : null;
-      if (sw) {
+      if (kn) {
+        const [att, vic] = kn;
+        att.knife = false;
+        vic.state = 'dead'; vic.deathT = this.raceTime; vic.killedBy = att.i;
+        this.emit('stab', { x, y, by: att.i, victim: vic.i });
+        this.emit('eliminate', { i: vic.i, x: vic.x, y: vic.y, by: att.i });
+      } else if (sw) {
         const [att, vic] = sw;
         const m = Math.hypot(vic.x - att.x, vic.y - att.y) || 1;
         vic.vx = (vic.x - att.x) / m; vic.vy = (vic.y - att.y) / m; this.jitter(vic, 0.05);
@@ -548,8 +587,9 @@ export class Game {
     for (const p of this.pickups) {
       if (!p.active) { p.respawn -= dt; if (p.respawn <= 0) { p.active = true; this.emit('pickupSpawn', { x: p.x, y: p.y }); } continue; }
       if (Math.hypot(r.x - p.x, r.y - p.y) < U * 0.55) {
-        p.active = false; p.respawn = 12;
+        p.active = false; p.respawn = p.kind === 'knife' ? Infinity : 12;
         let kind = p.kind;
+        if (kind === 'knife') r.knife = true;
         if (kind === 'mystery') kind = this.rng.pick(['sword', 'zap', 'freeze']);
         if (kind === 'sword') r.sword = 7;
         if (kind === 'zap') r.zap = 5;
@@ -652,6 +692,7 @@ export class Game {
       eliminated: this.racers.filter((r) => r.state === 'dead').length,
       margin: fin.length > 1 ? fin[1].finishT - fin[0].finishT : null,
       leadChanges: this.leadChanges,
+      knifeKills: this.events.filter((e) => e.name === 'stab').length,
       // quão perto os outros estavam quando o vencedor chegou (em blocos)
       chaseGap: this.winner ? Math.min(999, ...this.racers.filter((r) => r !== this.winner && r.state !== 'dead').map((r) => (r.state === 'finished' ? 0 : this.distOf(r))), 999) : null,
       nearFinish: this.racers.filter((r) => r !== this.winner && r.state !== 'dead' && (r.state === 'finished' || this.distOf(r) < 25)).length,
@@ -670,5 +711,6 @@ export function dramaScore(s, racerCount) {
   score += (s.nearFinish || 0) * 3;                          // pelotão perto da chegada
   if (s.firstFinish != null && s.firstFinish > 25) score += 4;
   if (s.eliminated >= 1 && s.eliminated < racerCount - 1) score += 4;
+  if (s.knifeKills) score += 7;                              // teve facada!
   return score;
 }

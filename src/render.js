@@ -63,6 +63,20 @@ function drawSword(g, x, y, s, rot = -Math.PI / 4) {
   g.fillStyle = '#facc15'; g.beginPath(); g.arc(0, 15, 3.5, 0, Math.PI * 2); g.fill(); g.stroke();
   g.restore();
 }
+function drawKnife(g, x, y, s, rot = -Math.PI / 4) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s / 40, s / 40);
+  g.lineJoin = 'round'; g.strokeStyle = '#0f172a'; g.lineWidth = 2.5;
+  // lâmina
+  const grd = g.createLinearGradient(-5, 0, 5, 0);
+  grd.addColorStop(0, '#f8fafc'); grd.addColorStop(1, '#94a3b8');
+  g.fillStyle = grd;
+  g.beginPath(); g.moveTo(-4, -2); g.lineTo(-4, -22); g.quadraticCurveTo(-2, -32, 5, -34); g.lineTo(5, -2); g.closePath(); g.fill(); g.stroke();
+  // guarda e cabo
+  g.fillStyle = '#334155'; g.fillRect(-7, -3, 15, 4); g.strokeRect(-7, -3, 15, 4);
+  g.fillStyle = '#7c2d12'; g.beginPath(); g.rect(-3.5, 1, 8, 16); g.fill(); g.stroke();
+  g.fillStyle = '#fbbf24'; g.fillRect(-1, 5, 3, 2); g.fillRect(-1, 11, 3, 2);
+  g.restore();
+}
 function drawBolt(g, x, y, s, color = '#facc15') {
   g.save(); g.translate(x, y); g.scale(s / 40, s / 40);
   g.fillStyle = color; g.strokeStyle = '#111827'; g.lineWidth = 2.5; g.lineJoin = 'round';
@@ -168,7 +182,6 @@ export class Renderer {
     switch (name) {
       case 'count': this.countdown = { text: String(p.n), t: 0, color: '#ffffff' }; break;
       case 'go': this.countdown = { text: 'VAI!', t: 0, color: '#4ade80' }; this.flash = 0.5; break;
-      case 'bounce': this.burst(p.x, p.y, 4, { color: teamColor(p.i), speed: 120, life: 0.25, size: 3, type: 'spark' }); break;
       case 'clack': this.burst(p.x, p.y, 8, { color: '#ffffff', speed: 220, life: 0.3, size: 3, type: 'spark' }); this.ring(p.x, p.y, '#ffffff', 30); break;
       case 'brickHit': this.burst(p.x, p.y, 6, { color: p.owner == null ? BRICK_GENERIC : teamColor(p.owner), speed: 160, life: 0.5, size: 6, type: 'debris' }); this.shake = Math.max(this.shake, 4); break;
       case 'brickBreak': {
@@ -188,8 +201,8 @@ export class Renderer {
         this.trails.set(p.i, []);
         break;
       case 'pickup': {
-        const label = { sword: 'ESPADA!', zap: 'TURBO!', freeze: 'CONGELOU TODOS!' }[p.kind] || '!';
-        const col = { sword: '#e5e7eb', zap: '#facc15', freeze: '#7dd3fc' }[p.kind] || '#fff';
+        const label = { knife: 'PEGOU A FACA!', sword: 'ESPADA!', zap: 'TURBO!', freeze: 'CONGELOU TODOS!' }[p.kind] || '!';
+        const col = { knife: '#f87171', sword: '#e5e7eb', zap: '#facc15', freeze: '#7dd3fc' }[p.kind] || '#fff';
         this.popup(p.x, p.y - 40, label, col);
         this.burst(p.x, p.y, 18, { color: col, speed: 280, life: 0.6, size: 5, type: 'star' });
         this.ring(p.x, p.y, col, 70);
@@ -198,18 +211,25 @@ export class Renderer {
       }
       case 'swordHit': this.popup(p.x, p.y - 40, 'PANCADA!', '#f87171'); this.ring(p.x, p.y, '#fff', 80); this.shake = Math.max(this.shake, 10); this.burst(p.x, p.y, 16, { color: '#fff', speed: 380, life: 0.4, size: 4, type: 'spark' }); break;
       case 'floodStart': this.banner = { text: this.theme.verb, t: 0, dur: 2.4 }; this.shake = Math.max(this.shake, 6); break;
+      case 'stab': {
+        this.burst(p.x, p.y, 26, { color: '#ef4444', speed: 420, life: 0.8, size: 6, type: 'drop', gy: 700 });
+        this.ring(p.x, p.y, '#ef4444', 110);
+        this.flash = 0.4; this.shake = Math.max(this.shake, 14);
+        this.popup(p.x, p.y - 60, `${game.racers[p.by].team.name.toUpperCase()} ELIMINOU!`, '#f87171', 1.1);
+        break;
+      }
       case 'splash': {
         const th = this.theme;
         this.burst(p.x, p.y, 14, { color: th.surface, speed: 300, life: 0.7, size: 5, type: 'drop', gy: 900 });
         this.ring(p.x, p.y, th.surface, 50);
-        if (!this._splashPop || this.time - this._splashPop > 3) { this._splashPop = this.time; this.popup(p.x, p.y - 40, 'SPLASH!', th.surface); }
         break;
       }
       case 'eliminate': {
         const th = this.theme;
+        if (p.by != null) break; // morte por faca: efeito já mostrado no 'stab'
         this.burst(p.x, p.y, 24, { color: th.surface, speed: 380, life: 0.9, size: 6, type: 'drop', gy: 900 });
         this.ring(p.x, p.y, th.surface, 80);
-        this.popup(p.x, p.y - 50, 'ELIMINADO', '#f87171');
+        if (p.by == null) this.popup(p.x, p.y - 50, 'ELIMINADO', '#f87171');
         this.shake = Math.max(this.shake, 10);
         break;
       }
@@ -447,10 +467,11 @@ export class Renderer {
       if (!p.active) continue;
       const bob = Math.sin(this.time * 3 + p.x) * 4;
       const rg = g.createRadialGradient(p.x, p.y, 2, p.x, p.y, 34);
-      const glow = p.kind === 'sword' ? 'rgba(167,139,250,.55)' : p.kind === 'zap' ? 'rgba(250,204,21,.55)' : 'rgba(244,114,182,.55)';
+      const glow = p.kind === 'knife' ? 'rgba(239,68,68,.5)' : p.kind === 'sword' ? 'rgba(167,139,250,.55)' : p.kind === 'zap' ? 'rgba(250,204,21,.55)' : 'rgba(244,114,182,.55)';
       rg.addColorStop(0, glow); rg.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = rg; g.beginPath(); g.arc(p.x, p.y, 34, 0, Math.PI * 2); g.fill();
-      if (p.kind === 'sword') drawSword(g, p.x, p.y + bob, 40, -Math.PI / 4 + Math.sin(this.time * 2) * 0.2);
+      if (p.kind === 'knife') drawKnife(g, p.x, p.y + bob, 44, -Math.PI / 4 + Math.sin(this.time * 2) * 0.25);
+      else if (p.kind === 'sword') drawSword(g, p.x, p.y + bob, 40, -Math.PI / 4 + Math.sin(this.time * 2) * 0.2);
       else if (p.kind === 'zap') drawBolt(g, p.x, p.y + bob, 40);
       else drawMystery(g, p.x, p.y + bob, 40, this.time);
     }
@@ -500,39 +521,73 @@ export class Renderer {
     }
     const L = F.level, t = this.time;
     const wave = (x) => Math.sin(x * 0.045 + t * 3.2) * 3 + Math.sin(x * 0.09 - t * 2.1) * 2;
-    g.save();
-    g.globalAlpha = 0.93;
-    g.fillStyle = this.floodGrad[key];
-    g.beginPath();
-    const surfaces = [];
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const lv = L[r * COLS + c];
-      if (lv <= 0) continue;
-      const x = c * TILE, y = r * TILE;
-      const aboveFull = r > 0 && L[(r - 1) * COLS + c] > 0;
-      if (lv >= 1 && aboveFull) { g.rect(x - 0.5, y - 0.5, TILE + 1, TILE + 1); continue; }
-      const top = y + (1 - lv) * TILE;
-      // superfície ondulada
-      g.moveTo(x - 0.5, y + TILE + 0.5);
-      for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; g.lineTo(xx + (k === 4 ? 0.5 : k === 0 ? -0.5 : 0), Math.min(y + TILE, top + wave(xx) * Math.min(1, lv * 3))); }
-      g.lineTo(x + TILE + 0.5, y + TILE + 0.5);
-      g.closePath();
-      surfaces.push([x, top, lv]);
+    if (F.mode === 'path') {
+      // correnteza: cada célula enche a partir do lado de onde a água veio
+      g.save();
+      g.globalAlpha = 0.93;
+      g.fillStyle = this.floodGrad[key];
+      g.beginPath();
+      const front = [];
+      for (let i = 0; i < L.length; i++) {
+        const lv = L[i];
+        if (lv <= 0) continue;
+        const x = (i % COLS) * TILE, y = ((i / COLS) | 0) * TILE;
+        if (lv >= 1) { g.rect(x - 0.5, y - 0.5, TILE + 1, TILE + 1); continue; }
+        const d = F.from[i], k = lv * TILE;
+        if (d === 0) g.rect(x - 0.5, y, TILE + 1, k);
+        else if (d === 1) g.rect(x - 0.5, y + TILE - k, TILE + 1, k);
+        else if (d === 2) g.rect(x, y - 0.5, k, TILE + 1);
+        else g.rect(x + TILE - k, y - 0.5, k, TILE + 1);
+        front.push([x, y, d, k]);
+      }
+      g.fill();
+      // espuma na frente da correnteza
+      g.globalAlpha = 0.9; g.strokeStyle = th.surface; g.lineWidth = 4; g.lineCap = 'round';
+      g.beginPath();
+      for (const [x, y, d, k] of front) {
+        const wob = Math.sin(t * 8 + x * 0.2 + y * 0.13) * 2;
+        if (d === 0) { g.moveTo(x, y + k + wob); g.lineTo(x + TILE, y + k - wob); }
+        else if (d === 1) { g.moveTo(x, y + TILE - k + wob); g.lineTo(x + TILE, y + TILE - k - wob); }
+        else if (d === 2) { g.moveTo(x + k + wob, y); g.lineTo(x + k - wob, y + TILE); }
+        else { g.moveTo(x + TILE - k + wob, y); g.lineTo(x + TILE - k - wob, y + TILE); }
+      }
+      g.stroke();
+      g.restore();
+    } else {
+      g.save();
+      g.globalAlpha = 0.93;
+      g.fillStyle = this.floodGrad[key];
+      g.beginPath();
+      const surfaces = [];
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const lv = L[r * COLS + c];
+        if (lv <= 0) continue;
+        const x = c * TILE, y = r * TILE;
+        const aboveFull = r > 0 && L[(r - 1) * COLS + c] > 0;
+        if (lv >= 1 && aboveFull) { g.rect(x - 0.5, y - 0.5, TILE + 1, TILE + 1); continue; }
+        const top = y + (1 - lv) * TILE;
+        // superfície ondulada
+        g.moveTo(x - 0.5, y + TILE + 0.5);
+        for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; g.lineTo(xx + (k === 4 ? 0.5 : k === 0 ? -0.5 : 0), Math.min(y + TILE, top + wave(xx) * Math.min(1, lv * 3))); }
+        g.lineTo(x + TILE + 0.5, y + TILE + 0.5);
+        g.closePath();
+        surfaces.push([x, top, lv]);
+      }
+      g.fill();
+      g.globalAlpha = 1;
+      // brilho da superfície
+      g.strokeStyle = th.surface; g.lineWidth = 3; g.globalAlpha = 0.8;
+      g.beginPath();
+      for (const [x, top, lv] of surfaces) {
+        if (lv < 0.06) continue;
+        for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; const yy = top + wave(xx) * Math.min(1, lv * 3); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+      }
+      g.stroke();
+      g.restore();
     }
-    g.fill();
-    g.globalAlpha = 1;
-    // brilho da superfície
-    g.strokeStyle = th.surface; g.lineWidth = 3; g.globalAlpha = 0.8;
-    g.beginPath();
-    for (const [x, top, lv] of surfaces) {
-      if (lv < 0.06) continue;
-      for (let k = 0; k <= 4; k++) { const xx = x + (k / 4) * TILE; const yy = top + wave(xx) * Math.min(1, lv * 3); k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
-    }
-    g.stroke();
-    g.restore();
     // bolhas
     if (!this.bubbles) this.bubbles = [];
-    if (surfaces.length && Math.random() < dt * 14) {
+    if (Math.random() < dt * 14) {
       const flooded = [];
       for (let i = 0; i < L.length; i++) if (L[i] >= 1) flooded.push(i);
       if (flooded.length) {
@@ -601,8 +656,8 @@ export class Renderer {
     g.globalAlpha = alpha;
     if (r.state === 'dead') g.filter = 'grayscale(1) brightness(.8)';
     // aura de power-up
-    if (r.state === 'alive' && (r.sword > 0 || r.zap > 0 || r.boost > 0.6)) {
-      const col = r.sword > 0 ? 'rgba(167,139,250,.65)' : r.zap > 0 ? 'rgba(250,204,21,.7)' : 'rgba(34,211,238,.45)';
+    if (r.state === 'alive' && (r.knife || r.sword > 0 || r.zap > 0 || r.boost > 0.6)) {
+      const col = r.knife ? 'rgba(239,68,68,.6)' : r.sword > 0 ? 'rgba(167,139,250,.65)' : r.zap > 0 ? 'rgba(250,204,21,.7)' : 'rgba(34,211,238,.45)';
       const rg = g.createRadialGradient(0, 0, s * 0.3, 0, 0, s * 1.2);
       rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = rg; g.beginPath(); g.arc(0, 0, s * 1.2, 0, Math.PI * 2); g.fill();
@@ -620,6 +675,7 @@ export class Renderer {
     g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 2; roundRect(g, -s / 2 - 3, -s / 2 - 3, s + 6, s + 6, 8); g.stroke();
     g.filter = 'none';
     if (r.frozen > 0) drawSnow(g, s / 2, -s / 2, 16);
+    if (r.state === 'alive' && r.knife) drawKnife(g, s / 2 + 8, 0, 30, Math.PI / 5 + Math.sin(this.time * 10) * 0.25);
     if (r.state === 'alive' && r.sword > 0) drawSword(g, Math.cos(this.time * 7) * s * 0.75, Math.sin(this.time * 7) * s * 0.75, 30, this.time * 7 + Math.PI / 2);
     if (r.state === 'alive' && r.zap > 0) drawBolt(g, s / 2 + 2, -s / 2 - 2, 20);
     if (r.state === 'finished') {

@@ -30,7 +30,7 @@ Abra `http://localhost:5173`. No painel lateral você escolhe a fase, os times, 
 inundação, os textos e a seed. Aperte **▶ Jogar** (ou Espaço).
 
 - **✨ Achar corrida emocionante**: simula 40 corridas em segundos e escolhe a mais disputada
-  (chegada apertada, eliminações, duração ~50s).
+  (final apertado, viradas na liderança, facada, ~60s).
 - **⏺ Gravar vídeo**: grava a tela do jogo com áudio direto do navegador (MP4 no Chrome
   recente, WebM nos outros). Prático, mas pode ter pequenas travadas se o PC for lento.
 
@@ -40,14 +40,14 @@ O renderizador gera o vídeo **quadro a quadro** a 60fps, com o áudio sincroniz
 independente da velocidade do seu computador:
 
 ```bash
-npm run render -- --category selecoes --level zigue --teams br,ar,fr,pt --best 40
+npm run render -- --category selecoes --level tunel --teams br,ar,fr,pt --best 40
 ```
 
 O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as suas configurações.
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `zigue`, `colunas`, `labirinto`, `arena8` (ou `1`..`4`) |
+| `--level` | `tunel`, `caracol`, `arena8` (ou `1`..`3`) |
 | `--category` | `selecoes` ou `clubes` (sem `--teams`, usa os times padrão da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `fla,cor,pal,sao`) |
@@ -68,25 +68,23 @@ Exemplo de lote para a semana inteira:
 npm run render -- --level arena8 --category clubes --count 8 --best 30 --batch 7 --theme lava
 ```
 
-## Elementos do jogo
+## Como funciona
 
-| Símbolo | Elemento |
-|---|---|
-| 🟫 Tijolo comum (`B`) | qualquer um quebra; o bloco inteiro explode quando a vida acaba |
-| 🟩 Tijolo colorido (`1`-`8`) | só o dono (com o escudo/bandeira desenhado) consegue quebrar |
-| 🚧 Portão (`D`) | abre e fecha sozinho |
-| ⏫ Acelerador (`^ v < >`) | lança o quadrado na direção da seta |
-| 🔴 Bumper (`O`) | rebate com força, estilo pinball |
-| ➖ Hélice (`*`) | barra giratória que arremessa quem encosta |
-| 🌀 Portais (`P/p`, `Q/q`) | teletransporte de mão única (entra no maiúsculo, sai no minúsculo) |
-| ⚔️ Espada (`!`) | quebra qualquer tijolo em 1 batida e arremessa rivais |
-| ⚡ Raio (`z`) | turbo de velocidade |
-| ❓ Caixa surpresa (`?`) | espada, raio ou **gelo** (congela todos os rivais) |
-| 🌊 Onda (`~`) | sobe como água de verdade (enche o ponto mais baixo alcançável) e arrasta quem alcança |
+- **Paredes gigantes com túneis**: cada fase é um bloco maciço com túneis estreitos cavados dentro.
+  Os bonecos quicam, batem e voltam até acertar as passagens.
+- **Raias de largada**: cada boneco começa na sua raia e só ele quebra o tijolo da sua cor.
+- **Correnteza**: a água nasce nas raias e **avança pelo caminho dos túneis**, atrás dos bonecos.
+  Ela não elimina: arrasta para a frente quem alcança (dá para ligar o modo "água elimina").
+- **Chegada**: protegida por tijolos bem duros, então o pelotão alcança o líder no final.
+  O vídeo termina assim que o 1º chega.
+- **Faca**: só uma por fase, escondida num nicho de entrada estreita. Quem pega elimina o
+  primeiro boneco que encostar (a faca é gasta).
 
-Os quadrados quicam de forma imprevisível, batendo e voltando até acertar as passagens
-estreitas. Eles têm só um leve "instinto" de ir para a chegada, e a onda empurra os atrasados,
-então a corrida sempre termina e a liderança vira várias vezes.
+Fases: `tunel` (serpentina), `caracol` (espiral até o centro) e `arena8` (8 competidores, dois
+caminhos que se juntam). Todas dão vídeos de ~60s.
+
+Elementos extras (portões, bumpers, hélices, portais, raio, caixa surpresa, aceleradores) ainda
+existem no motor — a legenda está no topo de `src/levels.js` — mas as fases padrão não usam.
 
 ## Personalizar
 
@@ -114,13 +112,13 @@ categoria ficam em `PRESETS` no `src/teams.js`.
 ### Criar fases
 
 As fases ficam em `src/levels.js`, como mapas de texto de 36 colunas x 48 linhas (cada caractere
-é um bloco de 28px; a legenda está no topo do arquivo). Paredes internas de 2 blocos (56px, ~ a
-largura de um quadrado), corredores de 4-5 blocos e passagens de 2-3 blocos dão o visual dos vídeos
-de referência. O `tools/levelgen.py`
-monta mapas a partir de retângulos (`carve`), o que é bem mais fácil que editar à mão. Cada fase também ajusta:
+é um bloco de 28px; a legenda está no topo do arquivo). O jeito mais fácil é usar o
+`tools/levelgen.py`: o mapa começa todo como parede e você cava túneis com `tunnel(m, [pontos])`
+(largura 4 = 112px) e estreitamentos de 2-3 blocos. Rode `python3 tools/levelgen.py` e cole o
+mapa gerado no `src/levels.js`. Cada fase também ajusta:
 
 ```js
-flood: { delay: 4, rate: 0.42, accel: 0.014 }, // quando começa, velocidade e aceleração
+flood: { delay: 3, rate: 1.6, accel: 0.02 }, // quando começa, blocos/s da correnteza, aceleração
 finishBrickHp: 10, // batidas para abrir a chegada
 endOnWin: true,    // o vídeo acaba quando o 1º chega
 floodKills: false, // true = a água elimina

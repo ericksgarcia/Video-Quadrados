@@ -215,7 +215,7 @@ export const SFX = {
   },
 
   pickup(e, t, { kind }) {
-    if (kind === 'sword') {
+    if (kind === 'sword' || kind === 'knife') {
       // "shiiing" metálico
       e.noiseHit(t, { dur: 0.6, peak: 0.18, type: 'highpass', f: 6000, dest: e.sfx });
       [2350, 3520, 4690, 6100].forEach((f, i) => e.osc(t, { type: 'sine', f, dur: 0.9 - i * 0.15, peak: 0.07, a: 0.005 }));
@@ -232,6 +232,18 @@ export const SFX = {
   },
 
   pickupSpawn(e, t) { e.bell(t, { f: 1568, dur: 0.3, peak: 0.04 }); },
+
+  // facada: golpe rápido + impacto + nota grave dramática
+  stab(e, t, { x = 500 }) {
+    const dest = e.out((x / 1008) * 1.2 - 0.6);
+    e.noiseHit(t, { dur: 0.12, peak: 0.35, type: 'bandpass', f: 2500, f2: 7000, Q: 2, dest });
+    [2900, 4300].forEach((f) => e.osc(t, { type: 'sine', f, f2: f * 0.8, glide: 0.3, dur: 0.35, peak: 0.06, dest }));
+    e.osc(t + 0.05, { type: 'sine', f: 110, f2: 40, glide: 0.25, dur: 0.35, peak: 0.7, dest });
+    e.noiseHit(t + 0.05, { dur: 0.25, peak: 0.3, type: 'lowpass', f: 900, f2: 150, dest });
+    e.osc(t + 0.12, { type: 'sawtooth', f: 98, dur: 0.9, peak: 0.07, a: 0.02, filter: { f: 700, f2: 200, glide: 0.8 } });
+    e.osc(t + 0.12, { type: 'sawtooth', f: 104, dur: 0.9, peak: 0.07, a: 0.02, filter: { f: 700, f2: 200, glide: 0.8 } });
+    e.duckFor(t, 0.3, 1.4);
+  },
 
   swordHit(e, t, { x = 500 }) {
     const dest = e.out((x / 1008) * 1.2 - 0.6);
@@ -267,7 +279,8 @@ export const SFX = {
     for (let i = 0; i < 4; i++) SFX.bubble(e, t + 0.08 + Math.random() * 0.35);
   },
 
-  eliminate(e, t, { x = 500 }) {
+  eliminate(e, t, { x = 500, by }) {
+    if (by != null) return; // som já tocado no 'stab'
     const dest = e.out((x / 1008) * 1.2 - 0.6);
     // splash
     e.noiseHit(t, { dur: 0.6, peak: 0.4, type: 'lowpass', f: 3000, f2: 250, dest });

@@ -10,7 +10,7 @@ const params = new URLSearchParams(location.search);
 const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
-  level: 'zigue', count: 4, category: 'selecoes', teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
+  level: 'tunel', count: 4, category: 'selecoes', teams: ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en'],
   theme: 'roxo', seed: 7, music: true, floodKills: false,
   title: 'QUAL SELEÇÃO VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SEU TIME!',
 };

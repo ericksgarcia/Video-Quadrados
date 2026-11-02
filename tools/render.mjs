@@ -4,7 +4,7 @@
 //   npm run render -- --level subida --teams br,ar,fr,pt --best 40 --out videos/corrida.mp4
 //
 // Opções:
-//   --level <id|n>       fase (zigue, colunas, labirinto, arena8 ou 1..4)
+//   --level <id|n>       fase (tunel, caracol, arena8 ou 1..3)
 //   --category selecoes|clubes   categoria (padrão: selecoes)
 //   --teams a,b,c,d      ids dos times (veja src/teams.js) — ou --preset "Grandes do Rio"
 //   --count n            quantos competidores (quando não passa --teams)
@@ -97,7 +97,7 @@ await page.waitForFunction(() => window.__studio);
 const { PRESETS, CATEGORY_DEFAULTS } = await import('../src/teams.js');
 const category = args.category || (args.teams ? undefined : 'selecoes'); // com --teams, a categoria é deduzida dos times
 const base = {
-  level: args.level || 'zigue',
+  level: args.level || 'tunel',
   category,
   teams: args.teams ? String(args.teams).split(',') : args.preset ? (PRESETS[category] || {})[args.preset] : CATEGORY_DEFAULTS[category].teams.slice(0, Number(args.count || 4)),
   theme: args.theme, title: args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined), subtitle: args.subtitle, handle: args.handle, cta: args.cta,
