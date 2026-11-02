@@ -1,0 +1,15 @@
+{
+  "name": "corrida-dos-quadrados",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gerador de vídeos de corrida de quadrados (bandeiras/escudos) para TikTok",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "render": "node tools/render.mjs",
+    "test": "node tools/simtest.mjs 20"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Corrida dos Quadrados</title>
+  <style>
+    :root { --bg: #0b0e1a; --panel: #141a2e; --line: #252d4a; --text: #e5e7eb; --muted: #94a3b8; --accent: #a855f7; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 Inter, "Segoe UI", Roboto, Arial, sans-serif; }
+    .app { display: flex; gap: 20px; height: 100%; padding: 16px; }
+    .stage-wrap { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+    canvas#stage { height: calc(100vh - 32px); max-width: 100%; aspect-ratio: 9 / 16; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.6); background: #000; }
+    aside { width: 340px; flex-shrink: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; overflow-y: auto; }
+    h1 { font-size: 18px; margin: 0 0 4px; }
+    p.sub { color: var(--muted); margin: 0 0 14px; font-size: 12px; }
+    label { display: block; margin: 10px 0 4px; color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    select, input[type=text], input:not([type]) { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: #0d1222; color: var(--text); font: inherit; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row > * { flex: 1; }
+    .slot { display: flex; align-items: center; gap: 8px; margin: 6px 0; text-transform: none; letter-spacing: 0; }
+    .slot span { width: 22px; height: 22px; border-radius: 6px; background: #252d4a; display: grid; place-items: center; color: #fff; font-size: 12px; flex: none; }
+    button { border: 0; border-radius: 10px; padding: 10px 12px; font: 700 14px Inter, Arial, sans-serif; cursor: pointer; background: #252d4a; color: #fff; }
+    button:hover { filter: brightness(1.15); }
+    button.primary { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    button.rec { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    button.rec.on { animation: blink 1s infinite; }
+    button.small { flex: 0 0 auto; padding: 8px 10px; }
+    @keyframes blink { 50% { opacity: .6; } }
+    .actions { display: grid; gap: 8px; margin-top: 14px; }
+    .check { display: flex; gap: 8px; align-items: center; margin-top: 12px; text-transform: none; letter-spacing: 0; color: var(--text); font-size: 14px; }
+    code#cli { display: block; white-space: pre-wrap; word-break: break-all; background: #0d1222; border: 1px solid var(--line); padding: 8px; border-radius: 8px; font-size: 11px; color: #c4b5fd; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    #bestInfo { color: #86efac; font-size: 12px; margin-top: 6px; }
+    body.render { background: #000; }
+    body.render .app { padding: 0; }
+    body.render aside { display: none; }
+    body.render canvas#stage { height: auto; width: 1080px; border-radius: 0; box-shadow: none; }
+    @media (max-width: 800px) {
+      .app { flex-direction: column; height: auto; }
+      aside { width: 100%; }
+      canvas#stage { height: auto; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="stage-wrap"><canvas id="stage" width="1080" height="1920"></canvas></div>
+    <aside>
+      <h1>🟥 Corrida dos Quadrados</h1>
+      <p class="sub">Monte a corrida, aperte Jogar (ou Espaço) e grave o vídeo.</p>
+
+      <label>Fase</label>
+      <select id="level"></select>
+
+      <div class="row">
+        <div><label>Competidores</label><select id="count"></select></div>
+        <div><label>Inundação</label><select id="theme"></select></div>
+      </div>
+
+      <label>Atalho de times</label>
+      <select id="preset"></select>
+      <div id="slots"></div>
+
+      <label>Seed (define a corrida)</label>
+      <div class="row"><input id="seed" /><button class="small" id="dice" title="Seed aleatória">🎲</button></div>
+      <button id="best" style="width:100%;margin-top:8px">✨ Achar corrida emocionante</button>
+      <div id="bestInfo"></div>
+
+      <label>Título</label><input id="title" />
+      <label>Subtítulo</label><input id="subtitle" />
+      <label>Chamada final</label><input id="cta" />
+      <label>@ do canal</label><input id="handle" placeholder="@seucanal" />
+
+      <label class="check"><input type="checkbox" id="music" /> Música de fundo</label>
+
+      <div class="actions">
+        <button class="primary" id="play">▶ Jogar</button>
+        <button class="rec" id="rec">⏺ Gravar vídeo</button>
+      </div>
+      <p class="hint">Para MP4 1080x1920 60fps perfeito (sem travadas), use o renderizador:</p>
+      <code id="cli"></code>
+    </aside>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
