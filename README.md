@@ -59,7 +59,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `gaiola` (padrão), `derby`, `serpente`, `arena8` (ou `1`..`4`) |
+| `--level` | `gaiola`, `cofre` (padrão: sorteia entre as duas), `derby`, `serpente`, `arena8` |
 | `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
@@ -97,6 +97,9 @@ Fase principal: **`gaiola`** — cópia do vídeo de referência: 4 baias empilh
 (a barra de saída é da cor do último preso; a que solta o último é da cor do primeiro), tijolos que
 quebram um a um, **massa sólida** que empurra os quadrados, 2 pistões que abrem e fecham as curvas e
 uma faca permanente num atalho onde a massa não entra.
+
+**`cofre`** — cópia do 5º vídeo: baias à esquerda na mesma corrente, a massa dá a volta pelo topo e
+pela direita, chegada no meio protegida por tijolos escuros, atalho escuro e 3 pistões horizontais.
 
 Outras fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
 à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e

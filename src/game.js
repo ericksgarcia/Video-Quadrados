@@ -275,26 +275,42 @@ export class Game {
       const ph = (((rt + (p.phase ?? 0)) % per) + per) % per / per; // 0..1
       const tri = ph < 0.5 ? ph * 2 : 2 - ph * 2;
       p.h = tri * (p.max ?? 4) * TILE;
-      const x0 = p.c * TILE, x1 = (p.c + (p.w ?? 2)) * TILE, y1 = p.r * TILE, y0 = y1 - p.h;
+      // dir 'up' (padrão): base na linha r, cresce para cima nas colunas c..c+w-1
+      // dir 'right': base na coluna c, cresce para a direita nas linhas r..r+w-1
+      let x0, y0, x1, y1;
+      if (p.dir === 'right') { x0 = p.c * TILE; x1 = x0 + p.h; y0 = p.r * TILE; y1 = (p.r + (p.w ?? 2)) * TILE; }
+      else { x0 = p.c * TILE; x1 = (p.c + (p.w ?? 2)) * TILE; y1 = p.r * TILE; y0 = y1 - p.h; }
       p.rect = [x0, y0, x1, y1];
-      // empurra quem estiver no caminho
+      // empurra quem estiver no caminho (sem espaço nenhum: esmagado)
       for (const r of this.racers) {
         if (r.state !== 'alive') continue;
         const h = r.size / 2;
         if (r.x + h <= x0 || r.x - h >= x1 || r.y + h <= y0 || r.y - h >= y1) continue;
-        const up = y0 - h - 0.5;
-        if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
-        this.squeeze(r);
+        if (p.dir === 'right') {
+          const nx = x1 + h + 0.5;
+          if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = Math.abs(r.vx); continue; }
+        } else {
+          const up = y0 - h - 0.5;
+          if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
+        }
+        if (!this.squeeze(r)) { r.state = 'dead'; r.deathT = this.raceTime; this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true }); }
       }
     }
   }
 
   pistonCovers(row, col) {
     for (const p of this.pistons) {
-      if (!p.rect || col < p.c || col >= p.c + (p.w ?? 2)) continue;
-      const [, y0, , y1] = p.rect;
-      const top = row * TILE, bot = top + TILE;
-      if (Math.min(bot, y1) - Math.max(top, y0) > TILE * 0.5) return true;
+      if (!p.rect) continue;
+      const [x0, y0, x1, y1] = p.rect;
+      if (p.dir === 'right') {
+        if (row < p.r || row >= p.r + (p.w ?? 2)) continue;
+        const l = col * TILE;
+        if (Math.min(l + TILE, x1) - Math.max(l, x0) > TILE * 0.5) return true;
+      } else {
+        if (col < p.c || col >= p.c + (p.w ?? 2)) continue;
+        const top = row * TILE;
+        if (Math.min(top + TILE, y1) - Math.max(top, y0) > TILE * 0.5) return true;
+      }
     }
     return false;
   }

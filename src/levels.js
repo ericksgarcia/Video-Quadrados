@@ -23,6 +23,90 @@
 
 export const LEVELS = [
   {
+    // cópia do 5º vídeo de referência: baias à esquerda presas em corrente, massa sólida,
+    // 3 pistões horizontais, chegada protegida por tijolos escuros, atalho escuro no meio, sem faca
+    id: 'cofre',
+    name: 'Cofre',
+    maxRacers: 4,
+    racerSpeed: 275, homing: 0, steer: 0, snap: 0, // quique livre, sem "instinto" (igual ao vídeo)
+    brickBlock: 2,      // cada tijolo (2x2) quebra sozinho
+    colorBrickHp: 1,
+    brickHp: 2,         // tijolos escuros: 2 batidas
+    flood: { delay: 0.2, zoneRate: 0.75, delay2: 9.0, stage2After: 0, stage2Gap: 1.5, rate: 2.4, accel: 0 },
+    massTrack: {
+      unit: 2, origin: [3, 2],
+      stage1: [ // nasce na borda esquerda de cada baia e anda 3 unidades para a direita
+        [5, 0, 6, 2, 'right'], [8, 0, 9, 2, 'right'], [11, 0, 12, 2, 'right'], [14, 0, 15, 2, 'right'],
+      ],
+      stage2: [
+        [4, 3, 15, 6, 'up'],      // sobe pela sala das baias
+        [0, 3, 3, 6, 'up'],       // sobe até o teto
+        [0, 7, 1, 15, 'right'],   // vai pelo topo para a direita
+        [2, 14, 20, 15, 'down'],  // desce o corredor da direita
+        [19, 8, 20, 13, 'left'],  // volta por baixo
+        [7, 8, 18, 9, 'up'],      // sobe o corredor da esquerda
+        [5, 8, 6, 9, 'up'],       // chega nos tijolos da chegada
+      ],
+    },
+    // atalho da barra escura do meio: a massa nunca entra
+    noFlood: [[21, 22, 24, 29]],
+    pistons: [ // horizontais, crescem para a direita (8s, fecham o corredor no pico)
+      { dir: 'right', c: 30, r: 7, w: 2, max: 4, period: 8 },  // corredor da direita, em cima
+      { dir: 'right', c: 30, r: 39, w: 2, max: 4, period: 8 }, // corredor da direita, embaixo
+      { dir: 'right', c: 18, r: 39, w: 2, max: 4, period: 8 }, // corredor da esquerda, embaixo
+    ],
+    map: [
+      '####################################',
+      '####################################',
+      '####################################',
+      '########..........................##',
+      '########..........................##',
+      '########..........................##',
+      '########..........................##',
+      '########........##############....##',
+      '########........##############....##',
+      '########........##FFFF########....##',
+      '########........##FFFF########....##',
+      '########44444444##FFFF########....##',
+      '########44444444##FFFF########....##',
+      '##~.............##BBBB########....##',
+      '##~S............##BBBB########....##',
+      '##~.............##BBBB########....##',
+      '##~.............##BBBB########....##',
+      '########22222222##....########....##',
+      '########22222222##....########....##',
+      '##~.............##....########....##',
+      '##~S............##....########....##',
+      '##~.............##....BBBBBBBB....##',
+      '##~.............##....BBBBBBBB....##',
+      '########33333333##....BBBBBBBB....##',
+      '########33333333##....BBBBBBBB....##',
+      '##~.............##....########....##',
+      '##~S............##....########....##',
+      '##~.............##....########....##',
+      '##~.............##....########....##',
+      '########11111111##....########....##',
+      '########11111111##....########....##',
+      '##~.............##....########....##',
+      '##~S............##....########....##',
+      '##~.............##....########....##',
+      '##~.............##....########....##',
+      '##################....########....##',
+      '##################....########....##',
+      '##################....########....##',
+      '##################....########....##',
+      '##################....########....##',
+      '##################....########....##',
+      '##################................##',
+      '##################................##',
+      '##################................##',
+      '##################................##',
+      '####################################',
+      '####################################',
+      '####################################',
+    ],
+  },
+  {
     // cópia do vídeo de referência: baias presas em corrente, massa sólida, 2 pistões, faca permanente
     id: 'gaiola',
     name: 'Gaiola',

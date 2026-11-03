@@ -148,7 +148,53 @@ def gaiola():
         m.put(R0 + 2 * r + 1, C0 + 2 * 15 - 1, 'S')
     return m.lines()
 
+def unitmap(U, code, R0=3, C0=2):
+    """Converte um mapa em unidades (1 unidade = 2x2 blocos) para o grid de blocos."""
+    m = M()
+    for r, line in enumerate(U):
+        for c, ch in enumerate(line):
+            for dr in range(2):
+                for dc in range(2):
+                    m.g[R0 + 2 * r + dr][C0 + 2 * c + dc] = code.get(ch, ch)
+    return m
+
+def cofre():
+    """Cópia do 5º vídeo de referência (square_derby): baias empilhadas à ESQUERDA, presas em corrente
+    (saída = cor do último; a barra que solta o último = cor do primeiro). Sobe, vai pelo topo para a
+    direita, desce o corredor da direita, volta por baixo e sobe até a chegada (no meio), protegida
+    por tijolos escuros. Barra escura no meio = atalho entre os dois corredores (a massa não entra)."""
+    U = [  # 16 x 21.  g=saída (cor 4)  r=barra 1-2 (cor 2)  b=barra 2-3 (cor 3)  y=barra 3-4 (cor 1)  k=tijolo escuro
+        '###.............',  # 0
+        '###.............',  # 1
+        '###....#######..',  # 2
+        '###....#FF####..',  # 3  chegada
+        '###gggg#FF####..',  # 4
+        '~......#kk####..',  # 5  baia 1 (+ tijolos escuros da chegada)
+        '~......#kk####..',  # 6
+        '###rrrr#..####..',  # 7
+        '~......#..####..',  # 8  baia 2
+        '~......#..kkkk..',  # 9  barra escura (atalho)
+        '###bbbb#..kkkk..',  # 10
+        '~......#..####..',  # 11 baia 3
+        '~......#..####..',  # 12
+        '###yyyy#..####..',  # 13
+        '~......#..####..',  # 14 baia 4
+        '~......#..####..',  # 15
+        '########..####..',  # 16
+        '########..####..',  # 17
+        '########..####..',  # 18
+        '########........',  # 19
+        '########........',  # 20
+    ]
+    R0, C0 = 3, 2
+    m = unitmap(U, {'g': '4', 'r': '2', 'b': '3', 'y': '1', 'k': 'B', '~': '.'}, R0, C0)
+    for r, line in enumerate(U):            # fonte da massa: borda esquerda de cada baia
+        if line[0] == '~': m.put(R0 + 2 * r, C0, '~'); m.put(R0 + 2 * r + 1, C0, '~')
+    for r in [5, 8, 11, 14]:                # largada encostada na esquerda de cada baia
+        m.put(R0 + 2 * r + 1, C0 + 1, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

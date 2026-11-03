@@ -13,8 +13,8 @@ referência que o usuário mandou. Bandeiras/escudos ainda existem como opção 
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Fase padrão: **`gaiola`** (cópia do vídeo de referência). Se o usuário pedir algo específico,
-     repasse: `--level gaiola|derby|serpente|arena8`,
+   - Fase padrão: sorteia entre **`gaiola`** e **`cofre`** (cópias dos vídeos de referência). Se o
+     usuário pedir algo específico, repasse: `--level gaiola|cofre|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
@@ -35,6 +35,11 @@ iteração. Se ele pedir mudança, atualize esta lista.
   está logo abaixo dela; a barra de **saída** (em cima) é da cor do **último** preso (baia de baixo)
   e a barra que solta o último é da cor do **primeiro** (baia de cima). Cada tijolo (2x2) quebra
   sozinho, com 1 batida ("quebram 1 a 1").
+- **Fase Cofre** — cópia do 5º vídeo de referência (mesma grade 16x21, espelhada): baias à
+  **esquerda** com a mesma prisão em corrente; massa nasce na borda esquerda de cada baia; sobe,
+  vai pelo topo para a direita, desce o corredor da direita, volta por baixo e sobe até a chegada
+  (no meio, protegida por tijolos escuros de 2 batidas). Barra escura no meio = atalho entre os
+  corredores (a massa não entra). **Sem faca.** 3 pistões **horizontais** (`dir: 'right'`).
 - **Massa sólida (não é água)**: cinza-chumbo de concreto (paleta Concreto), firme — ninguém entra nela; a frente **empurra os
   quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
   saída nenhuma, é esmagado. Na Gaiola a massa anda por um **trilho de trechos** (`massTrack`):
@@ -43,8 +48,9 @@ iteração. Se ele pedir mudança, atualize esta lista.
   aparece de cima prensando. 1ª etapa nasce no fundo de cada baia e anda 3 unidades; 2ª etapa sobe
   do fundo da sala depois que a barra que solta o último abre; depois segue o caminho longo
   (~1,2 unidade/s); pistão fechado na frente segura a massa. A massa **não entra no atalho da faca**.
-- **Pistões**: blocos escuros nas pontas dos pilares que sobem e descem (8s; no pico fecham a curva
-  por completo e seguram a massa).
+- **Pistões**: blocos escuros que crescem e recolhem (8s; no pico fecham a passagem por completo e
+  seguram a massa). Verticais na Gaiola (pontas dos pilares), horizontais no Cofre. Quem ficar
+  prensado sem espaço (massa + pistão) é esmagado, como o azul no vídeo de referência.
 - **Faca permanente** (`knifeKeep`): quem pega elimina **todo mundo** em que encostar. Eliminado
   mostra um X e some.
 - Largada imediata (sem 3-2-1). Quique livre, sem "instinto" (homing/steer 0). Quadrados ~275 px/s.
@@ -53,7 +59,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   tijolos duros (`finishBrickHp`).
 - **O vídeo termina assim que o 1º chega** (~1,3s de comemoração + 3,8s de tela de vencedor).
   Ninguém fica esperando os outros.
-- **Duração**: Gaiola ~65–80s (o vídeo de referência tem 78s); fases antigas ~60s.
+- **Duração**: Gaiola ~65–80s (referência 78s); Cofre ~58–74s (referência 58s); fases antigas ~60s.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
@@ -82,7 +88,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
   `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()` é desenhada em unidades (texto 16x21).
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()` e `cofre()` são desenhadas em unidades (texto 16x21, helper `unitmap`).
 - Ao mexer em fases/física, rode `npm test` (simula corridas) e mire: 100% com vencedor e vídeo
   médio de ~60s. Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.
