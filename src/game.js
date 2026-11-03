@@ -56,6 +56,7 @@ export class Game {
       disp: new Float32Array(ROWS * COLS), ddir: new Int8Array(ROWS * COLS).fill(-1),
     };
     this.pistons = (level.pistons || []).map((p) => ({ ...p, h: 0 }));
+    this.track = level.massTrack ? this.buildTrack(level.massTrack) : null;
   }
 
   // ------------------------------------------------------------ parsing
@@ -430,6 +431,7 @@ export class Game {
       F.started = true;
       this.emit('floodStart');
     }
+    if (this.track) return this.updateTrack(dt, rt);
     if (F.mode === 'path') return this.updatePathFlood(dt, rt);
     const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale * (U / TILE);
     const L = F.level;
@@ -493,6 +495,86 @@ export class Game {
     this.smoothFlood();
     let top = ROWS;
     for (let i = 0; i < L.length; i++) if (L[i] > 0) { top = (i / COLS) | 0; break; }
+    F.topRow = top;
+    F.rate_now = rate;
+  }
+
+  // ------------------------------------------------------------ trilho da massa (fases com massTrack)
+  // A massa preenche trechos retangulares do caminho, cada um numa direção fixa (up/down/left/right).
+  // A frente é sempre uma linha reta de parede a parede: só empurra, nunca aparece "de cima" prensando.
+  // stage1: trechos em paralelo (começam em flood.delay); stage2: em sequência (começam em stage2At).
+  buildTrack(t) {
+    const u = t.unit ?? 1, [or, oc] = t.origin ?? [0, 0];
+    const seg = ([r0, c0, r1, c1, dir]) => {
+      const R0 = or + r0 * u, C0 = oc + c0 * u, R1 = or + (r1 + 1) * u - 1, C1 = oc + (c1 + 1) * u - 1;
+      const vertical = dir === 'up' || dir === 'down';
+      return { R0, C0, R1, C1, dir, p: 0, len: vertical ? R1 - R0 + 1 : C1 - C0 + 1, ddir: { up: 1, down: 0, left: 3, right: 2 }[dir] };
+    };
+    return { stage1: (t.stage1 || []).map(seg), stage2: (t.stage2 || []).map(seg), cur: 0 };
+  }
+
+  // células da fatia k (0 = a primeira que a massa ocupa) de um trecho
+  sliceCells(sg, k) {
+    const out = [];
+    if (sg.dir === 'up' || sg.dir === 'down') {
+      const r = sg.dir === 'up' ? sg.R1 - k : sg.R0 + k;
+      for (let c = sg.C0; c <= sg.C1; c++) out.push([r, c]);
+    } else {
+      const c = sg.dir === 'left' ? sg.C1 - k : sg.C0 + k;
+      for (let r = sg.R0; r <= sg.R1; r++) out.push([r, c]);
+    }
+    return out;
+  }
+
+  sliceBlocked(sg, k) {
+    if (k >= sg.len) return false;
+    return this.sliceCells(sg, k).some(([r, c]) => this.pistons.length && this.pistonCovers(r, c));
+  }
+
+  advanceSeg(sg, d) {
+    if (sg.p >= sg.len) return true;
+    const np = Math.min(sg.len, sg.p + d);
+    const k = Math.floor(np);
+    if (np > sg.p && this.sliceBlocked(sg, Math.min(k, sg.len - 1)) && k > Math.floor(sg.p) - (sg.p % 1 === 0 ? 1 : 0)) {
+      sg.p = Math.max(sg.p, Math.floor(sg.p)); // pistão fechado na frente: a massa espera
+      if (this.sliceBlocked(sg, Math.floor(sg.p))) return false;
+    }
+    sg.p = np;
+    return sg.p >= sg.len;
+  }
+
+  updateTrack(dt, rt) {
+    const F = this.flood, T = this.track;
+    const rate = Math.min(F.maxRate, F.rate + F.accel * (rt - F.delay)) * this.speedScale;
+    const zr = (F.zoneRate ?? rate) * this.speedScale;
+    for (const sg of T.stage1) this.advanceSeg(sg, zr * dt);
+    if (F.stage2At == null) {
+      if (F.stage2After == null) F.stage2At = F.delay2 ?? F.delay;
+      else if (this._ownerBroke?.[F.stage2After] != null) F.stage2At = Math.max(F.delay2 ?? 0, this._ownerBroke[F.stage2After] + (F.stage2Gap ?? 1.5));
+    }
+    if (F.stage2At != null && rt >= F.stage2At && T.cur < T.stage2.length) {
+      if (this.advanceSeg(T.stage2[T.cur], rate * dt)) T.cur++;
+    }
+    // monta o campo de massa (o mesmo usado na física e no desenho)
+    const lv = F.disp, dir = F.ddir;
+    lv.fill(0); dir.fill(-1);
+    let top = ROWS;
+    for (const sg of [...T.stage1, ...T.stage2]) {
+      if (sg.p <= 0) continue;
+      const full = Math.floor(sg.p), frac = sg.p - full;
+      for (let k = 0; k <= Math.min(full, sg.len - 1); k++) {
+        const v = k < full ? 1 : frac;
+        if (v <= 0) continue;
+        for (const [r, c] of this.sliceCells(sg, k)) {
+          const cell = this.grid[r][c];
+          if (cell.k === 'wall') continue;
+          const i = r * COLS + c;
+          if (v >= 1 || lv[i] < v) { if (lv[i] < 1) { lv[i] = v; dir[i] = sg.ddir; } }
+          if (r < top) top = r;
+        }
+      }
+    }
+    F.level.set(lv);
     F.topRow = top;
     F.rate_now = rate;
   }

@@ -32,6 +32,26 @@ export const LEVELS = [
     colorBrickHp: 1,
     knifeKeep: true,    // a faca não gasta: quem pega elimina todo mundo em que encostar
     flood: { delay: 0.2, zoneRate: 0.75, delay2: 9.7, stage2After: 0, stage2Gap: 1.5, rate: 2.4, accel: 0 },
+    // trilho da massa (unidades do mapa 16x21): cada trecho enche numa direção, como no vídeo
+    massTrack: {
+      unit: 2, origin: [3, 2],
+      stage1: [ // nasce no fundo de cada baia e anda 3 unidades para a esquerda
+        [5, 13, 6, 15, 'left'], [8, 13, 9, 15, 'left'], [11, 13, 12, 15, 'left'], [14, 13, 15, 15, 'left'],
+      ],
+      stage2: [
+        [4, 9, 15, 12, 'up'],     // sobe pela sala das baias
+        [0, 9, 3, 12, 'up'],      // sobe no canto de cima até o teto
+        [0, 0, 1, 8, 'left'],     // aí vai da direita para a esquerda pelo topo
+        [2, 0, 20, 1, 'down'],    // desce pelo corredor da esquerda
+        [17, 2, 20, 4, 'right'],  // passa por baixo do pilar
+        [7, 3, 16, 4, 'up'],      // sobe
+        [7, 5, 8, 7, 'right'],    // passa pela ponta do pilar do meio (pistão)
+        [9, 6, 20, 7, 'down'],    // desce
+        [20, 8, 20, 12, 'right'], // corredor de baixo
+        [17, 13, 20, 15, 'up'],   // sobe à direita
+        [17, 9, 18, 12, 'left'],  // entra na chegada
+      ],
+    },
     // sala da faca (atalho): a massa nunca entra, igual ao vídeo
     noFlood: [[9, 8, 14, 17], [7, 8, 8, 9], [15, 16, 16, 17]],
     pistons: [

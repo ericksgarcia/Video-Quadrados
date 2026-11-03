@@ -37,9 +37,12 @@ iteração. Se ele pedir mudança, atualize esta lista.
   sozinho, com 1 batida ("quebram 1 a 1").
 - **Massa sólida (não é água)**: cinza-chumbo de concreto (paleta Concreto), firme — ninguém entra nela; a frente **empurra os
   quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
-  saída nenhuma, é esmagado. Na Gaiola: 1ª etapa nasce no fundo de cada baia e anda 3 unidades;
-  2ª etapa sobe do fundo da sala depois que a barra que solta o último abre; depois segue o caminho
-  longo (~1,2 unidade/s). A massa **não entra no atalho da faca** (`noFlood`).
+  saída nenhuma, é esmagado. Na Gaiola a massa anda por um **trilho de trechos** (`massTrack`):
+  cada trecho enche numa direção fixa, frente sempre reta, e só passa ao próximo quando o atual
+  termina (ex.: sobe no canto até o teto e **só então** vai da direita para a esquerda) — nunca
+  aparece de cima prensando. 1ª etapa nasce no fundo de cada baia e anda 3 unidades; 2ª etapa sobe
+  do fundo da sala depois que a barra que solta o último abre; depois segue o caminho longo
+  (~1,2 unidade/s); pistão fechado na frente segura a massa. A massa **não entra no atalho da faca**.
 - **Pistões**: blocos escuros nas pontas dos pilares que sobem e descem (8s; no pico fecham a curva
   por completo e seguram a massa).
 - **Faca permanente** (`knifeKeep`): quem pega elimina **todo mundo** em que encostar. Eliminado
