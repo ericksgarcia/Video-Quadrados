@@ -59,7 +59,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `derby`, `serpente`, `arena8` (ou `1`..`3`) |
+| `--level` | `gaiola` (padrão), `derby`, `serpente`, `arena8` (ou `1`..`4`) |
 | `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
@@ -93,7 +93,12 @@ npm run render -- --level arena8 --count 8 --best 30 --batch 7
 - **Faca**: só uma por fase, escondida num nicho de entrada estreita. Quem pega elimina o
   primeiro boneco que encostar (a faca é gasta).
 
-Fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
+Fase principal: **`gaiola`** — cópia do vídeo de referência: 4 baias empilhadas presas em corrente
+(a barra de saída é da cor do último preso; a que solta o último é da cor do primeiro), tijolos que
+quebram um a um, **massa sólida** que empurra os quadrados, 2 pistões que abrem e fecham as curvas e
+uma faca permanente num atalho onde a massa não entra.
+
+Outras fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
 à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e
 volta pelo meio até duas chegadas). Todas dão vídeos de ~60s.
 

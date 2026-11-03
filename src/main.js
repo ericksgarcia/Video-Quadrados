@@ -10,7 +10,7 @@ const params = new URLSearchParams(location.search);
 const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
-  level: 'derby', count: 4, category: 'cores', teams: ['vermelho', 'azul', 'amarelo', 'verde', 'ciano', 'laranja', 'roxo', 'rosa'],
+  level: 'gaiola', count: 4, category: 'cores', teams: ['vermelho', 'azul', 'amarelo', 'verde', 'ciano', 'laranja', 'roxo', 'rosa'],
   theme: 'roxo', seed: 7, music: true, floodKills: false,
   title: 'QUAL COR VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SUA COR!',
 };

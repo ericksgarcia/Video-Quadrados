@@ -95,7 +95,60 @@ def arena8():
     m.put(20, 17, '!')
     return m.lines()
 
+def gaiola():
+    """Cópia do vídeo de referência (square_derby): mapa de 16x21 unidades (1 unidade = 2x2 blocos).
+    4 baias empilhadas à direita, presas em corrente: a barra de saída tem a cor do ÚLTIMO preso
+    (baia de baixo) e a barra que solta o último tem a cor do PRIMEIRO (baia de cima); as do meio
+    são da cor de quem está logo abaixo. A massa nasce no fundo (direita) de cada baia."""
+    U = [  # 16 colunas x 21 linhas.  a=saída(cor 4)  y=barra 1-2 (cor 2)  g=barra 2-3 (cor 3)  b=barra 3-4 (cor 1)
+        '.............###',  # 0
+        '.............###',  # 1
+        '..##########.###',  # 2  (lacuna de 1 na coluna 3 -> sala da faca; L da coluna 8)
+        '..#.....#....###',  # 3
+        '..#..k..#aaaa###',  # 4  k = faca
+        '..#.....#......~',  # 5  baia 1
+        '..#####.#......~',  # 6
+        '..#.....#yyyy###',  # 7
+        '..#.....#......~',  # 8  baia 2
+        '..#..#..#......~',  # 9
+        '..#..#..#gggg###',  # 10
+        '..#..#..#......~',  # 11 baia 3
+        '..#..#..#......~',  # 12
+        '..#..#..#bbbb###',  # 13
+        '..#..#..#......~',  # 14 baia 4
+        '..#..#..#......~',  # 15
+        '..#..#..########',  # 16
+        '.....#..#FF.....',  # 17 chegada
+        '.....#..#FF.....',  # 18
+        '.....#..#####...',  # 19
+        '.....#..........',  # 20
+    ]
+    # conserta a linha 2: pilar esquerdo (col 2), lacuna (col 3), braço do L (cols 4-8)
+    U[2] = '..#.#####....###'
+    m = M()
+    R0, C0 = 3, 2  # deslocamento em blocos (centraliza 32x42 no grid 36x48)
+    code = {'#': '#', '.': '.', 'a': '4', 'y': '2', 'g': '3', 'b': '1', 'F': 'F', 'k': '.', '~': '.'}
+    for r, line in enumerate(U):
+        for c, ch in enumerate(line):
+            for dr in range(2):
+                for dc in range(2):
+                    m.g[R0 + 2 * r + dr][C0 + 2 * c + dc] = code[ch]
+    for r, line in enumerate(U):
+        for c, ch in enumerate(line):
+            if ch == 'k': m.put(R0 + 2 * r + 1, C0 + 2 * c, '!')
+            if ch == '~': m.put(R0 + 2 * r, C0 + 2 * c + 1, '~'); m.put(R0 + 2 * r + 1, C0 + 2 * c + 1, '~')
+    # 1ª etapa da massa: nasce na parede direita de cada baia e anda 3 unidades (zona '%')
+    for r in [5, 6, 8, 9, 11, 12, 14, 15]:
+        for c in range(C0 + 26, C0 + 32):
+            m.g[R0 + 2 * r][c] = m.g[R0 + 2 * r + 1][c] = '%'
+        m.g[R0 + 2 * r][C0 + 31] = m.g[R0 + 2 * r + 1][C0 + 31] = '~'
+    # 2ª etapa: sobe do fundo da sala (linha de baixo da baia 4)
+    for c in range(C0 + 18, C0 + 26): m.put(R0 + 2 * 15 + 1, c, '=')
+    for k, r in enumerate([5, 8, 11, 14]):       # largada no fundo (direita) de cada baia
+        m.put(R0 + 2 * r + 1, C0 + 2 * 15 - 1, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

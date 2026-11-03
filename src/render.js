@@ -117,7 +117,6 @@ export class Renderer {
     this.particles = [];
     this.resultsT = null;
     this.cam = { z: 1, x: AW / 2, y: AH / 2 };
-    this.runs = null;
     this.buildStatic();
   }
 
@@ -164,7 +163,6 @@ export class Renderer {
   onEvent(name, p) {
     switch (name) {
       case 'brickBreak': {
-        this.runs = null; // o corredor mudou: recalcula as larguras usadas pela água
         const col = p.owner == null ? BRICK_DARK : this.colorOf(p.owner);
         for (const [c, r] of p.cells) if ((c + r) % 2 === 0) this.debris((c + 0.5) * TILE, (r + 0.5) * TILE, 2, col);
         break;
@@ -200,6 +198,7 @@ export class Renderer {
     this.drawPads();
     this.drawBricks();
     this.drawDoors();
+    this.drawPistons();
     this.drawPickups();
     this.drawBumpers();
     this.drawPortals();
@@ -218,7 +217,7 @@ export class Renderer {
     const game = this.game, cam = this.cam;
     let tz = 1, tx = AW / 2, ty = AH / 2;
     const win = game.winner;
-    if (win && game.phase === 'race') {
+    if (win && game.phase === 'race' && this.opts.zoom) {
       tz = 1.9;
       const hw = AW / 2 / tz, hh = (H / 2) / tz;
       tx = clamp(win.x, hw - AX / tz, AW - hw + AX / tz);
@@ -248,7 +247,7 @@ export class Renderer {
       // correnteza: cada célula enche a partir do lado de onde a água veio. Para a frente da água
       // ficar reta de parede a parede (como nas referências), o nível de cada célula é espalhado
       // pela largura do corredor (perpendicular ao fluxo).
-      const { lv: DL, dir: DD } = this.smoothFlood(L, F.from);
+      const DL = F.disp, DD = F.ddir; // mesmo campo usado na física (massa sólida)
       for (let i = 0; i < DL.length; i++) {
         const lv = DL[i];
         if (lv <= 0) continue;
@@ -271,87 +270,6 @@ export class Renderer {
     g.fill();
   }
 
-  // Para cada célula de corredor: as células da seção transversal do corredor (a "largura"),
-  // usadas para a água encher a largura toda de uma vez (frente reta, igual às referências).
-  buildRuns() {
-    const game = this.game;
-    const open = (r, c) => { const k = game.cell(r, c); return !!k && k.k !== 'wall' && k.k !== 'brick'; };
-    const span = (r, c, dr, dc) => {
-      const out = [r * COLS + c];
-      for (const sg of [-1, 1]) for (let k = 1; ; k++) {
-        const rr = r + dr * k * sg, cc = c + dc * k * sg;
-        if (!open(rr, cc)) break;
-        out.push(rr * COLS + cc);
-        if (out.length > 7) return null; // mais largo que um corredor: é um salão
-      }
-      return out;
-    };
-    this.runs = new Array(ROWS * COLS).fill(null);
-    this.runAxis = new Int8Array(ROWS * COLS); // 1 = seção horizontal (água anda na vertical), 2 = vertical
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      if (!open(r, c)) continue;
-      const h = span(r, c, 0, 1), v = span(r, c, 1, 0);
-      const pick = h && (!v || h.length <= v.length) ? [h, 1] : v ? [v, 2] : null;
-      if (pick) { this.runs[r * COLS + c] = pick[0]; this.runAxis[r * COLS + c] = pick[1]; }
-    }
-    // cantos (onde dois corredores se cruzam): usam a largura do corredor vizinho que chega nele,
-    // projetada nesta linha/coluna
-    this.corners = new Array(ROWS * COLS).fill(null);
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const i = r * COLS + c;
-      if (!open(r, c) || this.runs[i]) continue;
-      const cands = [];
-      for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
-        for (let k = 1; k <= 8; k++) {
-          const rr = r + dr * k, cc = c + dc * k;
-          if (!open(rr, cc)) break;
-          const j = rr * COLS + cc, run = this.runs[j];
-          if (!run) continue;
-          const axis = this.runAxis[j];
-          if ((axis === 1) !== (dr !== 0)) break; // precisa ser um corredor que chega de frente
-          const proj = run.map((q) => (axis === 1 ? r * COLS + (q % COLS) : ((q / COLS) | 0) * COLS + c)).filter((q) => open((q / COLS) | 0, q % COLS));
-          cands.push({ src: j, run: proj, axis });
-          break;
-        }
-      }
-      if (cands.length) this.corners[i] = cands;
-    }
-  }
-
-  smoothFlood(L, from) {
-    const n = L.length;
-    if (!this.runs) this.buildRuns();
-    if (!this._fl || this._fl.lv.length !== n) this._fl = { lv: new Float32Array(n), dir: new Int8Array(n) };
-    const { lv, dir } = this._fl;
-    lv.set(L); dir.set(from);
-    const axisOf = this._axis || (this._axis = new Int8Array(n));
-    axisOf.set(this.runAxis);
-    for (let i = 0; i < n; i++) {
-      let run = this.runs[i];
-      if (!run && this.corners[i]) {
-        // canto: segue o corredor de onde a água está chegando (o mais cheio)
-        let m = L[i];
-        for (const cd of this.corners[i]) for (const j of cd.run) if (L[j] > m) { m = L[j]; axisOf[i] = cd.axis; }
-        lv[i] = m;
-        continue;
-      }
-      if (!run) continue;
-      let m = 0;
-      for (const j of run) if (L[j] > m) m = L[j];
-      lv[i] = m;
-    }
-    // de que lado a célula parcial enche: segue o eixo do corredor
-    for (let i = 0; i < n; i++) {
-      const v = lv[i];
-      if (v <= 0 || v >= 1 || !axisOf[i]) continue;
-      const r = (i / COLS) | 0, c = i % COLS;
-      const full = (rr, cc) => rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && lv[rr * COLS + cc] >= 1;
-      if (axisOf[i] === 1) dir[i] = full(r - 1, c) ? 0 : full(r + 1, c) ? 1 : (from[i] >= 0 && from[i] < 2 ? from[i] : 1);
-      else dir[i] = full(r, c - 1) ? 2 : full(r, c + 1) ? 3 : (from[i] >= 2 ? from[i] : 2);
-    }
-    return this._fl;
-  }
-
   drawBricks() {
     const g = this.g, game = this.game;
     for (const cl of game.clusters) {
@@ -361,6 +279,7 @@ export class Renderer {
       const sh = (cl.shake || 0) * 3;
       const ox = (Math.random() - 0.5) * sh, oy = (Math.random() - 0.5) * sh;
       const inCl = (r, c) => { const k = game.cell(r, c); return k?.cluster === cl && k.k === 'brick'; };
+      const same = (r, c) => { const k = game.cell(r, c); return k?.k === 'brick' && k.cluster?.hp > 0 && k.owner === cl.owner; };
       g.save(); g.translate(ox, oy);
       g.fillStyle = base;
       for (const cell of cl.cells) g.fillRect(cell.c * TILE - 0.5, cell.r * TILE - 0.5, TILE + 1, TILE + 1);
@@ -380,13 +299,24 @@ export class Renderer {
       g.beginPath();
       for (const cell of cl.cells) {
         const x = cell.c * TILE, y = cell.r * TILE;
-        if (!inCl(cell.r - 1, cell.c)) { g.moveTo(x, y); g.lineTo(x + TILE, y); }
-        if (!inCl(cell.r + 1, cell.c)) { g.moveTo(x, y + TILE); g.lineTo(x + TILE, y + TILE); }
-        if (!inCl(cell.r, cell.c - 1)) { g.moveTo(x, y); g.lineTo(x, y + TILE); }
-        if (!inCl(cell.r, cell.c + 1)) { g.moveTo(x + TILE, y); g.lineTo(x + TILE, y + TILE); }
+        if (!same(cell.r - 1, cell.c)) { g.moveTo(x, y); g.lineTo(x + TILE, y); }
+        if (!same(cell.r + 1, cell.c)) { g.moveTo(x, y + TILE); g.lineTo(x + TILE, y + TILE); }
+        if (!same(cell.r, cell.c - 1)) { g.moveTo(x, y); g.lineTo(x, y + TILE); }
+        if (!same(cell.r, cell.c + 1)) { g.moveTo(x + TILE, y); g.lineTo(x + TILE, y + TILE); }
       }
       g.stroke();
       g.restore();
+    }
+  }
+
+  // pistões: blocos escuros que sobem e descem na ponta das paredes
+  drawPistons() {
+    const g = this.g;
+    for (const p of this.game.pistons || []) {
+      if (!p.rect || p.h < 0.5) continue;
+      const [x0, y0, x1, y1] = p.rect;
+      g.fillStyle = '#2b2e3f'; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+      g.strokeStyle = LINE; g.lineWidth = LW; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
     }
   }
 
@@ -479,13 +409,14 @@ export class Renderer {
   drawRacer(r) {
     const g = this.g;
     const s = r.size;
+    // eliminado: mostra o X por um instante e some (igual ao vídeo)
+    if (r.state === 'dead' && this.game.raceTime - r.deathT > 0.7) return;
     g.save();
     g.translate(Math.round(r.x), Math.round(r.y));
     g.drawImage(this.badges[r.i], -s / 2, -s / 2, s, s);
     g.strokeStyle = LINE; g.lineWidth = 3; g.strokeRect(-s / 2, -s / 2, s, s);
     if (r.state === 'dead') {
       // eliminado: fica parado com um X, igual às referências
-      g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(-s / 2, -s / 2, s, s);
       g.strokeStyle = LINE; g.lineWidth = 3;
       g.beginPath(); g.moveTo(-s / 2 + 5, -s / 2 + 5); g.lineTo(s / 2 - 5, s / 2 - 5); g.moveTo(s / 2 - 5, -s / 2 + 5); g.lineTo(-s / 2 + 5, s / 2 - 5); g.stroke();
     }

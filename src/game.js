@@ -9,9 +9,8 @@ export const ROWS = 48;
 export const U = 56; // unidade de tamanho dos elementos (px)
 export const SIM_HZ = 120;
 
-const INTRO = 0.5;          // s antes da contagem
-const BEAT = 0.6;           // s entre 3, 2, 1, VAI
-export const RACE_START = INTRO + BEAT * 3;
+const INTRO = 0.3;          // s parado antes de largar (sem contagem 3-2-1, igual às referências)
+export const RACE_START = INTRO;
 const RESULTS_HOLD = 3.8;   // s de tela de resultado no final
 const AFTER_WIN_LIMIT = 15; // s máx. após o vencedor (só quando endOnWin = false)
 const WIN_CELEBRATE = 1.3;  // s de comemoração antes da tela de vencedor
@@ -51,7 +50,12 @@ export class Game {
       // 'path' (padrão): a água avança pelos túneis atrás dos bonecos, como uma correnteza
       // 'gravity': enche sempre o ponto mais baixo (sobe como uma piscina)
       mode: f.mode ?? 'path', from: new Int8Array(ROWS * COLS).fill(-1),
+      maxRate: f.maxRate ?? Infinity, zoneRate: f.zoneRate, delay2: f.delay2, stage2After: f.stage2After, stage2Gap: f.stage2Gap,
+      // massa sólida (padrão): ninguém entra nela; a frente empurra os quadrados na hora
+      solid: f.solid ?? true,
+      disp: new Float32Array(ROWS * COLS), ddir: new Int8Array(ROWS * COLS).fill(-1),
     };
+    this.pistons = (level.pistons || []).map((p) => ({ ...p, h: 0 }));
   }
 
   // ------------------------------------------------------------ parsing
@@ -80,7 +84,9 @@ export class Game {
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === '?') this.pickups.push({ kind: 'mystery', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === 'S') this.spawns.push(cell);
-        else if (ch === '~') { cell.src = true; this.sources.push(cell); }
+        else if (ch === '~') { cell.src = true; cell.zone = true; this.sources.push(cell); }
+        else if (ch === '%') cell.zone = true;   // zona da 1ª etapa da massa (empurra dentro das baias)
+        else if (ch === '=') cell.src2 = true;   // fonte da 2ª etapa (liga em flood.delay2)
         row.push(cell);
       }
       this.grid.push(row);
@@ -91,6 +97,17 @@ export class Game {
       const cell = this.grid[r][c];
       if (cell.k !== 'brick' || cell.cluster) continue;
       const cl = { owner: cell.owner, cells: [], hp: 0, maxHp: 0 };
+      const B = this.level.brickBlock;
+      if (B) {
+        // cada bloco BxB é um tijolo independente (quebram um a um, igual ao vídeo)
+        for (let dr = 0; dr < B; dr++) for (let dc = 0; dc < B; dc++) {
+          const k = this.cell(r + dr, c + dc);
+          if (k && k.k === 'brick' && !k.cluster && k.owner === cell.owner) { k.cluster = cl; cl.cells.push(k); }
+        }
+        cl.hp = cl.maxHp = cell.owner == null ? (this.level.brickHp ?? 1) : (this.level.colorBrickHp ?? 1);
+        this.clusters.push(cl);
+        continue;
+      }
       const stack = [cell]; cell.cluster = cl;
       while (stack.length) {
         const k = stack.pop(); cl.cells.push(k);
@@ -105,6 +122,9 @@ export class Game {
       cl.hp = cl.maxHp = Math.max(1, Math.round(base + (!guardsFinish && cl.cells.length > 24 ? 1 : 0)));
       cl.finish = guardsFinish;
       this.clusters.push(cl);
+    }
+    for (const [r0, c0, r1, c1] of this.level.noFlood || []) {
+      for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) if (this.cell(r, c)) this.cell(r, c).noFlood = true; // a massa não entra (atalho)
     }
     this.buildDistField();
     for (const list of Object.values(portalMap)) if (list.length === 2) { list[0].pair = list[1]; list[1].pair = list[0]; }
@@ -194,13 +214,7 @@ export class Game {
   step(dt = 1 / SIM_HZ) {
     this.t += dt;
     if (this.phase === 'intro' || this.phase === 'countdown') {
-      const k = Math.floor((this.t - INTRO) / BEAT);
-      if (this.t >= INTRO && k >= this._countStep && k <= 3) {
-        this.phase = 'countdown';
-        if (k < 3) this.emit('count', { n: 3 - k });
-        else { this.phase = 'race'; this.emit('go'); this.emit('music', { on: true }); }
-        this._countStep = k + 1;
-      }
+      if (this.t >= INTRO) { this.phase = 'race'; this.emit('go'); this.emit('music', { on: true }); }
       this.updateDecor(dt);
       return;
     }
@@ -208,7 +222,9 @@ export class Game {
     this.updateDecor(dt);
     if (this.phase === 'race') {
       this.updateDoors(dt);
+      this.updatePistons();
       this.updateFlood(dt);
+      if (this.flood.solid) for (const r of this.racers) if (r.state === 'alive') this.pushOut(r);
       for (const r of this.racers) if (r.state === 'alive') this.moveRacer(r, dt);
       this.racerCollisions();
       for (const r of this.racers) if (r.state === 'alive') this.interact(r, dt);
@@ -216,6 +232,7 @@ export class Game {
       this.updateIntensity();
       this.trackLeader(dt);
     } else if (this.phase === 'results') {
+      this.updatePistons();
       this.updateFlood(dt);
       if (this.t - this.endT > RESULTS_HOLD) { this.phase = 'done'; this.emit('done'); }
     }
@@ -248,6 +265,148 @@ export class Game {
     }
   }
 
+  // ------------------------------------------------------------ pistões (blocos escuros que sobem e descem nas pontas das paredes)
+  // { c, w, r, max, period, phase }: colunas c..c+w-1, crescem para cima a partir da linha r até max blocos
+  updatePistons() {
+    const rt = this.raceTime;
+    for (const p of this.pistons) {
+      const per = p.period ?? 8;
+      const ph = (((rt + (p.phase ?? 0)) % per) + per) % per / per; // 0..1
+      const tri = ph < 0.5 ? ph * 2 : 2 - ph * 2;
+      p.h = tri * (p.max ?? 4) * TILE;
+      const x0 = p.c * TILE, x1 = (p.c + (p.w ?? 2)) * TILE, y1 = p.r * TILE, y0 = y1 - p.h;
+      p.rect = [x0, y0, x1, y1];
+      // empurra quem estiver no caminho
+      for (const r of this.racers) {
+        if (r.state !== 'alive') continue;
+        const h = r.size / 2;
+        if (r.x + h <= x0 || r.x - h >= x1 || r.y + h <= y0 || r.y - h >= y1) continue;
+        const up = y0 - h - 0.5;
+        if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
+        this.squeeze(r);
+      }
+    }
+  }
+
+  pistonCovers(row, col) {
+    for (const p of this.pistons) {
+      if (!p.rect || col < p.c || col >= p.c + (p.w ?? 2)) continue;
+      const [, y0, , y1] = p.rect;
+      const top = row * TILE, bot = top + TILE;
+      if (Math.min(bot, y1) - Math.max(top, y0) > TILE * 0.5) return true;
+    }
+    return false;
+  }
+
+  // retângulo de massa dentro da célula i (ou null)
+  massRect(i) {
+    const lv = this.flood.disp[i];
+    if (lv <= 0) return null;
+    const x = (i % COLS) * TILE, y = ((i / COLS) | 0) * TILE;
+    if (lv >= 1) return [x, y, x + TILE, y + TILE];
+    const d = this.flood.ddir[i], k = lv * TILE;
+    if (d === 0) return [x, y, x + TILE, y + k];
+    if (d === 2) return [x, y, x + k, y + TILE];
+    if (d === 3) return [x + TILE - k, y, x + TILE, y + TILE];
+    return [x, y + TILE - k, x + TILE, y + TILE];
+  }
+
+  // a massa é sólida: se a frente avançou sobre um quadrado, ele é empurrado na hora
+  pushOut(r) {
+    const F = this.flood;
+    for (let it = 0; it < 3; it++) {
+      const h = r.size / 2;
+      const c0 = Math.floor((r.x - h) / TILE), c1 = Math.floor((r.x + h) / TILE);
+      const r0 = Math.floor((r.y - h) / TILE), r1 = Math.floor((r.y + h) / TILE);
+      let px = 0, py = 0;
+      for (let rr = r0; rr <= r1; rr++) for (let cc = c0; cc <= c1; cc++) {
+        if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) continue;
+        const i = rr * COLS + cc, m = this.massRect(i);
+        if (!m) continue;
+        if (r.x + h <= m[0] || r.x - h >= m[2] || r.y + h <= m[1] || r.y - h >= m[3]) continue;
+        const d = F.ddir[i] < 0 ? 1 : F.ddir[i];
+        if (d === 0) py = Math.max(py, m[3] - (r.y - h) + 0.3);
+        else if (d === 1) py = Math.min(py, m[1] - (r.y + h) - 0.3);
+        else if (d === 2) px = Math.max(px, m[2] - (r.x - h) + 0.3);
+        else px = Math.min(px, m[0] - (r.x + h) - 0.3);
+      }
+      if (!px && !py) return;
+      const nx = r.x + px, ny = r.y + py;
+      if (!this.hitTiles(r, nx, ny, true)) {
+        r.x = nx; r.y = ny;
+        if (px) r.vx = Math.sign(px) * Math.abs(r.vx);
+        if (py) r.vy = Math.sign(py) * Math.abs(r.vy);
+      } else if (this.slideAlongPath(r)) {
+        // prensado contra a parede: escorrega no sentido do caminho (como no vídeo)
+      } else if (!this.squeeze(r)) {
+        // sem nenhum espaço: esmagado
+        r.state = 'dead'; r.deathT = this.raceTime;
+        this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true });
+        return;
+      }
+      if (!r.pushedSnd || this.t - r.pushedSnd > 0.25) { r.pushedSnd = this.t; this.emit('push', { i: r.i, x: r.x, y: r.y }); }
+    }
+  }
+
+  // escorrega no sentido do caminho (eixo dominante da direção para a chegada) até sair da massa
+  slideAlongPath(r) {
+    const d = this.desiredDir(r.x, r.y);
+    if (!d) return false;
+    const ax = Math.abs(d[0]) >= Math.abs(d[1]);
+    const sx = ax ? Math.sign(d[0]) : 0, sy = ax ? 0 : Math.sign(d[1]);
+    for (let k = 2; k <= TILE * 6; k += 2) {
+      const x = r.x + sx * k, y = r.y + sy * k;
+      if (this.hitTiles(r, x, y, true)) return false;
+      if (this.freeAt(r, x, y)) {
+        r.x = x; r.y = y;
+        if (sx) r.vx = sx * Math.abs(r.vx); else r.vy = sy * Math.abs(r.vy);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // espaço totalmente livre (sem parede, tijolo, massa ou pistão)?
+  freeAt(r, x, y) {
+    if (this.hitTiles(r, x, y, true)) return false;
+    const h = r.size / 2 - 0.01;
+    for (const p of this.pistons) { const m = p.rect; if (m && m[3] - m[1] > 0.5 && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) return false; }
+    const c0 = Math.floor((x - h) / TILE), c1 = Math.floor((x + h) / TILE);
+    const r0 = Math.floor((y - h) / TILE), r1 = Math.floor((y + h) / TILE);
+    for (let rr = r0; rr <= r1; rr++) for (let cc = c0; cc <= c1; cc++) {
+      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) continue;
+      const m = this.massRect(rr * COLS + cc);
+      if (m && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) return false;
+    }
+    return true;
+  }
+
+  // espremido: escorrega para o espaço livre mais próximo (de preferência à frente da massa)
+  squeeze(r) {
+    for (let rad = 3; rad <= TILE * 8; rad += 3) {
+      let best = null, bd = Infinity;
+      for (let k = 0; k < 24; k++) {
+        const a = (k / 24) * Math.PI * 2;
+        const x = r.x + Math.cos(a) * rad, y = r.y + Math.sin(a) * rad;
+        if (!this.freeAt(r, x, y)) continue;
+        const d = this.distAt(x, y);
+        if (d < bd) { bd = d; best = [x, y, a]; }
+      }
+      if (best) {
+        r.x = best[0]; r.y = best[1];
+        r.vx = Math.cos(best[2]); r.vy = Math.sin(best[2]); this.jitter(r, 0);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  distAt(x, y) {
+    const c = Math.floor(x / TILE), rr = Math.floor(y / TILE);
+    const d = this.dist?.[rr * COLS + c];
+    return Number.isFinite(d) ? d : 9999;
+  }
+
   overlapsCell(r, row, col) {
     const h = r.size / 2;
     return r.x + h > col * TILE && r.x - h < (col + 1) * TILE && r.y + h > row * TILE && r.y - h < (row + 1) * TILE;
@@ -258,6 +417,8 @@ export class Game {
     if (!cell) return false;
     if (cell.k === 'wall' || cell.k === 'brick') return false;
     if (cell.k === 'door') return cell.door.open >= 0.5;
+    if (this.pistons.length && this.pistonCovers(cell.r, cell.c)) return false;
+    if (cell.noFlood) return false;
     return true;
   }
 
@@ -302,26 +463,119 @@ export class Game {
   // correnteza: cada célula vizinha de água enche em 1/rate segundos -> a frente anda "rate" blocos/s
   updatePathFlood(dt, rt) {
     const F = this.flood, L = F.level;
-    const rate = (F.rate + F.accel * (rt - F.delay)) * this.speedScale;
+    const rate = Math.min(F.maxRate, F.rate + F.accel * (rt - F.delay)) * this.speedScale;
     const full = (r, c) => r >= 0 && r < ROWS && c >= 0 && c < COLS && L[r * COLS + c] >= 1;
     const grow = [];
+    // 2ª etapa: começa em delay2, mas só depois que o 1º tijolo do dono 'stage2After' quebrar (+stage2Gap)
+    if (F.stage2At == null && F.delay2 != null) {
+      if (F.stage2After == null) F.stage2At = F.delay2;
+      else if (this._ownerBroke?.[F.stage2After] != null) F.stage2At = Math.max(F.delay2, this._ownerBroke[F.stage2After] + (F.stage2Gap ?? 1.5));
+    }
+    const stage2 = F.stage2At != null && rt >= F.stage2At;
+    // a 1ª etapa (zona) não vaza para fora dela; a 2ª etapa nasce nas fontes '='
+    const feeds = (r, c, zone) => full(r, c) && (!!this.grid[r][c].zone === zone || !this.grid[r][c].zone);
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
       const i = r * COLS + c;
       if (L[i] >= 1) continue;
       const cell = this.grid[r][c];
       if (!this.floodPassable(cell)) continue;
+      const z = !!cell.zone;
       let from = -1;
-      if (full(r - 1, c)) from = 0; else if (full(r + 1, c)) from = 1; else if (full(r, c - 1)) from = 2; else if (full(r, c + 1)) from = 3;
-      else if (cell.src) from = 1;
+      if (feeds(r - 1, c, z)) from = 0; else if (feeds(r + 1, c, z)) from = 1; else if (feeds(r, c - 1, z)) from = 2; else if (feeds(r, c + 1, z)) from = 3;
+      else if (cell.src) from = 3;
+      else if (cell.src2 && stage2) from = 1;
       if (from < 0) continue;
       if (F.from[i] < 0) F.from[i] = from;
       grow.push(i);
     }
-    for (const i of grow) L[i] = Math.min(1, L[i] + rate * dt);
+    const zr = Math.min(F.maxRate, F.zoneRate ?? rate) * this.speedScale;
+    for (const i of grow) L[i] = Math.min(1, L[i] + (this.grid[(i / COLS) | 0][i % COLS].zone ? zr : rate) * dt);
+    this.smoothFlood();
     let top = ROWS;
     for (let i = 0; i < L.length; i++) if (L[i] > 0) { top = (i / COLS) | 0; break; }
     F.topRow = top;
     F.rate_now = rate;
+  }
+
+  // Para cada célula de corredor: as células da seção transversal (a "largura" do corredor).
+  buildRuns() {
+    const open = (r, c) => { const k = this.cell(r, c); return !!k && k.k !== 'wall' && k.k !== 'brick'; };
+    const span = (r, c, dr, dc) => {
+      const out = [r * COLS + c];
+      for (const sg of [-1, 1]) for (let k = 1; ; k++) {
+        const rr = r + dr * k * sg, cc = c + dc * k * sg;
+        if (!open(rr, cc)) break;
+        out.push(rr * COLS + cc);
+        if (out.length > 8) return null; // mais largo que um corredor (4 unidades): é um salão
+      }
+      return out;
+    };
+    this.runs = new Array(ROWS * COLS).fill(null);
+    this.runAxis = new Int8Array(ROWS * COLS); // 1 = seção horizontal (massa anda na vertical), 2 = vertical
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (!open(r, c)) continue;
+      const h = span(r, c, 0, 1), v = span(r, c, 1, 0);
+      const pick = h && (!v || h.length <= v.length) ? [h, 1] : v ? [v, 2] : null;
+      if (pick) { this.runs[r * COLS + c] = pick[0]; this.runAxis[r * COLS + c] = pick[1]; }
+    }
+    // cantos: usam a largura do corredor vizinho que chega neles, projetada
+    this.corners = new Array(ROWS * COLS).fill(null);
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const i = r * COLS + c;
+      if (!open(r, c) || this.runs[i]) continue;
+      const cands = [];
+      for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        for (let k = 1; k <= 8; k++) {
+          const rr = r + dr * k, cc = c + dc * k;
+          if (!open(rr, cc)) break;
+          const j = rr * COLS + cc, run = this.runs[j];
+          if (!run) continue;
+          const axis = this.runAxis[j];
+          if ((axis === 1) !== (dr !== 0)) break;
+          const proj = run.map((q) => (axis === 1 ? r * COLS + (q % COLS) : ((q / COLS) | 0) * COLS + c)).filter((q) => open((q / COLS) | 0, q % COLS));
+          cands.push({ src: j, run: proj, axis });
+          break;
+        }
+      }
+      if (cands.length) this.corners[i] = cands;
+    }
+    this._runsDirty = false;
+  }
+
+  smoothFlood() {
+    const F = this.flood, L = F.level, from = F.from, n = L.length;
+    if (!this.runs || this._runsDirty) this.buildRuns();
+    const lv = F.disp, dir = F.ddir;
+    lv.set(L); dir.set(from);
+    const axisOf = this._axis || (this._axis = new Int8Array(n));
+    axisOf.set(this.runAxis);
+    for (let i = 0; i < n; i++) {
+      const run = this.runs[i];
+      if (!run && this.corners[i]) {
+        let m = L[i];
+        for (const cd of this.corners[i]) for (const j of cd.run) if (L[j] > m) { m = L[j]; axisOf[i] = cd.axis; }
+        lv[i] = m;
+        continue;
+      }
+      if (!run) continue;
+      let m = 0;
+      for (const j of run) if (L[j] > m) m = L[j];
+      lv[i] = m;
+    }
+    for (let i = 0; i < n; i++) {
+      const v = lv[i];
+      if (v <= 0 || v >= 1 || !axisOf[i]) continue;
+      const r = (i / COLS) | 0, c = i % COLS;
+      const full = (rr, cc) => rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && lv[rr * COLS + cc] >= 1;
+      if (axisOf[i] === 1) dir[i] = full(r - 1, c) ? 0 : full(r + 1, c) ? 1 : (from[i] >= 0 && from[i] < 2 ? from[i] : 1);
+      else dir[i] = full(r, c - 1) ? 2 : full(r, c + 1) ? 3 : (from[i] >= 2 ? from[i] : 2);
+    }
+    // a massa nunca invade um pistão nem um tijolo
+    for (let i = 0; i < n; i++) {
+      if (lv[i] <= 0) continue;
+      const cell = this.grid[(i / COLS) | 0][i % COLS];
+      if (!this.floodPassable(cell) && L[i] <= 0) lv[i] = 0;
+    }
   }
 
   waterSurfaceAt(x, y) {
@@ -348,13 +602,23 @@ export class Game {
     return false;
   }
 
-  hitTiles(r, x, y) {
+  hitTiles(r, x, y, wallsOnly = false) {
     const h = r.size / 2 - 0.01;
     const c0 = Math.floor((x - h) / TILE), c1 = Math.floor((x + h) / TILE);
     const r0 = Math.floor((y - h) / TILE), r1 = Math.floor((y + h) / TILE);
     let out = null;
     for (let rr = r0; rr <= r1; rr++) for (let cc = c0; cc <= c1; cc++) {
       if (this.solidAt(r, rr, cc)) (out ||= []).push(this.cell(rr, cc));
+      else if (!wallsOnly && this.flood?.solid && rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS) {
+        const m = this.massRect(rr * COLS + cc);
+        // só bloqueia massa em que ele ainda não está encostado (senão um espremido nunca mais sai do lugar)
+        if (m && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]
+          && !(r.x + h > m[0] && r.x - h < m[2] && r.y + h > m[1] && r.y - h < m[3])) (out ||= []).push({ k: 'mass' });
+      }
+    }
+    if (!wallsOnly) for (const p of this.pistons) {
+      const m = p.rect;
+      if (m && m[3] - m[1] > 0.5 && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) (out ||= []).push({ k: 'piston' });
     }
     return out;
   }
@@ -405,6 +669,8 @@ export class Game {
       cl.shake = 1;
       if (cl.hp <= 0) {
         for (const k of cl.cells) { k.k = 'floor'; k.broken = true; }
+        if (cl.owner != null) (this._ownerBroke ||= {})[cl.owner] ??= this.raceTime;
+        this._runsDirty = true;
         this.emit('brickBreak', { x, y, owner: cl.owner, by: r.i, sword: r.sword > 0, cells: cl.cells.map((k) => [k.c, k.r]) });
       } else this.emit('brickHit', { x, y, owner: cl.owner, by: r.i, hp: cl.hp, maxHp: cl.maxHp });
     }
@@ -502,7 +768,7 @@ export class Game {
       const sw = A.sword > 0 && !(B.sword > 0) ? [A, B] : B.sword > 0 && !(A.sword > 0) ? [B, A] : null;
       if (kn) {
         const [att, vic] = kn;
-        att.knife = false;
+        if (!this.level.knifeKeep) att.knife = false; // knifeKeep: a faca não gasta (igual ao vídeo)
         vic.state = 'dead'; vic.deathT = this.raceTime; vic.killedBy = att.i;
         this.emit('stab', { x, y, by: att.i, victim: vic.i });
         this.emit('eliminate', { i: vic.i, x: vic.x, y: vic.y, by: att.i });
@@ -608,7 +874,7 @@ export class Game {
       return;
     }
     // inundação
-    if (this.flood.started) {
+    if (this.flood.started && !this.flood.solid) {
       const surf = this.waterSurfaceAt(r.x, r.y);
       const under = r.y > surf;
       if (under && this.floodKills) {

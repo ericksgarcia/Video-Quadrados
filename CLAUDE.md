@@ -13,7 +13,8 @@ referência que o usuário mandou. Bandeiras/escudos ainda existem como opção 
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Se o usuário pedir algo específico, repasse: `--level derby|serpente|arena8`,
+   - Fase padrão: **`gaiola`** (cópia do vídeo de referência). Se o usuário pedir algo específico,
+     repasse: `--level gaiola|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme roxo|agua|lava|acido`, `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
@@ -29,21 +30,27 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (vermelho, azul, amarelo, verde) nas fases de 4; 8 cores na Arena 8.
 - **Mapas no estilo das referências**: corredores largos (5 blocos = 140px) em serpentina/U,
   paredes de 2 blocos, alguns tijolos escuros comuns no caminho.
-- **As cores começam prendendo todo mundo**: cada quadrado nasce numa baia fechada por tijolos
-  ALTOS da sua cor; cada boneco só quebra o tijolo da sua cor. Derby = largada em corrente (a baia
-  de cada um é fechada à direita pelo tijolo da sua cor; quebrando, junta com a vizinha; a última
-  abre a saída).
-- **Água (correnteza)**: nasce nas raias e **avança pelo caminho dos túneis** atrás dos bonecos
-  (`flood.mode: 'path'`). **Não elimina** — só empurra/arrasta quem alcança.
-- **Sem elementos extras** nas fases (sem bumpers, hélices, portais, raio, caixa, portões,
-  aceleradores/linhas que empurram). Só tijolos + **uma faca**.
-- **Faca**: uma por fase, num nicho de entrada estreita no meio do caminho (difícil de pegar).
-  Quem pega **elimina o primeiro boneco que encostar**; a faca é gasta.
-- **Chegada difícil**: tijolos da chegada bem duros (`finishBrickHp`), para o pelotão alcançar o
-  líder e o final ficar apertado.
+- **Fase principal: Gaiola** — cópia do 4º vídeo de referência (mapa de 16x21 unidades, 1 unidade =
+  2x2 blocos). 4 baias empilhadas à direita, presas **em corrente**: cada barra é da cor de quem
+  está logo abaixo dela; a barra de **saída** (em cima) é da cor do **último** preso (baia de baixo)
+  e a barra que solta o último é da cor do **primeiro** (baia de cima). Cada tijolo (2x2) quebra
+  sozinho, com 1 batida ("quebram 1 a 1").
+- **Massa sólida (não é água)**: índigo, firme — ninguém entra nela; a frente **empurra os
+  quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
+  saída nenhuma, é esmagado. Na Gaiola: 1ª etapa nasce no fundo de cada baia e anda 3 unidades;
+  2ª etapa sobe do fundo da sala depois que a barra que solta o último abre; depois segue o caminho
+  longo (~1,2 unidade/s). A massa **não entra no atalho da faca** (`noFlood`).
+- **Pistões**: blocos escuros nas pontas dos pilares que sobem e descem (8s; no pico fecham a curva
+  por completo e seguram a massa).
+- **Faca permanente** (`knifeKeep`): quem pega elimina **todo mundo** em que encostar. Eliminado
+  mostra um X e some.
+- Largada imediata (sem 3-2-1). Quique livre, sem "instinto" (homing/steer 0). Quadrados ~275 px/s.
+- Fases antigas (derby/serpente/arena8) continuam disponíveis, agora também com massa sólida.
+- **Chegada**: na Gaiola é um nicho quadriculado sem tijolos (igual ao vídeo); nas fases antigas,
+  tijolos duros (`finishBrickHp`).
 - **O vídeo termina assim que o 1º chega** (~1,3s de comemoração + 3,8s de tela de vencedor).
   Ninguém fica esperando os outros.
-- **Duração alvo ~60s**. Quadrados lentos (~210 px/s; 170 na Arena 8).
+- **Duração**: Gaiola ~65–80s (o vídeo de referência tem 78s); fases antigas ~60s.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
@@ -54,22 +61,22 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - Corredores `#e0e0d9` com contorno preto fino (~3,5px). Mapa centralizado na tela.
 - Tijolos: cor sólida + desenho de "tijolinho" em linhas escuras, contorno preto. Tijolo comum/da
   chegada é cinza-escuro `#2e2e2e`. Chegada quadriculada preto/branco.
-- Água chapada índigo `#3d328c` (sem gradiente, espuma ou bolhas), frente reta de parede a parede.
+- Massa chapada índigo `#3d328c` (sem gradiente), frente reta de parede a parede. Pistões `#2b2e3f`.
 - Quadrados: cor chapada com contorno preto, sem sombra/brilho; rastro em cunha semitransparente
   da mesma cor. Paleta: vermelho `#d50000`, azul `#265ef3`, amarelo `#ffd839`, verde `#007d53`,
   ciano, laranja, roxo, rosa.
 - Eliminado fica parado com um X. Faca: lâmina ciano + cabo roxo.
 - Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. Só o
   título discreto em cima (texto escuro, sem contorno).
-- Quando o 1º chega, a câmera dá zoom (1,9x) no vencedor; depois, tela de vencedor no mesmo
-  estilo chapado.
+- Sem zoom no final (o vídeo da Gaiola não tem). Quando o 1º chega: ~1,3s e tela de vencedor no
+  mesmo estilo chapado.
 
 ## Como o projeto funciona
 
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
   `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos.
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()` é desenhada em unidades (texto 16x21).
 - Ao mexer em fases/física, rode `npm test` (simula corridas) e mire: 100% com vencedor e vídeo
   médio de ~60s. Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.
