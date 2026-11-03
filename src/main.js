@@ -11,7 +11,7 @@ const RENDER_MODE = params.has('render');
 
 const DEFAULTS = {
   level: 'gaiola', count: 4, category: 'cores', teams: ['vermelho', 'azul', 'amarelo', 'verde', 'ciano', 'laranja', 'roxo', 'rosa'],
-  theme: 'roxo', seed: 7, music: true, floodKills: false,
+  theme: 'concreto', seed: 7, music: true, floodKills: false,
   title: 'QUAL COR VENCE?', subtitle: 'Comente seu palpite!', handle: '', cta: 'COMENTE SUA COR!',
 };
 

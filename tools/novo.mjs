@@ -49,7 +49,7 @@ function sortear() {
   const CORES = count > 4 ? Object.keys(COLORS) : ['vermelho', 'azul', 'amarelo', 'verde'];
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);
-  const theme = args.theme || 'roxo'; // água índigo, igual às referências
+  const theme = args.theme || 'concreto'; // paleta Concreto (prensa), escolhida pelo usuário
   return { category, level: level.id, levelName: level.name, teams, theme };
 }
 

@@ -13,20 +13,23 @@ export const AX = (W - AW) / 2;           // 36
 export const AY = Math.round((H - AH) / 2); // 288 — mapa centralizado, como nas referências
 const FONT = 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
-// cor da água (chapada). 'roxo' é o índigo dos vídeos de referência.
+// Paletas completas (fundo/paredes, corredores, massa que empurra, pistões, tijolo escuro, textos).
+// A massa nunca é vermelha/azul/amarela/verde para não confundir com os quadrados.
 export const THEMES = {
-  roxo: { name: 'Índigo (padrão)', water: '#3d328c' },
-  agua: { name: 'Azul', water: '#1f4fa8' },
-  lava: { name: 'Lava', water: '#b8361a' },
-  acido: { name: 'Ácido', water: '#3f7d1c' },
+  pedra: { name: 'Pedra (rocha que esmaga)', bg: '#2f2a26', floor: '#e9dfc8', line: '#15120f', water: '#7a5a43', piston: '#4b423b', brickDark: '#3a322c', title: '#f4ecdc', sub: '#cbbca3' },
+  geleira: { name: 'Geleira (gelo que avança)', bg: '#1d2b40', floor: '#f3f7fa', line: '#0e1724', water: '#a8d8ee', piston: '#46607e', brickDark: '#34465e', title: '#eef6fb', sub: '#a9c4da' },
+  concreto: { name: 'Concreto (prensa)', bg: '#5b636c', floor: '#f1efe9', line: '#16191c', water: '#3c434b', piston: '#22262b', brickDark: '#2c3035', title: '#f6f6f2', sub: '#d4d7da' },
+  roxo: { name: 'Índigo (vídeo original)', bg: '#adadad', floor: '#e0e0d9', line: '#151515', water: '#3d328c', piston: '#2b2e3f', brickDark: '#2e2e2e', title: '#151515', sub: '#2b2b2b' },
 };
+// nomes antigos continuam funcionando
+THEMES.agua = THEMES.geleira; THEMES.lava = THEMES.pedra; THEMES.acido = THEMES.concreto;
 
 // paleta medida nos vídeos de referência
-const BG = '#adadad';          // fundo e paredes (mesma cor)
-const FLOOR = '#e0e0d9';       // corredores
+let BG = '#adadad';            // fundo e paredes (mesma cor) — vem da paleta
+let FLOOR = '#e0e0d9';         // corredores
 const LINE = '#151515';        // contornos
 const LW = 3.5;                // espessura do contorno
-const BRICK_DARK = '#2e2e2e';  // tijolo comum / da chegada
+let BRICK_DARK = '#2e2e2e';    // tijolo comum / da chegada
 const CHECK_DARK = '#16161e', CHECK_LIGHT = '#f4f4f0';
 const PALETTE = ['#d50000', '#265ef3', '#ffd839', '#007d53', '#19b5d1', '#ff8a00', '#8e44ff', '#ff4fa3'];
 
@@ -92,14 +95,20 @@ export class Renderer {
     this.canvas = canvas;
     this.g = canvas.getContext('2d');
     canvas.width = W; canvas.height = H;
-    this.opts = { title: 'QUAL TIME VENCE?', subtitle: 'Comente seu palpite!', handle: '', theme: 'roxo', cta: 'COMENTE SEU TIME!', ...opts };
+    this.opts = { title: 'QUAL TIME VENCE?', subtitle: 'Comente seu palpite!', handle: '', theme: 'concreto', cta: 'COMENTE SEU TIME!', ...opts };
     this.particles = [];
     this.time = 0;
     this.trails = new Map();
     this.cam = { z: 1, x: AW / 2, y: AH / 2 };
   }
 
-  get theme() { return THEMES[this.opts.theme] || THEMES.roxo; }
+  get theme() { return THEMES[this.opts.theme] || THEMES.concreto; }
+
+  applyTheme() {
+    const t = this.theme;
+    BG = t.bg; FLOOR = t.floor; BRICK_DARK = t.brickDark;
+    this._themeKey = this.opts.theme;
+  }
 
   attach(game) {
     this.game = game;
@@ -117,6 +126,7 @@ export class Renderer {
     this.particles = [];
     this.resultsT = null;
     this.cam = { z: 1, x: AW / 2, y: AH / 2 };
+    this.applyTheme();
     this.buildStatic();
   }
 
@@ -143,7 +153,7 @@ export class Renderer {
 
     // contorno preto entre corredor e parede (+ borda da chegada)
     const [lc, l] = mk();
-    l.strokeStyle = LINE; l.lineWidth = LW; l.lineCap = 'square';
+    l.strokeStyle = this.theme.line; l.lineWidth = LW; l.lineCap = 'square';
     l.beginPath();
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
       if (solid(r, c)) continue;
@@ -186,6 +196,7 @@ export class Renderer {
     this.time += dt;
     if (this.resultsT != null) this.resultsT += dt;
     this.updateCamera(dt);
+    if (this._themeKey !== this.opts.theme) { this.applyTheme(); this.buildStatic(); }
 
     g.fillStyle = BG; g.fillRect(0, 0, W, H);
     this.drawTitle();
@@ -232,8 +243,8 @@ export class Renderer {
     const a = clamp(1 - (this.cam.z - 1) * 2, 0, 1);
     if (a <= 0 || !o.title) return;
     g.save(); g.globalAlpha = a;
-    text(g, o.title, W / 2, AY / 2 - (o.subtitle ? 22 : 0), { size: 74, maxW: 1000 });
-    if (o.subtitle) text(g, o.subtitle, W / 2, AY / 2 + 50, { size: 38, weight: 700, fill: '#2b2b2b', maxW: 900 });
+    text(g, o.title, W / 2, AY / 2 - (o.subtitle ? 22 : 0), { size: 74, maxW: 1000, fill: this.theme.title });
+    if (o.subtitle) text(g, o.subtitle, W / 2, AY / 2 + 50, { size: 38, weight: 700, fill: this.theme.sub, maxW: 900 });
     g.restore();
   }
 
@@ -315,7 +326,7 @@ export class Renderer {
     for (const p of this.game.pistons || []) {
       if (!p.rect || p.h < 0.5) continue;
       const [x0, y0, x1, y1] = p.rect;
-      g.fillStyle = '#2b2e3f'; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+      g.fillStyle = this.theme.piston; g.fillRect(x0, y0, x1 - x0, y1 - y0);
       g.strokeStyle = LINE; g.lineWidth = LW; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
     }
   }
@@ -448,7 +459,7 @@ export class Renderer {
     if (t < 0.15) return;
     const win = game.winner;
     const pop = easeOutBack(clamp((t - 0.15) / 0.45, 0, 1));
-    text(g, win ? 'VENCEDOR!' : 'NINGUÉM CHEGOU!', W / 2, 300, { size: 110 * pop + 1 });
+    text(g, win ? 'VENCEDOR!' : 'NINGUÉM CHEGOU!', W / 2, 300, { size: 110 * pop + 1, fill: this.theme.title });
     const cy = 640;
     if (win) {
       const s = 300 * pop;
@@ -461,7 +472,7 @@ export class Renderer {
       g.drawImage(this.badges[win.i], -s / 2, -s / 2, s, s);
       g.strokeStyle = LINE; g.lineWidth = 8; g.strokeRect(-s / 2, -s / 2, s, s);
       g.restore();
-      text(g, win.team.name.toUpperCase(), W / 2, cy + 230, { size: 92 * pop + 1, maxW: 980 });
+      text(g, win.team.name.toUpperCase(), W / 2, cy + 230, { size: 92 * pop + 1, maxW: 980, fill: this.theme.title });
     }
     // ranking
     const rank = game.ranking();

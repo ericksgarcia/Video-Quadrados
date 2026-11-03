@@ -66,7 +66,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 | `--preset` | atalho da categoria, ex.: `--category clubes --preset "Grandes do Rio"` |
 | `--seed` | número da corrida (mesma seed = mesma corrida, sempre) |
 | `--best N` | testa N seeds e renderiza a mais emocionante |
-| `--theme` | `roxo`, `agua`, `lava`, `acido` |
+| `--theme` | `concreto` (padrão), `pedra`, `geleira`, `roxo` |
 | `--title` `--subtitle` `--cta` `--handle` | textos na tela |
 | `--no-music` | sem música (para usar um som em alta do TikTok) |
 | `--kill` | modo difícil: a água elimina quem encosta |
