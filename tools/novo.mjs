@@ -3,7 +3,7 @@
 //
 //   npm run novo                          # tudo sorteado
 //   npm run novo -- --category clubes     # outra categoria (padrão: cores | selecoes | clubes)
-//   npm run novo -- --level serpente      # outra fase (padrão: gaiola, cofre, ponte, escada ou pocos | derby | serpente | arena8)
+//   npm run novo -- --level serpente      # outra fase (padrão: gaiola, cofre, ponte, escada, pocos ou colunas | derby | serpente | arena8)
 //   npm run novo -- --teams verde,azul,vermelho,amarelo
 //   npm run novo -- --dry                 # só mostra o que seria gerado
 //
@@ -43,9 +43,9 @@ const used = new Set(hist.map(key));
 function sortear() {
   // padrão: quadrados só de cor (estilo das referências)
   const category = args.category || 'cores';
-  // padrão: sorteia entre as cópias dos vídeos de referência (gaiola, cofre, ponte, escada, pocos); --level escolhe outra
-  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos']))) || LEVELS[0];
-  const count = Number(args.count) || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
+  // padrão: sorteia entre as cópias dos vídeos de referência (gaiola, cofre, ponte, escada, pocos, colunas); --level escolhe outra
+  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'colunas']))) || LEVELS[0];
+  const count = Number(args.count) || level.racers || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
   const CORES = count > 4 ? Object.keys(COLORS) : ['vermelho', 'azul', 'amarelo', 'verde'];
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);

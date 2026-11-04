@@ -300,7 +300,10 @@ export class Game {
           const up = y0 - h - 0.5;
           if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
         }
-        if (!this.squeeze(r)) { r.state = 'dead'; r.deathT = this.raceTime; this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true }); }
+        if (!this.squeeze(r)) {
+          r.pinT ??= this.t; // pistão: também dá 0,6s de graça
+          if (this.t - r.pinT > 0.6) { r.state = 'dead'; r.deathT = this.raceTime; this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true }); }
+        }
       }
     }
   }
@@ -354,7 +357,7 @@ export class Game {
         else if (d === 2) px = Math.max(px, m[2] - (r.x - h) + 0.3);
         else px = Math.min(px, m[0] - (r.x + h) - 0.3);
       }
-      if (!px && !py) return;
+      if (!px && !py) { r.pinT = null; return; }
       r.pushedT = this.t;
       const nx = r.x + px, ny = r.y + py;
       if (!this.hitTiles(r, nx, ny, true)) {
@@ -364,9 +367,14 @@ export class Game {
       } else if (this.slideAlongPath(r)) {
         // prensado contra a parede: escorrega no sentido do caminho (como no vídeo)
       } else if (!this.squeeze(r)) {
-        // sem nenhum espaço: esmagado
-        r.state = 'dead'; r.deathT = this.raceTime;
-        this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true });
+        // sem espaço: a massa segura (pressão) e o quadrado tem 0,6s para quebrar o tijolo em que está
+        // encostado; só é esmagado se continuar prensado
+        r.pinT ??= this.t;
+        this.massWait = Math.max(this.massWait ?? 0, this.t + 0.12);
+        if (this.t - r.pinT > 0.6) {
+          r.state = 'dead'; r.deathT = this.raceTime;
+          this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true });
+        }
         return;
       }
       if (!r.pushedSnd || this.t - r.pushedSnd > 0.25) { r.pushedSnd = this.t; this.emit('push', { i: r.i, x: r.x, y: r.y }); }
@@ -444,6 +452,7 @@ export class Game {
         const a = (k / 24) * Math.PI * 2;
         const x = r.x + Math.cos(a) * rad, y = r.y + Math.sin(a) * rad;
         if (!this.freeAt(r, x, y)) continue;
+        if (!this.clearPath(r, r.x, r.y, x, y)) continue; // nunca atravessa parede/tijolo
         const d = this.distAt(x, y);
         if (d < bd) { bd = d; best = [x, y, a]; }
       }
@@ -454,6 +463,16 @@ export class Game {
       }
     }
     return false;
+  }
+
+  // o caminho reto de (x0,y0) a (x1,y1) não passa por parede/tijolo?
+  clearPath(r, x0, y0, x1, y1) {
+    const L = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(L / 4));
+    for (let k = 1; k <= n; k++) {
+      const t = k / n;
+      if (this.hitTiles(r, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, true)) return false;
+    }
+    return true;
   }
 
   distAt(x, y) {
@@ -626,7 +645,7 @@ export class Game {
         if (v <= 0) continue;
         for (const [r, c] of this.sliceCells(sg, k)) {
           const cell = this.grid[r][c];
-          if (cell.k === 'wall' || cell.k === 'brick') continue; // tijolo inteiro: a massa não pinta por cima
+          if (cell.k === 'wall' || cell.k === 'brick' || cell.noFlood) continue; // tijolo inteiro / área protegida: a massa não pinta por cima
           const i = r * COLS + c;
           if (v >= 1 || lv[i] < v) { if (lv[i] < 1) { lv[i] = v; dir[i] = sg.ddir; } }
           if (r < top) top = r;
@@ -1125,6 +1144,7 @@ export class Game {
       winner: this.winner ? this.winner.team.id : null,
       finished: fin.length,
       eliminated: this.racers.filter((r) => r.state === 'dead').length,
+      crushed: this.events.filter((e) => e.name === 'eliminate' && e.p.crushed).length,
       margin: fin.length > 1 ? fin[1].finishT - fin[0].finishT : null,
       leadChanges: this.leadChanges,
       knifeKills: this.events.filter((e) => e.name === 'stab').length,
@@ -1140,11 +1160,12 @@ export class Game {
 export function dramaScore(s, racerCount) {
   if (!s.winner) return -100;
   let score = 0;
-  score -= Math.abs(s.raceTime - 50) * 0.35;                 // ~50s é um ótimo tamanho
+  score -= Math.abs(s.raceTime - 55) * 0.35;                 // ~55s é um ótimo tamanho
   score += Math.min(8, (s.leadChanges || 0) * 2);           // viradas na liderança
   if (s.chaseGap != null) score += Math.max(0, 10 - s.chaseGap * 0.4); // 2º colado no vencedor
   score += (s.nearFinish || 0) * 3;                          // pelotão perto da chegada
   if (s.firstFinish != null && s.firstFinish > 25) score += 4;
+  score -= (s.crushed || 0) * 14;                           // esmagado pela massa: feio, evita
   if (s.eliminated >= 1 && s.eliminated < racerCount - 1) score += 4;
   if (s.knifeKills) score += 7;                              // teve facada!
   return score;

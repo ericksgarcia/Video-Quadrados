@@ -14,7 +14,7 @@ for (const level of levels) {
   const agg = {};
   const add = (k, ex) => { (agg[k] ||= { n: 0, ex }); agg[k].n++; };
   for (let s = 1; s <= N; s++) {
-    const g = new Game({ level, teams: teams(Math.min(4, level.maxRacers)), seed: s });
+    const g = new Game({ level, teams: teams(level.racers ?? Math.min(4, level.maxRacers)), seed: s });
     const last = g.racers.map((r) => ({ x: r.x, y: r.y, t: 0 }));
     while (!g.done && g.t < 200) {
       g.step();

@@ -59,7 +59,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `gaiola`, `cofre`, `ponte`, `escada`, `pocos` (padrão: sorteia entre as cinco), `derby`, `serpente`, `arena8` |
+| `--level` | `gaiola`, `cofre`, `ponte`, `escada`, `pocos`, `colunas` (padrão: sorteia entre as seis), `derby`, `serpente`, `arena8` |
 | `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
@@ -112,6 +112,10 @@ topo e desce uma escada em zigue-zague de tijolos escuros até a chegada no cant
 
 **`pocos`** — cópia do 8º vídeo: os 4 começam juntos, 4 poços estreitos fechados por um tijolo de
 cor cada, massa subindo devagar e a chegada no alto atrás de tijolos escuros e um pistão.
+
+**`colunas`** — fase original (criada a partir dos prints de referência) com **5 quadrados**: cinco colunas
+na base com janelas de tijolos de cor em corrente, corredores com 2 pistões, nicho com faca e atalho de
+tijolos escuros.
 
 Outras fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
 à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e

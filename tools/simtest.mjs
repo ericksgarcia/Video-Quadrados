@@ -5,7 +5,7 @@ const seeds = Number(process.argv[2] || 20);
 for (const level of LEVELS) {
   const bad = level.map.map((l, i) => [i, l.length]).filter(([, n]) => n !== COLS);
   if (level.map.length !== ROWS || bad.length) { console.log(level.id, 'TAMANHO INVÁLIDO', level.map.length, bad); continue; }
-  const n = Math.min(level.maxRacers, 4 + (level.maxRacers > 4 ? 4 : 0));
+  const n = level.racers ?? Math.min(level.maxRacers, 4 + (level.maxRacers > 4 ? 4 : 0));
   const teams = Array.from({ length: n }, (_, i) => ({ id: 't' + i, name: 'T' + i, color: '#f00' }));
   const res = [];
   for (let s = 1; s <= seeds; s++) {

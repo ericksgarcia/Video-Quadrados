@@ -299,7 +299,43 @@ def pocos():
         m.put(R0 + 34, C0 + c, 'S')
     return m.lines()
 
+def colunas():
+    """Fase ORIGINAL (criada a partir do padrão dos prints de referência): 5 colunas na base, 1 quadrado em
+    cada. A parede entre colunas tem uma janela de 4 tijolos de cor (só o dono quebra); as cores abrem
+    a janela de OUTRA coluna: o 2º e o 4º abrem as primeiras (ao mesmo tempo), depois o 1º e o 5º abrem
+    as do meio e por fim o 3º abre a saída. Janelas (esq.→dir.): cores 2,1,5,4,3. Depois: corredor da direita, corredor de baixo (pistão e
+    nicho com faca), subida pela esquerda e corredor de cima (pistão) até a chegada, atrás de 4 tijolos
+    escuros. Um atalho de 4 tijolos escuros liga o corredor de baixo ao de cima."""
+    U = [  # 17 x 20 unidades.  1..5 = tijolo do quadrado 1..5   B = tijolo escuro   F = chegada
+        '###..........BBFF',  # 0  corredor de cima (pistão em cima da parede)
+        '###..........BBFF',  # 1
+        '###..######B#####',  # 2  parede; sobe pela esquerda (cols 3-4); atalho escuro (col 11)
+        '###..######B#####',  # 3
+        '###..######B#####',  # 4
+        '###..######B#####',  # 5
+        '###..............',  # 6  corredor de baixo (pistão em cima da parede)
+        '###..............',  # 7
+        '######.########..',  # 8  entrada do nicho da faca (col 6, 2 unidades de comprimento); corredor da direita
+        '######.########..',  # 9
+        '#####...#######..',  # 10 nicho (1x3)
+        '###############..',  # 11
+        '..2..1..5..4..3..',  # 12 janelas (6 tijolos de altura): cols 2,5,8,11 e saída (col 14)
+        '..2..1..5..4..3..',  # 13
+        '..2..1..5..4..3..',  # 14
+        '..2..1..5..4..3..',  # 15
+        '..2..1..5..4..3..',  # 16
+        '..2..1..5..4..3..',  # 17
+        '..#..#..#..#..#..',  # 18
+        '..#..#..#..#..#..',  # 19
+    ]
+    R0, C0 = 4, 1
+    m = unitmap(U, {}, R0, C0)
+    m.put(R0 + 21, C0 + 12, '!')              # faca no fundo do nicho
+    for c in (2, 8, 14, 20, 26):               # largada: 1 quadrado no fundo de cada coluna
+        m.put(R0 + 37, C0 + c, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

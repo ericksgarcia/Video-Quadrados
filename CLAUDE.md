@@ -34,6 +34,30 @@ vídeo"** (ou "o próximo", "pega da pendente"...):
 Sempre na **nossa paleta** (Concreto) e com **final sem placar**, a menos que o usuário peça outra
 coisa. Não apague nada de `pendente/` sem ter gerado o vídeo correspondente.
 
+## Bug de física corrigido (importante)
+
+`squeeze()` (quadrado espremido pela massa/pistão escapa para o espaço livre mais próximo) agora só
+escolhe destino com **caminho reto livre** (`clearPath`): antes podia teleportar o quadrado através de
+paredes finas (apareceu como "todo mundo no nicho da faca aos 50s" na fase Colunas).
+
+**Consequência**: depois dessa correção, `npm test` mostra ~15–30% de corridas sem vencedor em algumas
+fases (quadrados que a massa prensa no teto da sala antes de a saída abrir morrem de verdade; antes o
+teleporte os "salvava"). Tudo bem: o `novo`/`render --best 30` escolhe a melhor corrida e
+`dramaScore` agora **penaliza esmagados** (−14 cada) e prefere ~55s. Se o usuário reclamar de mortes
+por esmagamento, deixe a massa mais lenta ou pare a subida antes do teto. Há 0,6s de graça: a massa
+segura (`massWait`) e o quadrado prensado pode quebrar o tijolo em que encosta (`pinT`).
+
+## Criar fase do zero: lições (fase Colunas)
+
+- Janelas/barras em corrente: cada quadrado encosta nas barras dos dois lados da sua coluna; só a
+  cor do dono quebra. Calcule a ordem por busca (script em Python) para ter 1–2 começos e o menor
+  deslocamento entre colunas; a ordem "óbvia" costuma ser a pior.
+- A massa **nunca** deve selar a saída antes de os quadrados presos conseguirem sair; e não deve
+  esmagar quem está no fundo: pare a subida antes do teto do cômodo (`massTrack` com trecho curto).
+- Corredores estreitos (2 unidades) e longos com quique 100% livre demoram demais (difusão): use
+  `homing` leve (0.1–0.2) em fases originais.
+- Verifique sempre: `npm test`, `npm run fisica`, e o histograma de esmagamentos por tempo/lugar.
+
 ## Pasta `referencias/` (biblioteca de exemplos)
 
 Prints do **início** de cada vídeo de referência (`01-…58-…png`, mais 2 folhas de contato `_folha-*.png`) + `LEIA-ME.md` com a tabela
@@ -51,9 +75,9 @@ olhe os prints, combine os elementos e registre a fase nova como nas outras.
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`**, **`escada`** e **`pocos`**
-     (cópias dos vídeos de referência). Se o usuário pedir algo específico, repasse:
-     `--level gaiola|cofre|ponte|escada|pocos|derby|serpente|arena8`,
+   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`**, **`escada`**, **`pocos`** (cópias
+     dos vídeos de referência) e **`colunas`** (fase original, 5 quadrados). Se o usuário pedir algo
+     específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
@@ -104,6 +128,20 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (1 batida), num corredor sobre uma lingueta de parede com **1 pistão vertical** (8s, 2
   unidades). Sem faca. Duração varia muito (40–115s; referência ~63s) — a corrida depende de
   quem acerta o poço certo.
+- **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
+  17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
+  levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
+  (vermelho, azul, amarelo, verde, ciano). A parede entre colunas tem uma **janela de 6 tijolos de cor**
+  (só o dono quebra); janelas da esquerda para a direita: cores 2,1,5,4,3 (azul, vermelho, ciano, verde,
+  amarelo): o 2º e o 4º abrem as primeiras ao mesmo tempo, depois o 1º e o 5º abrem as do meio e o 3º
+  abre a **saída pela direita** (ordem escolhida por busca: deslocamento máximo de 2 colunas — a ordem
+  "reversa" que parece óbvia é o pior caso). Depois: corredor da direita → corredor de baixo (**pistão** 8s +
+  nicho com **faca** permanente, bem fundo) → sobe pela esquerda → corredor de cima (**pistão** 10s) → chegada
+  atrás de 4 tijolos escuros; **atalho de 4 tijolos escuros** liga o corredor de baixo ao de cima. Massa
+  (`massTrack`): 1) sobe pelas colunas e pelo fundo do corredor da direita a 0,22 bloco/s **só até 2
+  unidades abaixo do topo das colunas** (sempre sobra faixa livre: sem esmagamento), 2) corredor da
+  direita, 3) corredor de baixo, 4) esquerda, 5) topo a 0,6 bloco/s. `noFlood` protege o nicho da faca.
+  Sim.: 23/30 com vencedor (os que travam são descartados pelo best-of-30), ~50–100s.
 - **Massa sólida (não é água)**: cinza-chumbo de concreto (paleta Concreto), firme — ninguém entra nela; a frente **empurra os
   quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
   saída nenhuma, é esmagado. Na Gaiola a massa anda por um **trilho de trechos** (`massTrack`):
@@ -158,7 +196,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
   `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` em unidades.
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` e `colunas()` em unidades.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.
