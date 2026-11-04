@@ -4,6 +4,28 @@ Projeto do canal de TikTok do usuário: vídeos verticais (1080x1920, 60fps, ~60
 quadrados **só de cor** (vermelho, azul, amarelo, verde...), no estilo flat dos vídeos de
 referência que o usuário mandou. Bandeiras/escudos ainda existem como opção (`--category`). Fale sempre em **português do Brasil**.
 
+## Pasta `pendente/` (fila de vídeos de referência)
+
+O usuário coloca vídeos de referência (.mp4) em `pendente/`. Quando ele pedir **"gera o próximo
+vídeo"** (ou "o próximo", "pega da pendente"...):
+
+1. `ls pendente/` → pegue o primeiro `.mp4` (ordem alfabética). Se **não houver nenhum**, avise e
+   use o fluxo `npm run novo` abaixo.
+2. **Copie o vídeo como uma fase nova** (receita usada nas fases Gaiola…Poços): extraia quadros
+   (`ffmpeg ... fps=1/3 ... tile`), descubra a grade (unidades de 2x2 blocos; ~14x18 ou 16x21 ou
+   32x42 blocos) amostrando cores do quadro 0, meça com quadros a 10 fps: velocidade dos
+   quadrados, ritmo da massa (por trecho), período/altura dos pistões, tempos de quebra dos
+   tijolos, e como o vídeo termina. Crie a função no `tools/levelgen.py`, a fase no
+   `src/levels.js` (`massTrack`, `pistons`, `racerSize`, `racerSpeed`, `zoom`) e inclua o id na lista
+   do `tools/novo.mjs`.
+3. Rode `npm test` e `npm run fisica`, confira prints, renderize (`node tools/render.mjs --level
+   <id> --teams ... --theme concreto --best 30 ...`) e envie o `.mp4` + legenda.
+4. **Exclua o vídeo da pasta** (`git rm pendente/<arquivo>`), atualize este arquivo com as regras da
+   fase nova, faça commit e push na branch da sessão.
+
+Sempre na **nossa paleta** (Concreto) e com **final sem placar**, a menos que o usuário peça outra
+coisa. Não apague nada de `pendente/` sem ter gerado o vídeo correspondente.
+
 ## Quando o usuário pedir "um vídeo novo" (ou "faz outro vídeo", "gera mais um"...)
 
 1. Confirme as ferramentas (já vêm no ambiente de nuvem): `ffmpeg -version` e
