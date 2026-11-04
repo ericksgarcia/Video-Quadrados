@@ -13,8 +13,9 @@ referência que o usuário mandou. Bandeiras/escudos ainda existem como opção 
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`** e **`escada`** (cópias dos
-     vídeos de referência). Se o usuário pedir algo específico, repasse: `--level gaiola|cofre|ponte|escada|derby|serpente|arena8`,
+   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`**, **`escada`** e **`pocos`**
+     (cópias dos vídeos de referência). Se o usuário pedir algo específico, repasse:
+     `--level gaiola|cofre|ponte|escada|pocos|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
@@ -55,6 +56,16 @@ iteração. Se ele pedir mudança, atualize esta lista.
   frente horizontal) e termina no corredor de baixo até a chegada (canto inferior esquerdo,
   atrás de 4 tijolos escuros). Sem pistões, sem faca. Cada trecho do `massTrack` pode ter
   velocidade própria (6º item, blocos/s). A massa não pinta por cima de tijolo ainda inteiro.
+- **Fase Poços** — cópia do 8º vídeo (mapa 14x18 unidades, `zoom: 1.24`, `racerSize: 36`, ~4,2
+  unidades/s): os **4 quadrados começam juntos** na sala de baixo (amarelo, azul, verde, vermelho
+  da esquerda para a direita). 4 poços estreitos (1 unidade) sobem até uma sala grande; cada poço
+  é fechado em cima por **UM tijolo da cor de um quadrado** (só ele quebra). Quem entra no poço
+  errado fica esperando o dono do tijolo (o amarelo abre o seu primeiro e libera a subida para
+  todos). A massa **sobe devagar e igual** (~0,13 unidade/s = 0,265 bloco/s, começa em ~1,2s) pela
+  sala de baixo e pelos 4 poços. Chegada no canto de cima à esquerda atrás de 4 tijolos escuros
+  (1 batida), num corredor sobre uma lingueta de parede com **1 pistão vertical** (8s, 2
+  unidades). Sem faca. Duração varia muito (40–115s; referência ~63s) — a corrida depende de
+  quem acerta o poço certo.
 - **Massa sólida (não é água)**: cinza-chumbo de concreto (paleta Concreto), firme — ninguém entra nela; a frente **empurra os
   quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
   saída nenhuma, é esmagado. Na Gaiola a massa anda por um **trilho de trechos** (`massTrack`):
@@ -80,7 +91,8 @@ iteração. Se ele pedir mudança, atualize esta lista.
   colisão (o vizinho sai da frente); a separação nunca entra em parede/pistão; se a pilha estiver
   compactada, a massa segura um instante (pressão) em vez de enfiar um quadrado no outro.
 - **Duração**: Gaiola ~65–80s (referência 78s); Cofre ~58–74s (referência 58s); Ponte ~55–105s
-  (referência 82s); Escada ~60–85s (referência 58s); fases antigas ~60s.
+  (referência 82s); Escada ~60–85s (referência 58s); Poços 40–115s (referência 63s); fases
+  antigas ~60s.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
@@ -108,7 +120,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
   `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos.
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` em unidades.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.

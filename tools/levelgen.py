@@ -268,7 +268,38 @@ def escada():
         for c in range(32): m.g[3 + r][2 + c] = g[r][c]
     return m.lines()
 
+def pocos():
+    """Cópia do 8º vídeo de referência (square_derby): mapa 14x18 unidades. Os 4 quadrados começam
+    juntos na sala de baixo; 4 poços estreitos (1 unidade) sobem até uma sala grande, cada poço fechado
+    em cima por UM tijolo da cor de um quadrado (só ele quebra). A chegada fica no canto de cima à
+    esquerda, atrás de 4 tijolos escuros, num corredor acima de uma lingueta de parede (com um pistão)."""
+    U = [  # 14 x 18.  F=chegada  B=tijolo escuro  1..4=tijolo de cor (dono = quadrado 1..4)
+        'FFBB..........',  # 0
+        'FFBB..........',  # 1
+        '###########...',  # 2  lingueta (abertura de 3 unidades à direita)
+        '..............',  # 3  sala grande
+        '..............',  # 4
+        '..............',  # 5
+        '##1##2##3##4##',  # 6  tijolo no alto de cada poço
+        '##.##.##.##.##',  # 7
+        '##.##.##.##.##',  # 8
+        '##.##.##.##.##',  # 9
+        '##.##.##.##.##',  # 10
+        '##.##.##.##.##',  # 11
+        '##.##.##.##.##',  # 12
+        '##.##.##.##.##',  # 13
+        '..............',  # 14 sala de baixo
+        '..............',  # 15
+        '..............',  # 16
+        '..............',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (11, 13, 15, 17):             # largada: 4 quadrados lado a lado no fundo da sala de baixo
+        m.put(R0 + 34, C0 + c, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
