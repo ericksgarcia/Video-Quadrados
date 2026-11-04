@@ -194,7 +194,39 @@ def cofre():
         m.put(R0 + 2 * r + 1, C0 + 1, 'S')
     return m.lines()
 
+def ponte():
+    """Cópia do 6º vídeo de referência (square_derby): duas metades simétricas. Em cada sala de baixo
+    uma dupla (vermelho+amarelo / verde+azul); a coluna acima tem tijolos que ALTERNAM as cores da
+    dupla (um precisa abrir para o outro). Em cima, a chegada cercada por um mosaico das cores da
+    dupla. Barra em T com pistões nas pontas. A massa sobe devagar pelas duas salas de baixo."""
+    U = [  # 14 x 18.  r=vermelho(1) y=amarelo(2) g=verde(3) b=azul(4)
+        '....yrFFgb....',  # 0
+        '....ryFFbg....',  # 1
+        '....yrFFgb....',  # 2
+        '..##########..',  # 3  barra em T (pistões nas pontas)
+        '......##......',  # 4
+        '......##......',  # 5
+        '......##......',  # 6
+        '##yy######bb##',  # 7
+        '##..######..##',  # 8
+        '##rr######gg##',  # 9
+        '##..######..##',  # 10
+        '##yy######bb##',  # 11
+        '##..######..##',  # 12
+        '##rr######gg##',  # 13
+        '......##......',  # 14
+        '......##......',  # 15
+        '......##......',  # 16
+        '......##......',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {'r': '1', 'y': '2', 'g': '3', 'b': '4'}, R0, C0)
+    m.g = [row[:] for row in m.g]
+    for c in (12, 14, 21, 23):              # largada: vermelho, amarelo | verde, azul (longe das paredes)
+        m.put(R0 + 2 * 17, c, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

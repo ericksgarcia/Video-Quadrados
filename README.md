@@ -59,7 +59,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `gaiola`, `cofre` (padrão: sorteia entre as duas), `derby`, `serpente`, `arena8` |
+| `--level` | `gaiola`, `cofre`, `ponte` (padrão: sorteia entre as três), `derby`, `serpente`, `arena8` |
 | `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
@@ -100,6 +100,12 @@ uma faca permanente num atalho onde a massa não entra.
 
 **`cofre`** — cópia do 5º vídeo: baias à esquerda na mesma corrente, a massa dá a volta pelo topo e
 pela direita, chegada no meio protegida por tijolos escuros, atalho escuro e 3 pistões horizontais.
+
+**`ponte`** — cópia do 6º vídeo: duas duplas presas por colunas de tijolos que alternam as cores
+da dupla, chegada cercada por um mosaico colorido, pistões na barra em T e massa subindo devagar.
+
+O vídeo acaba logo que o 1º chega, sem placar (o TikTok volta para o começo). `npm run fisica`
+verifica a física (ninguém dentro de parede, massa, pistão ou de outro quadrado).
 
 Outras fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
 à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e

@@ -13,7 +13,8 @@ const INTRO = 0.3;          // s parado antes de largar (sem contagem 3-2-1, igu
 export const RACE_START = INTRO;
 const RESULTS_HOLD = 3.8;   // s de tela de resultado no final
 const AFTER_WIN_LIMIT = 15; // s máx. após o vencedor (só quando endOnWin = false)
-const WIN_CELEBRATE = 1.3;  // s de comemoração antes da tela de vencedor
+const WIN_CELEBRATE = 1.3;  // s de comemoração antes da tela de vencedor (só com endScreen)
+const LOOP_HOLD = 0.5;      // s depois que o 1º chega, sem placar: o vídeo acaba e "reinicia" (loop do TikTok)
 const TIME_LIMIT = 150;     // s máx. de corrida
 
 const PENTA = [0, 2, 4, 7, 9]; // escala pentatônica (soa "satisfatório")
@@ -191,7 +192,7 @@ export class Game {
       const extra = Math.floor(i / spawns.length);
       const ang = (rng.range(25, 65) * Math.PI) / 180 + rng.int(0, 3) * (Math.PI / 2);
       return {
-        i, team, size: 44,
+        i, team, size: this.level.racerSize ?? 44,
         x: (s.c + 0.5) * TILE + extra * 8, y: (s.r + 0.5) * TILE - extra * 8,
         vx: Math.cos(ang), vy: Math.sin(ang),
         state: 'alive', place: 0, finishT: 0, deathT: 0,
@@ -228,6 +229,8 @@ export class Game {
       if (this.flood.solid) for (const r of this.racers) if (r.state === 'alive') this.pushOut(r);
       for (const r of this.racers) if (r.state === 'alive') this.moveRacer(r, dt);
       this.racerCollisions();
+      if (this.flood.solid) for (const r of this.racers) if (r.state === 'alive') this.pushOut(r);
+      if (this.flood.solid) this.checkPressure();
       for (const r of this.racers) if (r.state === 'alive') this.interact(r, dt);
       this.checkEnd();
       this.updateIntensity();
@@ -279,6 +282,7 @@ export class Game {
       // dir 'right': base na coluna c, cresce para a direita nas linhas r..r+w-1
       let x0, y0, x1, y1;
       if (p.dir === 'right') { x0 = p.c * TILE; x1 = x0 + p.h; y0 = p.r * TILE; y1 = (p.r + (p.w ?? 2)) * TILE; }
+      else if (p.dir === 'left') { x1 = p.c * TILE; x0 = x1 - p.h; y0 = p.r * TILE; y1 = (p.r + (p.w ?? 2)) * TILE; }
       else { x0 = p.c * TILE; x1 = (p.c + (p.w ?? 2)) * TILE; y1 = p.r * TILE; y0 = y1 - p.h; }
       p.rect = [x0, y0, x1, y1];
       // empurra quem estiver no caminho (sem espaço nenhum: esmagado)
@@ -289,6 +293,9 @@ export class Game {
         if (p.dir === 'right') {
           const nx = x1 + h + 0.5;
           if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = Math.abs(r.vx); continue; }
+        } else if (p.dir === 'left') {
+          const nx = x0 - h - 0.5;
+          if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = -Math.abs(r.vx); continue; }
         } else {
           const up = y0 - h - 0.5;
           if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
@@ -302,7 +309,7 @@ export class Game {
     for (const p of this.pistons) {
       if (!p.rect) continue;
       const [x0, y0, x1, y1] = p.rect;
-      if (p.dir === 'right') {
+      if (p.dir === 'right' || p.dir === 'left') {
         if (row < p.r || row >= p.r + (p.w ?? 2)) continue;
         const l = col * TILE;
         if (Math.min(l + TILE, x1) - Math.max(l, x0) > TILE * 0.5) return true;
@@ -348,6 +355,7 @@ export class Game {
         else px = Math.min(px, m[0] - (r.x + h) - 0.3);
       }
       if (!px && !py) return;
+      r.pushedT = this.t;
       const nx = r.x + px, ny = r.y + py;
       if (!this.hitTiles(r, nx, ny, true)) {
         r.x = nx; r.y = ny;
@@ -383,9 +391,39 @@ export class Game {
     return false;
   }
 
-  // espaço totalmente livre (sem parede, tijolo, massa ou pistão)?
+  pistonHit(r, x, y) {
+    const h = r.size / 2 - 0.01;
+    for (const p of this.pistons) { const m = p.rect; if (m && m[2] - m[0] > 0.5 && m[3] - m[1] > 0.5 && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) return true; }
+    return false;
+  }
+
+  // pressão: se quadrados empurrados ainda estão sobrepostos depois de tudo, a massa segura um instante
+  checkPressure() {
+    const rs = this.racers.filter((r) => r.state === 'alive');
+    for (let a = 0; a < rs.length; a++) for (let b = a + 1; b < rs.length; b++) {
+      const A = rs[a], B = rs[b];
+      if (A.pushedT !== this.t && B.pushedT !== this.t) continue;
+      const lim = (A.size + B.size) / 2 - 1;
+      if (Math.abs(A.x - B.x) < lim && Math.abs(A.y - B.y) < lim) { this.massWait = this.t + 0.2; return; }
+    }
+  }
+
+  // anda até (dx,dy) sem entrar em parede/tijolo/pistão; devolve quanto andou
+  tryMove(r, dx, dy) {
+    const L = Math.hypot(dx, dy);
+    if (L < 1e-6) return 0;
+    let lo = 0, hi = 1;
+    const blocked = (x, y) => this.hitTiles(r, x, y, true) || this.pistonHit(r, x, y);
+    if (!blocked(r.x + dx, r.y + dy)) lo = 1;
+    else for (let k = 0; k < 8; k++) { const m = (lo + hi) / 2; if (blocked(r.x + dx * m, r.y + dy * m)) hi = m; else lo = m; }
+    r.x += dx * lo; r.y += dy * lo;
+    return L * lo;
+  }
+
+  // espaço totalmente livre (sem parede, tijolo, massa, pistão ou outro quadrado)?
   freeAt(r, x, y) {
     if (this.hitTiles(r, x, y, true)) return false;
+    for (const o of this.racers) if (o !== r && o.state === 'alive' && Math.abs(o.x - x) < (o.size + r.size) / 2 && Math.abs(o.y - y) < (o.size + r.size) / 2) return false;
     const h = r.size / 2 - 0.01;
     for (const p of this.pistons) { const m = p.rect; if (m && m[3] - m[1] > 0.5 && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) return false; }
     const c0 = Math.floor((x - h) / TILE), c1 = Math.floor((x + h) / TILE);
@@ -526,7 +564,9 @@ export class Game {
       const vertical = dir === 'up' || dir === 'down';
       return { R0, C0, R1, C1, dir, p: 0, len: vertical ? R1 - R0 + 1 : C1 - C0 + 1, ddir: { up: 1, down: 0, left: 3, right: 2 }[dir] };
     };
-    return { stage1: (t.stage1 || []).map(seg), stage2: (t.stage2 || []).map(seg), cur: 0 };
+    // lanes: várias sequências em paralelo (ex.: as duas metades de um mapa simétrico)
+    const lanes = (t.lanes || []).map((l) => ({ segs: l.map(seg), cur: 0 }));
+    return { stage1: (t.stage1 || []).map(seg), stage2: (t.stage2 || []).map(seg), cur: 0, lanes };
   }
 
   // células da fatia k (0 = a primeira que a massa ocupa) de um trecho
@@ -563,19 +603,21 @@ export class Game {
     const F = this.flood, T = this.track;
     const rate = Math.min(F.maxRate, F.rate + F.accel * (rt - F.delay)) * this.speedScale;
     const zr = (F.zoneRate ?? rate) * this.speedScale;
-    for (const sg of T.stage1) this.advanceSeg(sg, zr * dt);
+    const hold = this.massWait != null && this.t < this.massWait; // quadrados compactados: espera
+    if (!hold) for (const sg of T.stage1) this.advanceSeg(sg, zr * dt);
     if (F.stage2At == null) {
       if (F.stage2After == null) F.stage2At = F.delay2 ?? F.delay;
       else if (this._ownerBroke?.[F.stage2After] != null) F.stage2At = Math.max(F.delay2 ?? 0, this._ownerBroke[F.stage2After] + (F.stage2Gap ?? 1.5));
     }
-    if (F.stage2At != null && rt >= F.stage2At && T.cur < T.stage2.length) {
+    if (!hold && F.stage2At != null && rt >= F.stage2At && T.cur < T.stage2.length) {
       if (this.advanceSeg(T.stage2[T.cur], rate * dt)) T.cur++;
     }
+    if (!hold) for (const ln of T.lanes) if (ln.cur < ln.segs.length && this.advanceSeg(ln.segs[ln.cur], rate * dt)) ln.cur++;
     // monta o campo de massa (o mesmo usado na física e no desenho)
     const lv = F.disp, dir = F.ddir;
     lv.fill(0); dir.fill(-1);
     let top = ROWS;
-    for (const sg of [...T.stage1, ...T.stage2]) {
+    for (const sg of [...T.stage1, ...T.stage2, ...T.lanes.flatMap((l) => l.segs)]) {
       if (sg.p <= 0) continue;
       const full = Math.floor(sg.p), frac = sg.p - full;
       for (let k = 0; k <= Math.min(full, sg.len - 1); k++) {
@@ -847,15 +889,30 @@ export class Game {
       const dx = B.x - A.x, dy = B.y - A.y;
       const ox = (A.size + B.size) / 2 - Math.abs(dx), oy = (A.size + B.size) / 2 - Math.abs(dy);
       if (ox <= 0 || oy <= 0) continue;
-      if (ox < oy) {
-        const s = Math.sign(dx) || 1;
-        A.x -= (s * ox) / 2; B.x += (s * ox) / 2;
-        if ((B.vx - A.vx) * s < 0) { const t = A.vx; A.vx = B.vx; B.vx = t; }
-      } else {
-        const s = Math.sign(dy) || 1;
-        A.y -= (s * oy) / 2; B.y += (s * oy) / 2;
-        if ((B.vy - A.vy) * s < 0) { const t = A.vy; A.vy = B.vy; B.vy = t; }
+      // quem está sendo empurrado pela massa (ou prensado) não volta para trás: o outro sai da frente
+      const pa = A.pushedT === this.t, pb = B.pushedT === this.t;
+      const ka = pa && !pb ? 0 : !pa && pb ? 1 : 0.5; // fração que A anda
+      // separa sem nunca entrar em parede: se um não puder andar, o outro anda o resto
+      const horiz = ox < oy, need = (horiz ? ox : oy) + 0.2;
+      const sg = Math.sign(horiz ? dx : dy) || 1;
+      let mA = this.tryMove(A, horiz ? -sg * need * ka : 0, horiz ? 0 : -sg * need * ka);
+      let mB = this.tryMove(B, horiz ? sg * need * (1 - ka) : 0, horiz ? 0 : sg * need * (1 - ka));
+      let left = need - mA - mB;
+      if (left > 0.3 && !pb) left -= this.tryMove(B, horiz ? sg * left : 0, horiz ? 0 : sg * left);
+      if (left > 0.3 && !pa) left -= this.tryMove(A, horiz ? -sg * left : 0, horiz ? 0 : -sg * left);
+      if (left > 0.3) {
+        // eixo bloqueado: tenta separar pelo outro eixo (ex.: lado a lado num corredor largo)
+        const need2 = (horiz ? oy : ox) + 0.2, sg2 = Math.sign(horiz ? dy : dx) || 1;
+        let l2 = need2 - this.tryMove(B, horiz ? 0 : sg2 * need2 / 2, horiz ? sg2 * need2 / 2 : 0) - this.tryMove(A, horiz ? 0 : -sg2 * need2 / 2, horiz ? -sg2 * need2 / 2 : 0);
+        if (l2 > 0.3) l2 -= this.tryMove(B, horiz ? 0 : sg2 * l2, horiz ? sg2 * l2 : 0);
+        if (l2 > 0.3) l2 -= this.tryMove(A, horiz ? 0 : -sg2 * l2, horiz ? -sg2 * l2 : 0);
+        if (l2 > 2 && !this.squeeze(pa && !pb ? B : pb && !pa ? A : (A.y < B.y ? A : B))) {
+          this.massWait = this.t + 0.25; // pilha compactada: a massa segura um instante (pressão)
+        }
       }
+      if (horiz) { if ((B.vx - A.vx) * sg < 0) { const t = A.vx; A.vx = B.vx; B.vx = t; } }
+      else if ((B.vy - A.vy) * sg < 0) { const t = A.vy; A.vy = B.vy; B.vy = t; }
+      if (pa && !pb) B.pushedT = this.t; else if (pb && !pa) A.pushedT = this.t; // o empurrão passa adiante
       this.jitter(A, 0.2); this.jitter(B, 0.2);
       this.unstick(A); this.unstick(B);
       A.squash = B.squash = 1;
@@ -1029,7 +1086,20 @@ export class Game {
     const rt = this.raceTime;
     // por padrão o vídeo acaba logo que alguém chega (ninguém fica esperando o resto)
     const endOnWin = this.level.endOnWin ?? true;
+    const endScreen = this.level.endScreen ?? false; // padrão: sem placar no final
+    if (!endScreen && this.winner && rt - this.winner.finishT > LOOP_HOLD) {
+      this.phase = 'done'; this.endT = this.t;
+      this.emit('music', { on: false });
+      this.emit('done');
+      return;
+    }
     const timeout = rt > TIME_LIMIT || (this.winner && rt - this.winner.finishT > (endOnWin ? WIN_CELEBRATE : AFTER_WIN_LIMIT));
+    if ((alive === 0 || timeout) && !endScreen) {
+      this.phase = 'done'; this.endT = this.t;
+      this.emit('music', { on: false });
+      this.emit('done');
+      return;
+    }
     if (alive === 0 || timeout) {
       this.phase = 'results'; this.endT = this.t;
       this.emit('music', { on: false });

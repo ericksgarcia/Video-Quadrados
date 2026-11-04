@@ -125,7 +125,15 @@ export class Renderer {
     this.trails = new Map();
     this.particles = [];
     this.resultsT = null;
-    this.cam = { z: 1, x: AW / 2, y: AH / 2 };
+    // enquadramento: centraliza o mapa (área aberta) e aplica o zoom da fase (level.zoom)
+    let r0 = ROWS, r1 = 0, c0 = COLS, c1 = 0;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (game.grid[r][c].k === 'wall') continue;
+      r0 = Math.min(r0, r); r1 = Math.max(r1, r); c0 = Math.min(c0, c); c1 = Math.max(c1, c);
+    }
+    this.view = { z: game.level.zoom ?? 1, x: ((c0 + c1 + 1) / 2) * TILE, y: ((r0 + r1 + 1) / 2) * TILE };
+    if (!game.level.zoom) { this.view.x = AW / 2; this.view.y = AH / 2; } // fases antigas: como antes
+    this.cam = { ...this.view };
     this.applyTheme();
     this.buildStatic();
   }
@@ -220,13 +228,13 @@ export class Renderer {
     this.drawParticles(dt);
     g.restore();
 
-    if (game.phase === 'results' || game.phase === 'done') this.drawResults();
+    if ((game.phase === 'results' || game.phase === 'done') && this.resultsT != null) this.drawResults(); // sem endScreen: não tem placar
   }
 
   // zoom no vencedor durante a comemoração (como no 1º vídeo de referência)
   updateCamera(dt) {
     const game = this.game, cam = this.cam;
-    let tz = 1, tx = AW / 2, ty = AH / 2;
+    let tz = this.view.z, tx = this.view.x, ty = this.view.y;
     const win = game.winner;
     if (win && game.phase === 'race' && this.opts.zoom) {
       tz = 1.9;
@@ -240,7 +248,7 @@ export class Renderer {
 
   drawTitle() {
     const o = this.opts, g = this.g;
-    const a = clamp(1 - (this.cam.z - 1) * 2, 0, 1);
+    const a = clamp(1 - (this.cam.z - this.view.z) * 2, 0, 1);
     if (a <= 0 || !o.title) return;
     g.save(); g.globalAlpha = a;
     text(g, o.title, W / 2, AY / 2 - (o.subtitle ? 22 : 0), { size: 74, maxW: 1000, fill: this.theme.title });
