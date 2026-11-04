@@ -186,3 +186,9 @@ tools/levelgen.py   gerador dos mapas a partir de retângulos
 
 Dicas para o TikTok: corridas de 35–60s performam melhor; use o subtítulo para pedir palpites
 nos comentários e poste a mesma fase com seeds diferentes como série ("Dia 1", "Dia 2"...).
+
+## Fila de vídeos de referência
+
+Coloque `.mp4` em `pendente/` e, numa janela nova do Claude, escreva **"faça o próximo vídeo"**: ele analisa o
+vídeo (`tools/analisar_video.py`), cria a fase igual na paleta Concreto, renderiza, entrega e remove o arquivo
+da fila. Os prints dos vídeos já vistos estão em `referencias/`.

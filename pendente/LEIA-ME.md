@@ -1,11 +1,10 @@
 # Pasta `pendente`
 
-Coloque aqui os vídeos de referência (.mp4) que você quer que eu copie como **fases novas**.
+Fila de vídeos de referência (.mp4) para virarem **fases novas**.
 
-Quando você pedir "gera o próximo vídeo", eu:
-1. pego o próximo arquivo desta pasta (ordem alfabética do nome);
-2. analiso o vídeo (mapa, tijolos, massa, pistões, tempos) e crio a fase igual, na nossa paleta;
-3. renderizo, te envio o vídeo e a legenda;
-4. salvo o print do início em `referencias/`, **excluo o arquivo daqui** (commit + push) e registro a fase no `CLAUDE.md`.
+Para processar o próximo, abra uma janela nova e escreva: **"faça o próximo vídeo"**. O Claude pega o
+primeiro arquivo (ordem alfabética), analisa (`tools/analisar_video.py`), cria a fase igual na nossa paleta
+(Concreto), renderiza, te manda o vídeo e a legenda, **exclui o arquivo daqui** e publica tudo.
 
-Se a pasta estiver vazia, eu uso `npm run novo` (sorteia uma fase que já existe).
+Para adicionar vídeos: coloque os `.mp4` aqui (no branch `claude/affectionate-albattani-ox3ava`, que é o
+branch padrão do repositório). Envie em lotes de ~10–15 arquivos por vez (o upload do site falha com cargas grandes).

@@ -19,11 +19,9 @@ Resolução dos prints: 576x1024 ou 720x1280 (o mapa ocupa ~90% da largura; 1 un
 
 ## Fila de vídeos (50 prints, `09` a `58`)
 
-Estes vídeos foram enviados pelo usuário pelo GitHub e ficaram na **raiz da branch
-`claude/affectionate-albattani-ox3ava`** (não em `pendente/`). O nome do print traz os 8 primeiros
-caracteres do arquivo de vídeo. Para pegar o vídeo: `git archive origin/claude/affectionate-albattani-ox3ava <arquivo>.mp4 | tar -x -C <pasta-vazia>`.
-**Status**: `pendente` = fase ainda não criada; mude para `feito (nome da fase)` quando copiar o vídeo
-(os vídeos **não** são apagados daquela branch; o controle é por esta tabela). Folhas de contato com
+Estes 50 vídeos estão na pasta **`pendente/`** (o nome do print traz os 8 primeiros caracteres do arquivo de
+vídeo; a fila anda em ordem alfabética do nome do arquivo). **Status**: `pendente` = fase ainda não criada; ao copiar o vídeo, mude para `feito (nome da fase)` **e exclua
+o arquivo de `pendente/`**. Folhas de contato com
 todos os números: `_folha-09-33.png` e `_folha-34-58.png`.
 
 Elementos novos vistos nos prints (a investigar quando copiar cada vídeo): **5 quadrados** (azul-claro/ciano

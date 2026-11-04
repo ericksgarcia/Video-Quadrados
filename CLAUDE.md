@@ -4,35 +4,85 @@ Projeto do canal de TikTok do usuário: vídeos verticais (1080x1920, 60fps, ~60
 quadrados **só de cor** (vermelho, azul, amarelo, verde...), no estilo flat dos vídeos de
 referência que o usuário mandou. Bandeiras/escudos ainda existem como opção (`--category`). Fale sempre em **português do Brasil**.
 
-## Pasta `pendente/` (fila de vídeos de referência)
+## ▶ "Faça o próximo vídeo" (procedimento COMPLETO e automático)
 
-O usuário coloca vídeos de referência (.mp4) em `pendente/`. Quando ele pedir **"gera o próximo
-vídeo"** (ou "o próximo", "pega da pendente"...):
+Quando o usuário escrever algo como **"faça o próximo vídeo"**, "próximo", "gera o próximo da pendente",
+"pega um da fila": siga **todos** os passos abaixo, em ordem, **sem pedir confirmação** (ele já autorizou
+tudo, inclusive excluir o vídeo da fila e publicar no branch padrão). Fale em português do Brasil. Uma
+janela por vez (duas ao mesmo tempo pegariam o mesmo vídeo).
 
-1. `ls pendente/` → pegue o primeiro `.mp4` (ordem alfabética). **Fila atual**: 50 vídeos que o
-   usuário enviou ficaram na **raiz da branch `claude/affectionate-albattani-ox3ava`** (não em
-   `pendente/`); a lista com status (`pendente`/`feito`) está em `referencias/LEIA-ME.md` — pegue o
-   primeiro `pendente` e extraia só ele (`git fetch origin && git archive
-   origin/claude/affectionate-albattani-ox3ava <arquivo>.mp4 | tar -x -C <pasta-vazia>`). Nesse caso
-   **não apague o vídeo daquela branch**: marque `feito (nome da fase)` na tabela. Se **não houver
-   nenhum** vídeo pendente, avise e use o fluxo `npm run novo` abaixo.
-2. **Copie o vídeo como uma fase nova** (receita usada nas fases Gaiola…Poços): extraia quadros
-   (`ffmpeg ... fps=1/3 ... tile`), descubra a grade (unidades de 2x2 blocos; ~14x18 ou 16x21 ou
-   32x42 blocos) amostrando cores do quadro 0, meça com quadros a 10 fps: velocidade dos
-   quadrados, ritmo da massa (por trecho), período/altura dos pistões, tempos de quebra dos
-   tijolos, e como o vídeo termina. Crie a função no `tools/levelgen.py`, a fase no
-   `src/levels.js` (`massTrack`, `pistons`, `racerSize`, `racerSpeed`, `zoom`) e inclua o id na lista
-   do `tools/novo.mjs`.
-3. Rode `npm test` e `npm run fisica`, confira prints, renderize (`node tools/render.mjs --level
-   <id> --teams ... --theme concreto --best 30 ...`) e envie o `.mp4` + legenda.
-4. **Antes de excluir**, salve o **print do início** do vídeo em `referencias/NN-nome.png`
-   (`ffmpeg -i <video> -frames:v 1 ...`) e adicione a linha na tabela de `referencias/LEIA-ME.md`
-   (os 58 primeiros prints já estão salvos; só vídeos novos precisam de print).
-5. Se o vídeo estava em `pendente/`: exclua (`git rm pendente/<arquivo>`). Atualize este arquivo com
-   as regras da fase nova, faça commit e push na branch da sessão.
+**0. Preparo.** `git fetch origin`. Vídeo da vez = `ls pendente/*.mp4 | sort | head -1`. Se `pendente/`
+não tiver nenhum `.mp4`: avise e faça o fluxo "vídeo novo" (`npm run novo`, mais abaixo). Confirme as
+ferramentas: `ffmpeg -version`, `node -e "require('playwright')"`, `python3 -c "import numpy, PIL"`
+(se faltar Playwright: `npm install && npx playwright install chromium`).
 
-Sempre na **nossa paleta** (Concreto) e com **final sem placar**, a menos que o usuário peça outra
-coisa. Não apague nada de `pendente/` sem ter gerado o vídeo correspondente.
+**1. Analisar o vídeo (automático).** Copie o `.mp4` para uma pasta nova do scratchpad e rode
+`python3 -I tools/analisar_video.py <video.mp4> <scratchpad>/an` (~1 min). Leia `an/analise.md` e **olhe**
+(Read mostra imagens) `an/inicio.png`, `an/folha.png` e `an/massa.png`. O relatório traz: grade (confira:
+14x18, 16x21… unidades de 2x2 blocos), mapa em ASCII (unidades e blocos), **ordem/tempo da quebra dos
+tijolos** (a corrente de cores), **mapa do instante de chegada da massa** (+ velocidade da frente),
+**pistões** (posição, período, altura, direção), velocidade/tamanho dos quadrados, posição inicial e o fim
+útil do vídeo. Veja também os prints parecidos em `referencias/` e as fases já feitas em `src/levels.js`.
+
+**2. Criar a fase** (copie a estrutura de uma parecida):
+- função nova em `tools/levelgen.py` (helper `unitmap(U, code, R0, C0)`; `R0=(48-2·alturaU)/2`,
+  `C0=(36-2·larguraU)/2`) e o mapa gerado vira `map:` em `src/levels.js` (rode o `levelgen` e cole, ou
+  gere com Python como nas fases anteriores);
+- **donos dos tijolos**: tijolo de cor = dígito `'1'..'8'` = (índice do quadrado da MESMA cor)+1; os
+  quadrados são numerados na ordem das células `S` do mapa **varrendo linha por linha (cima→baixo,
+  esquerda→direita)**; `--teams` no render segue essa ordem dos índices (ex.: amarelo, azul, verde, vermelho
+  da esquerda para a direita → `--teams amarelo,azul,verde,vermelho`). Tijolo escuro = `B`, chegada = `F`;
+- `massTrack` seguindo o mapa de chegada da massa (um trecho por faixa, com velocidade em blocos/s);
+  `pistons` com os números do relatório; `racerSize` = tamanho(unid)×56; `racerSpeed` = vel(unid/s)×56;
+  `zoom` ≈ 0,9×1080 / (largura do mapa em px do jogo); `homing:0, steer:0, snap:0` nas cópias;
+- registre o id em `tools/novo.mjs` (listas `pick([...])`) e documente a fase aqui (seção Regras);
+- **elementos que o motor ainda NÃO tem** (martelo, portais, quadrado lilás, bloco verde na chegada…):
+  se aparecerem no vídeo, aproxime com o que existe (ou implemente no motor se for simples) e **diga
+  claramente ao usuário o que foi aproximado**.
+
+**3. Validar.** `npm test` e `npm run fisica` (e o histograma de esmagados se houver); prints com o
+script Playwright (`?render=1`, veja `tools/render.mjs`/`src/main.js`: `__studio.setup/frame`) e compare
+com `an/inicio.png` e `an/folha.png`: mapa, ordem de quebra, massa, pistões. Ajuste até ficar igual.
+
+**4. Renderizar** (em segundo plano, ~2–4 min): `node tools/render.mjs --level <id> --teams <cores na ordem
+dos índices> --theme concreto --best 30 --seed <n> --out videos/<id>-concreto.mp4`. Confira com um contact
+sheet (`ffmpeg ... fps=1/5 ... tile`) e o final (sem placar, ~0,5s após o 1º chegar).
+
+**5. Entregar.** `SendUserFile` do `.mp4` + legenda de TikTok pronta (sem revelar o vencedor) e um resumo
+curto do que foi copiado/aproximado.
+
+**6. Fechar (obrigatório, não esqueça).**
+- print do início em `referencias/NN-nome.png` se ainda não existir (os 58 primeiros já existem; o nome traz
+  os 8 primeiros caracteres do arquivo de vídeo) e linha da tabela de `referencias/LEIA-ME.md` →
+  `feito (<id da fase>)`;
+- **excluir o vídeo da fila**: `git rm pendente/<arquivo>.mp4`;
+- atualizar este `CLAUDE.md` (regras da fase nova), `README.md` se preciso;
+- `git add -A && git commit` (mensagem em português, com as linhas de atribuição pedidas no sistema);
+- **publicar**: `git push -u origin <branch da sessão>` **e** `git push origin HEAD:claude/affectionate-albattani-ox3ava`
+  (esse é o **branch padrão** do repositório — é de onde as janelas novas partem; o usuário autorizou
+  publicar nele). Se for rejeitado (não é fast-forward): `git pull --rebase origin
+  claude/affectionate-albattani-ox3ava` e repita.
+
+## Referência rápida: config de uma fase (`src/levels.js`)
+
+- `id, name, maxRacers, racers` (nº de quadrados; padrão 4), `zoom` (câmera), `racerSize` (px; 44), `racerSpeed`
+  (px/s; 210), `homing/steer/snap` (instinto; 0 = quique livre), `endScreen` (true = tela de vencedor).
+- `brickBlock: 2` (cada tijolo 2x2 blocos quebra sozinho), `colorBrickHp` (batidas do tijolo de cor),
+  `brickHp` (do escuro), `knifeKeep: true` (faca não se gasta; `!` no mapa).
+- `flood: { delay, zoneRate (blocos/s do stage1), delay2, stage2After (índice do dono cujo 1º tijolo quebrado
+  dispara o stage2), stage2Gap (s), rate (blocos/s padrão dos trechos), accel, maxRate }`.
+- `massTrack: { unit (1=blocos, 2=unidades), origin: [linha, coluna] do mapa no grid 36x48, stage1: [...] (em
+  paralelo), stage2: [...] (em sequência), lanes: [[...],[...]] (sequências em paralelo) }`; trecho =
+  `[linha0, col0, linha1, col1, dir, velocidade?]` (coordenadas DO MAPA ×unit; `dir`: `'up'` enche de baixo p/
+  cima, `'down'`, `'left'`, `'right'`; frente sempre reta; não pinta parede/tijolo inteiro/`noFlood`; pistão
+  fechado na frente segura).
+- `pistons: [{ c, r, w, max, period, phase, dir }]` em coordenadas ABSOLUTAS de blocos (bloco do mapa + origin):
+  `dir:'up'` (padrão) base na linha `r`, cresce p/ cima nas colunas `c..c+w-1`; `'left'/'right'` base na coluna
+  `c`, cresce nas linhas `r..r+w-1`; `max` em blocos; `period` s.
+- `noFlood: [[r0,c0,r1,c1]]` (absolutos) áreas que a massa nunca preenche (nicho da faca, atalho).
+- `map`: 48 strings de 36: `#` parede, `.` chão, `F` chegada, `B` escuro, `1`–`8` tijolo do quadrado índice+1,
+  `S` largada, `!` faca. Exemplos prontos: Poços (14x18 u, 4 poços), Ponte (lanes+pistões), Escada (blocos,
+  trechos com velocidade), Colunas (original, 5 quadrados).
 
 ## Bug de física corrigido (importante)
 
@@ -67,6 +117,9 @@ inspiração quando o usuário pedir para **criar uma fase do zero** (sem vídeo
 olhe os prints, combine os elementos e registre a fase nova como nas outras.
 
 ## Quando o usuário pedir "um vídeo novo" (ou "faz outro vídeo", "gera mais um"...)
+
+(Isto é **diferente** de "faça o próximo vídeo": aqui NÃO se usa a fila `pendente/`; sorteia-se uma fase que
+já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo deste arquivo.)
 
 1. Confirme as ferramentas (já vêm no ambiente de nuvem): `ffmpeg -version` e
    `node -e "require('playwright')"`. Se o Playwright faltar: `npm install` e
@@ -199,4 +252,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` e `colunas()` em unidades.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
+- `tools/analisar_video.py` analisa um vídeo de referência (numpy + PIL): grade, mapa ASCII, quebra dos
+  tijolos, ritmo da massa, pistões, velocidade dos quadrados, fim útil (uso no procedimento "próximo vídeo").
+  `tools/fisica.mjs` (`npm run fisica`) verifica a física. `tools/levelgen.py` tem uma função por fase.
 - `npm start` abre o painel interativo em http://localhost:5173.
