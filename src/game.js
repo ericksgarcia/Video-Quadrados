@@ -559,10 +559,10 @@ export class Game {
   // stage1: trechos em paralelo (começam em flood.delay); stage2: em sequência (começam em stage2At).
   buildTrack(t) {
     const u = t.unit ?? 1, [or, oc] = t.origin ?? [0, 0];
-    const seg = ([r0, c0, r1, c1, dir]) => {
+    const seg = ([r0, c0, r1, c1, dir, speed]) => {
       const R0 = or + r0 * u, C0 = oc + c0 * u, R1 = or + (r1 + 1) * u - 1, C1 = oc + (c1 + 1) * u - 1;
       const vertical = dir === 'up' || dir === 'down';
-      return { R0, C0, R1, C1, dir, p: 0, len: vertical ? R1 - R0 + 1 : C1 - C0 + 1, ddir: { up: 1, down: 0, left: 3, right: 2 }[dir] };
+      return { R0, C0, R1, C1, dir, speed, p: 0, len: vertical ? R1 - R0 + 1 : C1 - C0 + 1, ddir: { up: 1, down: 0, left: 3, right: 2 }[dir] };
     };
     // lanes: várias sequências em paralelo (ex.: as duas metades de um mapa simétrico)
     const lanes = (t.lanes || []).map((l) => ({ segs: l.map(seg), cur: 0 }));
@@ -609,10 +609,11 @@ export class Game {
       if (F.stage2After == null) F.stage2At = F.delay2 ?? F.delay;
       else if (this._ownerBroke?.[F.stage2After] != null) F.stage2At = Math.max(F.delay2 ?? 0, this._ownerBroke[F.stage2After] + (F.stage2Gap ?? 1.5));
     }
+    const spd = (sg) => (sg.speed != null ? sg.speed * this.speedScale : rate) * dt; // trecho pode ter velocidade própria (blocos/s)
     if (!hold && F.stage2At != null && rt >= F.stage2At && T.cur < T.stage2.length) {
-      if (this.advanceSeg(T.stage2[T.cur], rate * dt)) T.cur++;
+      if (this.advanceSeg(T.stage2[T.cur], spd(T.stage2[T.cur]))) T.cur++;
     }
-    if (!hold) for (const ln of T.lanes) if (ln.cur < ln.segs.length && this.advanceSeg(ln.segs[ln.cur], rate * dt)) ln.cur++;
+    if (!hold) for (const ln of T.lanes) if (ln.cur < ln.segs.length && this.advanceSeg(ln.segs[ln.cur], spd(ln.segs[ln.cur]))) ln.cur++;
     // monta o campo de massa (o mesmo usado na física e no desenho)
     const lv = F.disp, dir = F.ddir;
     lv.fill(0); dir.fill(-1);
@@ -625,7 +626,7 @@ export class Game {
         if (v <= 0) continue;
         for (const [r, c] of this.sliceCells(sg, k)) {
           const cell = this.grid[r][c];
-          if (cell.k === 'wall') continue;
+          if (cell.k === 'wall' || cell.k === 'brick') continue; // tijolo inteiro: a massa não pinta por cima
           const i = r * COLS + c;
           if (v >= 1 || lv[i] < v) { if (lv[i] < 1) { lv[i] = v; dir[i] = sg.ddir; } }
           if (r < top) top = r;

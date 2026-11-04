@@ -13,8 +13,8 @@ referência que o usuário mandou. Bandeiras/escudos ainda existem como opção 
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`** e **`ponte`** (cópias dos vídeos de
-     referência). Se o usuário pedir algo específico, repasse: `--level gaiola|cofre|ponte|derby|serpente|arena8`,
+   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`** e **`escada`** (cópias dos
+     vídeos de referência). Se o usuário pedir algo específico, repasse: `--level gaiola|cofre|ponte|escada|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
 3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
@@ -46,6 +46,15 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (um abre para o outro). Chegada no topo cercada por um mosaico das cores das duplas. Barra em T
   com 2 pistões nas pontas (esquerda 8s, direita 10s). Massa sobe **bem devagar** (~0,12 unidade/s)
   pelas duas salas ao mesmo tempo (`massTrack.lanes`).
+- **Fase Escada** — cópia do 7º vídeo (mapa de 32x42 **blocos**, `zoom: 1.08`, quadrados
+  `racerSize: 34`, ~3,4 unidades/s): baias à esquerda na mesma prisão em corrente (verde, azul,
+  vermelho, amarelo de cima para baixo; barra de saída em cima = cor do último; a que solta o
+  último = cor do primeiro). A massa nasce na borda esquerda das baias (0,75 bloco/s, 6 blocos),
+  depois **sobe** pelas baias (2,4 blocos/s), corre pelo **topo para a direita** (2,7), desce o
+  eixo direito e uma **escada em zigue-zague** com 12 tijolos escuros de 1 batida (0,95 bloco/s,
+  frente horizontal) e termina no corredor de baixo até a chegada (canto inferior esquerdo,
+  atrás de 4 tijolos escuros). Sem pistões, sem faca. Cada trecho do `massTrack` pode ter
+  velocidade própria (6º item, blocos/s). A massa não pinta por cima de tijolo ainda inteiro.
 - **Massa sólida (não é água)**: cinza-chumbo de concreto (paleta Concreto), firme — ninguém entra nela; a frente **empurra os
   quadrados na hora**. Se prensar alguém contra a parede, ele escorrega no sentido do caminho; sem
   saída nenhuma, é esmagado. Na Gaiola a massa anda por um **trilho de trechos** (`massTrack`):
@@ -71,7 +80,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   colisão (o vizinho sai da frente); a separação nunca entra em parede/pistão; se a pilha estiver
   compactada, a massa segura um instante (pressão) em vez de enfiar um quadrado no outro.
 - **Duração**: Gaiola ~65–80s (referência 78s); Cofre ~58–74s (referência 58s); Ponte ~55–105s
-  (referência 82s); fases antigas ~60s.
+  (referência 82s); Escada ~60–85s (referência 58s); fases antigas ~60s.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
@@ -99,7 +108,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - `src/game.js` simulação determinística (mesma seed = mesma corrida); `src/render.js` visual;
   `src/audio.js` sons/música; `src/teams.js` cores/bandeiras/escudos; `src/levels.js` mapas ASCII 36x48.
 - `tools/render.mjs` renderiza MP4 quadro a quadro (Playwright + ffmpeg); `tools/novo.mjs` sorteia
-  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (texto, helper `unitmap`).
+  e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
 - `npm start` abre o painel interativo em http://localhost:5173.

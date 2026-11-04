@@ -59,7 +59,7 @@ O arquivo sai em `videos/`. O painel do navegador mostra o comando pronto com as
 
 | Opção | O que faz |
 |---|---|
-| `--level` | `gaiola`, `cofre`, `ponte` (padrão: sorteia entre as três), `derby`, `serpente`, `arena8` |
+| `--level` | `gaiola`, `cofre`, `ponte`, `escada` (padrão: sorteia entre as quatro), `derby`, `serpente`, `arena8` |
 | `--category` | `cores` (padrão), `selecoes` ou `clubes` (sem `--teams`, usa os padrões da categoria) |
 | `--count` | quantos competidores (com `--category`) |
 | `--teams` | ids separados por vírgula (ex.: `vermelho,azul,amarelo,verde` ou `fla,cor,pal,sao`) |
@@ -106,6 +106,9 @@ da dupla, chegada cercada por um mosaico colorido, pistões na barra em T e mass
 
 O vídeo acaba logo que o 1º chega, sem placar (o TikTok volta para o começo). `npm run fisica`
 verifica a física (ninguém dentro de parede, massa, pistão ou de outro quadrado).
+
+**`escada`** — cópia do 7º vídeo: a mesma prisão em corrente, a massa sobe pelas baias, corre pelo
+topo e desce uma escada em zigue-zague de tijolos escuros até a chegada no canto de baixo.
 
 Outras fases: `derby` (largada em corrente + serpentina, igual ao 2º vídeo), `serpente` (baias empilhadas
 à esquerda + curvas em U bem altas, igual ao 3º vídeo) e `arena8` (8 cores, sobe pelos lados e

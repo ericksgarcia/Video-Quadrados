@@ -226,7 +226,49 @@ def ponte():
         m.put(R0 + 2 * 17, c, 'S')
     return m.lines()
 
+def escada():
+    """Cópia do 7º vídeo de referência (square_derby): mapa de 32x42 BLOCOS. Baias empilhadas à
+    esquerda (4 quadrados presos em corrente: a barra de baixo da baia k é da cor de quem está nela;
+    a saída, em cima, é da cor do último; a que solta o último é da cor do primeiro). Sobe pelo eixo,
+    corre pelo topo para a direita, desce pelo corredor e depois por uma ESCADA em zigue-zague com
+    tijolos escuros, até a chegada no canto inferior esquerdo (atrás de 4 tijolos escuros)."""
+    g = [['#'] * 32 for _ in range(42)]
+    def carve(r0, c0, r1, c1, ch='.'):
+        for r in range(r0, r1 + 1):
+            for c in range(c0, c1 + 1): g[r][c] = ch
+    carve(0, 6, 3, 31)                      # corredor do topo
+    carve(4, 6, 7, 13)                      # eixo esquerdo (acima da barra de saída)
+    carve(4, 26, 9, 31)                     # eixo direito
+    carve(8, 26, 9, 27, 'B')                # tijolo escuro no pé do eixo direito
+    carve(8, 6, 9, 13, '4')                 # barra de saída (cor do 4º)
+    for r0 in (10, 16, 22, 28): carve(r0, 0, r0 + 3, 13)   # as 4 baias
+    carve(14, 6, 15, 13, '2'); carve(20, 6, 21, 13, '3'); carve(26, 6, 27, 13, '1')   # barras
+    # escada em zigue-zague (par de tijolos escuros por degrau)
+    carve(10, 24, 11, 27); carve(10, 28, 11, 29, 'B')
+    carve(12, 24, 13, 29)
+    carve(14, 24, 15, 25, 'B'); carve(14, 26, 15, 29)
+    carve(16, 22, 17, 25); carve(16, 26, 17, 27, 'B')
+    carve(18, 22, 19, 27)
+    carve(20, 22, 21, 23, 'B'); carve(20, 24, 21, 27)
+    carve(22, 20, 23, 23); carve(22, 24, 23, 25, 'B')
+    carve(24, 20, 25, 25)
+    carve(26, 20, 27, 21, 'B'); carve(26, 22, 27, 25)
+    carve(28, 18, 29, 21); carve(28, 22, 29, 23, 'B')
+    carve(30, 18, 31, 23)
+    carve(32, 18, 33, 19, 'B'); carve(32, 20, 33, 23)
+    carve(34, 16, 35, 19); carve(34, 20, 35, 21, 'B')
+    carve(36, 16, 37, 17, 'B'); carve(36, 18, 37, 21)
+    carve(38, 8, 39, 17); carve(38, 18, 39, 19, 'B'); carve(38, 20, 39, 21)
+    carve(40, 8, 41, 19)
+    carve(38, 4, 41, 7, 'B')                # 4 tijolos escuros na frente da chegada
+    carve(38, 0, 41, 3, 'F')                # chegada
+    for r in (12, 18, 24, 30): g[r][2] = 'S'  # largada: baia 1..4, perto da borda esquerda
+    m = M()
+    for r in range(42):
+        for c in range(32): m.g[3 + r][2 + c] = g[r][c]
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
