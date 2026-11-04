@@ -20,11 +20,21 @@ vídeo"** (ou "o próximo", "pega da pendente"...):
    do `tools/novo.mjs`.
 3. Rode `npm test` e `npm run fisica`, confira prints, renderize (`node tools/render.mjs --level
    <id> --teams ... --theme concreto --best 30 ...`) e envie o `.mp4` + legenda.
-4. **Exclua o vídeo da pasta** (`git rm pendente/<arquivo>`), atualize este arquivo com as regras da
+4. **Antes de excluir**, salve o **print do início** do vídeo em `referencias/NN-nome.png`
+   (`ffmpeg -i <video> -frames:v 1 ...`) e adicione a linha na tabela de `referencias/LEIA-ME.md`.
+5. **Exclua o vídeo da pasta** (`git rm pendente/<arquivo>`), atualize este arquivo com as regras da
    fase nova, faça commit e push na branch da sessão.
 
 Sempre na **nossa paleta** (Concreto) e com **final sem placar**, a menos que o usuário peça outra
 coisa. Não apague nada de `pendente/` sem ter gerado o vídeo correspondente.
+
+## Pasta `referencias/` (biblioteca de exemplos)
+
+Prints do **início** de cada vídeo de referência (`01-…08-…png`) + `LEIA-ME.md` com a tabela
+(arquivo → fase → grade → resumo) e o **vocabulário de elementos** (prisões da largada, tijolos,
+massa por trilho, pistões, atalho escuro, chegada, escala dos quadrados). Use essa pasta como
+inspiração quando o usuário pedir para **criar uma fase do zero** (sem vídeo de referência):
+olhe os prints, combine os elementos e registre a fase nova como nas outras.
 
 ## Quando o usuário pedir "um vídeo novo" (ou "faz outro vídeo", "gera mais um"...)
 
