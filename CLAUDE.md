@@ -9,8 +9,13 @@ referência que o usuário mandou. Bandeiras/escudos ainda existem como opção 
 O usuário coloca vídeos de referência (.mp4) em `pendente/`. Quando ele pedir **"gera o próximo
 vídeo"** (ou "o próximo", "pega da pendente"...):
 
-1. `ls pendente/` → pegue o primeiro `.mp4` (ordem alfabética). Se **não houver nenhum**, avise e
-   use o fluxo `npm run novo` abaixo.
+1. `ls pendente/` → pegue o primeiro `.mp4` (ordem alfabética). **Fila atual**: 50 vídeos que o
+   usuário enviou ficaram na **raiz da branch `claude/affectionate-albattani-ox3ava`** (não em
+   `pendente/`); a lista com status (`pendente`/`feito`) está em `referencias/LEIA-ME.md` — pegue o
+   primeiro `pendente` e extraia só ele (`git fetch origin && git archive
+   origin/claude/affectionate-albattani-ox3ava <arquivo>.mp4 | tar -x -C <pasta-vazia>`). Nesse caso
+   **não apague o vídeo daquela branch**: marque `feito (nome da fase)` na tabela. Se **não houver
+   nenhum** vídeo pendente, avise e use o fluxo `npm run novo` abaixo.
 2. **Copie o vídeo como uma fase nova** (receita usada nas fases Gaiola…Poços): extraia quadros
    (`ffmpeg ... fps=1/3 ... tile`), descubra a grade (unidades de 2x2 blocos; ~14x18 ou 16x21 ou
    32x42 blocos) amostrando cores do quadro 0, meça com quadros a 10 fps: velocidade dos
@@ -21,16 +26,17 @@ vídeo"** (ou "o próximo", "pega da pendente"...):
 3. Rode `npm test` e `npm run fisica`, confira prints, renderize (`node tools/render.mjs --level
    <id> --teams ... --theme concreto --best 30 ...`) e envie o `.mp4` + legenda.
 4. **Antes de excluir**, salve o **print do início** do vídeo em `referencias/NN-nome.png`
-   (`ffmpeg -i <video> -frames:v 1 ...`) e adicione a linha na tabela de `referencias/LEIA-ME.md`.
-5. **Exclua o vídeo da pasta** (`git rm pendente/<arquivo>`), atualize este arquivo com as regras da
-   fase nova, faça commit e push na branch da sessão.
+   (`ffmpeg -i <video> -frames:v 1 ...`) e adicione a linha na tabela de `referencias/LEIA-ME.md`
+   (os 58 primeiros prints já estão salvos; só vídeos novos precisam de print).
+5. Se o vídeo estava em `pendente/`: exclua (`git rm pendente/<arquivo>`). Atualize este arquivo com
+   as regras da fase nova, faça commit e push na branch da sessão.
 
 Sempre na **nossa paleta** (Concreto) e com **final sem placar**, a menos que o usuário peça outra
 coisa. Não apague nada de `pendente/` sem ter gerado o vídeo correspondente.
 
 ## Pasta `referencias/` (biblioteca de exemplos)
 
-Prints do **início** de cada vídeo de referência (`01-…08-…png`) + `LEIA-ME.md` com a tabela
+Prints do **início** de cada vídeo de referência (`01-…58-…png`, mais 2 folhas de contato `_folha-*.png`) + `LEIA-ME.md` com a tabela
 (arquivo → fase → grade → resumo) e o **vocabulário de elementos** (prisões da largada, tijolos,
 massa por trilho, pistões, atalho escuro, chegada, escala dos quadrados). Use essa pasta como
 inspiração quando o usuário pedir para **criar uma fase do zero** (sem vídeo de referência):
