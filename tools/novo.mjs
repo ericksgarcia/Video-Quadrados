@@ -46,7 +46,7 @@ function sortear() {
   // padrão: quadrados só de cor (estilo das referências)
   const category = args.category || 'cores';
   // padrão: sorteia entre as cópias dos vídeos de referência (gaiola, cofre, ponte, escada, pocos, colunas); --level escolhe outra
-  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'colunas', 'pente']))) || LEVELS[0];
+  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'colunas', 'pente', 'pilares']))) || LEVELS[0];
   const count = Number(args.count) || level.racers || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
   const CORES = count > 4 ? Object.keys(COLORS) : ['vermelho', 'azul', 'amarelo', 'verde'];
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;

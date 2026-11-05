@@ -23,6 +23,90 @@
 
 export const LEVELS = [
   {
+    // cópia do vídeo 10 (08babe70): 4 baias embaixo presas por tijolos de cor (verde abre p/ ciano, ciano abre p/ vermelho,
+    // amarelo sai direto), massa sobe pelas baias e varre tudo, 2 pistões horizontais, faca, chegada atrás de 3 tijolos escuros
+    id: 'pilares',
+    name: 'Pilares',
+    maxRacers: 4,
+    racers: 4,
+    zoom: 1.24,         // mapa 14x18 unidades
+    racerSize: 40,      // ~0,75 unidade
+    racerSpeed: 235, homing: 0, steer: 0, snap: 0, // ~4,2 unidades/s, quique livre
+    brickBlock: 2,
+    colorBrickHp: 1,
+    brickHp: 1,
+    knifeKeep: true,
+    flood: { delay: 0.8, zoneRate: 0.8, delay2: 9.5, stage2After: 0, stage2Gap: 1, rate: 1.8, accel: 0 }, // a varredura só começa 1s depois que o vermelho quebra o 1º tijolo dele (senão prensa quem ainda está nas baias)
+    massTrack: {
+      unit: 2, origin: [6, 4], // coordenadas em unidades (mapa 14x18); velocidades em blocos/s
+      stage1: [ // sobe pelo fundo das 4 baias (~0,4 unidade/s)
+        [14, 0, 17, 1, 'up'], [14, 3, 17, 4, 'up'], [14, 6, 17, 7, 'up'], [14, 9, 17, 10, 'up'],
+      ],
+      stage2: [
+        [10, 0, 13, 11, 'right', 1.5],  // varre a sala das baias da esquerda para a direita
+        [2, 12, 13, 13, 'up', 1.65],    // sobe pelo corredor da direita
+        [0, 8, 1, 13, 'left', 2.0],     // faixa de cima, da direita para a esquerda
+        [2, 8, 5, 10, 'down', 1.4],     // desce pela sala da direita (o pistão A segura)
+        [6, 4, 8, 10, 'left', 2.0],     // passagem de baixo, para a esquerda
+        [0, 4, 8, 6, 'up', 1.2],        // sobe pela coluna do meio (o pistão B segura)
+      ],
+    },
+    pistons: [
+      { c: 20, r: 10, w: 2, max: 6, period: 8, phase: 0, dir: 'right' },  // A: linha 2, nasce na parede esquerda da sala da direita
+      { c: 18, r: 16, w: 2, max: 6, period: 10, phase: 0, dir: 'left' },  // B: linha 5, nasce na parede direita da coluna do meio
+    ],
+    map: [
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####..............##............####',
+      '####..............##............####',
+      '####..............##............####',
+      '####...!..........##............####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####BBBBBB##..............##....####',
+      '####BBBBBB##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '############################....####',
+      '############################....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....33....22....11....44....####',
+      '####....##....##....##....##..######',
+      '####....##....##....##....##..######',
+      '####....##....##....##....##....####',
+      '####....##....##....##....##....####',
+      '####....##....##....##....##....####',
+      '####....##....##....##....##....####',
+      '####..S.##..S.##..S.##..S.##########',
+      '####....##....##....##....##########',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+    ],
+  },
+  {
     // cópia do vídeo 09 (07c1f66c): 4 baias no topo presas em corrente (tijolos vermelho, ciano, verde e por fim amarelo),
     // serpentina de corredores de 3 blocos, 1 pistão, tijolos escuros no meio e na chegada
     id: 'pente',

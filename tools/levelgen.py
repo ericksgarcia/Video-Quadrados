@@ -371,7 +371,39 @@ def pente():
     for c in (4, 7, 10, 13): m.put(R0, C0 + c, 'S')   # largada: 1 quadrado por baia (verde, vermelho, ciano, amarelo)
     return m.lines()
 
+def pilares():
+    """Cópia do vídeo 10 (08babe70): mapa 14x18 unidades. 4 baias embaixo (vermelho, verde, ciano, amarelo da esq. p/ dir.),
+    separadas por tijolos de cor de 4 unidades: ciano (col 2), verde (col 5), vermelho (col 8) e amarelo (col 11, a saída da
+    direita). Verde abre p/ ciano, ciano abre p/ vermelho; o amarelo já nasce junto do seu tijolo. Depois: corredor da direita
+    sobe, sala de cima, volta por baixo (linhas 6-8), sobe de novo e desce pela sala da esquerda (faca) até a chegada atrás de
+    3 tijolos escuros. 2 pistões horizontais (linha 2 e linha 5)."""
+    U = [
+        '.......#......',  # 0  faixa de cima
+        '.......#......',  # 1  (faca na sala da esquerda)
+        '...#...#...#..',  # 2  piston A nasce na col 8 (cresce p/ a direita)
+        '...#...#...#..',  # 3
+        '...#...#...#..',  # 4
+        '...#...#...#..',  # 5  piston B nasce na col 7 (cresce p/ a esquerda)
+        'BBB#.......#..',  # 6  tijolos escuros da chegada; passagem inferior (cols 4-10)
+        'FFF#.......#..',  # 7  chegada
+        'FFF#.......#..',  # 8
+        '############..',  # 9  parede entre a serpentina e as baias
+        '..3..2..1..4..',  # 10 tijolos de cor (4 linhas): ciano, verde, vermelho, amarelo
+        '..3..2..1..4..',  # 11
+        '..3..2..1..4..',  # 12
+        '..3..2..1..4..',  # 13
+        '..#..#..#..#.#',  # 14 baias (a massa nasce no fundo delas)
+        '..#..#..#..#..',  # 15
+        '..#..#..#..#..',  # 16
+        '..#..#..#..###',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (1, 4, 7, 10): m.put(R0 + 34, C0 + 2 * c, 'S')   # largada: 1 quadrado no fundo de cada baia
+    m.put(R0 + 3, C0 + 3, '!')                                # faca na sala de cima da esquerda
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
