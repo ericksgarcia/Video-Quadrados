@@ -74,7 +74,7 @@ curto do que foi copiado/aproximado.
   cima, `'down'`, `'left'`, `'right'`; frente sempre reta; não pinta parede/tijolo inteiro/`noFlood`; pistão
   fechado na frente segura).
 - `pistons: [{ c, r, w, max, period, phase, dir }]` em coordenadas ABSOLUTAS de blocos (bloco do mapa + origin):
-  `dir:'up'` (padrão) base na linha `r`, cresce p/ cima nas colunas `c..c+w-1`; `'left'/'right'` base na coluna
+  `dir:'up'` (padrão) base na linha `r`, cresce p/ cima nas colunas `c..c+w-1`; `'down'` base na linha `r` (borda de cima), cresce p/ baixo; `'left'/'right'` base na coluna
   `c`, cresce nas linhas `r..r+w-1`; `max` em blocos; `period` s.
 - `noFlood: [[r0,c0,r1,c1]]` (absolutos) áreas que a massa nunca preenche (nicho da faca, atalho).
 - `map`: 48 strings de 36: `#` parede, `.` chão, `F` chegada, `B` escuro, `1`–`8` tijolo do quadrado índice+1,
@@ -196,6 +196,15 @@ iteração. Se ele pedir mudança, atualize esta lista.
   1s depois que o vermelho quebra o 1º tijolo** (`stage2After: 0`; sem isso prensava quem ainda estava preso: 24 esmagados em 30
   corridas, agora 1); depois corredor da direita, faixa de cima, sala da direita, passagem de baixo e coluna do meio.
   Sim.: 0/30 sem vencedor, ~68s (referência 57s).
+- **Fase Meandro** — cópia do vídeo 11 (`099c992e`; mapa 14x18 unidades, `zoom 1.24`, `racerSize 40`, ~4,2 unidades/s, `brickBlock 2`, sem faca):
+  4 baias embaixo (ciano, vermelho, amarelo, verde da esquerda para a direita; `--teams ciano,vermelho,amarelo,verde`) separadas por
+  tijolos de cor de 4 unidades: vermelho (1-2), ciano (2-3), verde (3-4) e amarelo (saída pela direita). Vermelho abre 1-2, verde abre
+  3-4, ciano abre o meio e o amarelo sai. Depois: corredor da direita sobe → 2 tijolos escuros → desce pela coluna 9-10 → passagem
+  inferior (pistão P2 **desce** da parede) → sobe pela coluna 6-7 → faixa de cima (pistão P1 sobe da col 5) → desce pela coluna 3-4
+  → 2 tijolos escuros → coluna da esquerda sobe → 4 tijolos escuros → chegada no canto de cima. Pistões medidos: ambos 6s, pico em 3s,
+  máx 2 unidades. **Novo no motor: pistão `dir: 'down'`** (base na linha `r`, cresce para baixo). Massa: sobe pelas baias (0,33 unid/s),
+  varre a sala das baias (começa em 10s, ~0,9 unid/s), sobe o corredor da direita, faixa de cima, desce, passagem, sobe, faixa, desce
+  (tempos medidos no vídeo). Sim.: 0/30 sem vencedor, ~75s (referência ~80s), nenhum esmagado.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
