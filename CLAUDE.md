@@ -139,7 +139,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
 
 ## Regras do jogo (decididas com o usuário)
 
-- **Quadrados só de cor** (categoria `cores`, título "QUAL COR VENCE?"). 4 cores clássicas
+- **Quadrados só de cor** (categoria `cores`, título "QUAL COR VENCE?"; **com escudos**: ver abaixo). 4 cores clássicas
   (vermelho, azul, amarelo, verde) nas fases de 4; 8 cores na Arena 8.
 - **Mapas no estilo das referências**: corredores largos (5 blocos = 140px) em serpentina/U,
   paredes de 2 blocos, alguns tijolos escuros comuns no caminho.
@@ -178,6 +178,14 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (1 batida), num corredor sobre uma lingueta de parede com **1 pistão vertical** (8s, 2
   unidades). Sem faca. Duração varia muito (40–115s; referência ~63s) — a corrida depende de
   quem acerta o poço certo.
+- **Fase Pente** — cópia do vídeo 09 (`07c1f66c`; mapa 19x22 **blocos**, 1 célula = 1 bloco, `brickBlock: 1`, `zoom 1.83`,
+  `racerSpeed 170`, `racerSize 26` — no vídeo ~16px, aumentado para o escudo caber): 4 baias de 2 blocos no topo (verde,
+  vermelho, ciano, amarelo da esquerda para a direita) presas em corrente por tijolos de 1 bloco x 4: vermelho (entre baias 1-2),
+  ciano (2-3), verde (3-4) e por fim o **amarelo** (parede da esquerda, a saída). Depois serpentina de corredores de 3 blocos
+  (1 **pistão** vertical de 10s no 1º corredor), tijolo escuro no meio (2 pontos) e 2 tijolos escuros + 2 antes da chegada
+  (embaixo à esquerda). Massa: topo das baias desce 4 linhas (1s), e a **varredura da direita para a esquerda só começa
+  1,5s depois que o verde quebra o 1º tijolo** (`stage2After: 0`) — senão prensa o amarelo antes da corrente abrir e todos
+  morrem; depois percorre a serpentina (1,3–2,6 blocos/s). Sim.: ~27/30 com vencedor, ~64s (referência 63s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
@@ -222,6 +230,16 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
+
+## Escudos nos quadrados (pedido do usuário)
+
+- Biblioteca em `assets/escudos/*.png` (PNG sem fundo, 256x256) + `src/escudos.json`, gerada por `tools/escudos_build.py`
+  (fontes no cabeçalho do script): 20 clubes da Série A 2026 e 36 grandes de Inglaterra, Espanha, Itália, Alemanha e França.
+- **Cada vídeo sorteia 4 escudos** (`novo` faz isso sozinho; no render manual use `--crests sorteio` ou `--crests id1,id2,id3,id4`
+  na ordem dos índices dos quadrados). O quadrado continua da COR (a física/tijolos dependem dela) e o escudo é desenhado por cima.
+- **Topo do vídeo** (título "QUAL ESCUDO VENCE?"): para cada quadrado, o mini quadrado com o escudo, o nome do clube e o nome da cor
+  (ex.: LENS — VERDE). Aparece quando algum quadrado tem escudo.
+- No "próximo vídeo" use `--crests sorteio` no passo 4 (e cite os escudos sorteados na legenda).
 
 ## Visual (estilo flat, copiado dos 3 vídeos de referência que o usuário mandou)
 
