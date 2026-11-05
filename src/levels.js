@@ -35,7 +35,7 @@ export const LEVELS = [
     brickBlock: 1,      // tijolos de 1 bloco, cada um quebra sozinho
     colorBrickHp: 1,
     brickHp: 1,
-    flood: { delay: 1.0, zoneRate: 0.7, delay2: 5, rate: 1.3, accel: 0 },
+    flood: { delay: 1.0, zoneRate: 0.7, delay2: 5, stage2After: 0, stage2Gap: 1.5, rate: 1.3, accel: 0 }, // a varredura começa 1,5s depois que o verde quebra o 1º tijolo dele
     massTrack: {
       unit: 1, origin: [13, 8], // coordenadas em blocos (mapa 19x22)
       stage1: [ // nasce no topo de cada baia e desce 4 linhas

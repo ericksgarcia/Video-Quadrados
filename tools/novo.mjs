@@ -35,22 +35,25 @@ const shuffle = (arr) => { const a = [...arr]; for (let i = a.length - 1; i > 0;
 const SELECOES_POP = ['br', 'ar', 'fr', 'pt', 'es', 'de', 'it', 'en', 'nl', 'be', 'uy', 'co', 'mx', 'us', 'jp', 'hr', 'ma', 'sn', 'kr', 'ch'];
 const CLUBES_POP = Object.keys(CLUBS);
 
+// biblioteca de escudos (assets/escudos): cada vídeo sorteia 4, que preenchem os quadrados de cor
+const CRESTLIB = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/escudos.json'), 'utf8'));
 const hist = fs.existsSync(HIST) ? JSON.parse(fs.readFileSync(HIST, 'utf8')) : [];
 // cores: a ordem importa (qual cor fica em qual baia); times: só a combinação
-const key = (c) => `${c.level}|${(c.category === 'cores' ? [...c.teams] : [...c.teams].sort()).join(',')}`;
+const key = (c) => `${c.level}|${(c.category === 'cores' ? [...c.teams] : [...c.teams].sort()).join(',')}|${(c.crests || []).join(',')}`;
 const used = new Set(hist.map(key));
 
 function sortear() {
   // padrão: quadrados só de cor (estilo das referências)
   const category = args.category || 'cores';
   // padrão: sorteia entre as cópias dos vídeos de referência (gaiola, cofre, ponte, escada, pocos, colunas); --level escolhe outra
-  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'colunas']))) || LEVELS[0];
+  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'colunas', 'pente']))) || LEVELS[0];
   const count = Number(args.count) || level.racers || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
   const CORES = count > 4 ? Object.keys(COLORS) : ['vermelho', 'azul', 'amarelo', 'verde'];
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);
   const theme = args.theme || 'concreto'; // paleta Concreto (prensa), escolhida pelo usuário
-  return { category, level: level.id, levelName: level.name, teams, theme };
+  const crests = args['no-crests'] ? undefined : args.crests ? String(args.crests).split(',') : shuffle(CRESTLIB).slice(0, teams.length).map((c) => c.id);
+  return { category, level: level.id, levelName: level.name, teams, theme, crests };
 }
 
 let cfg = sortear();
@@ -58,14 +61,15 @@ for (let i = 0; i < 200 && used.has(key(cfg)) && !args.teams; i++) cfg = sortear
 const seedStart = 1 + rand(900000);
 const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '').replace(/^(\d{8})(\d{4})$/, '$1-$2');
 const base = `videos/${stamp}-${cfg.level}`;
-const names = cfg.teams.map((id) => TEAMS[id]?.name || id);
+const names = cfg.crests ? cfg.crests.map((id) => CRESTLIB.find((c) => c.id === id)?.name || id) : cfg.teams.map((id) => TEAMS[id]?.name || id);
 
 console.log(`Novo vídeo: fase ${cfg.levelName} | ${cfg.category} | ${names.join(', ')} | água ${cfg.theme}`);
 if (args.dry) process.exit(0);
 
 const renderArgs = ['tools/render.mjs', '--level', cfg.level, '--teams', cfg.teams.join(','), '--theme', cfg.theme,
   '--best', String(args.best || 30), '--seed', String(seedStart), '--out', `${base}.mp4`,
-  '--title', CATEGORY_DEFAULTS[cfg.category].title, '--cta', CATEGORY_DEFAULTS[cfg.category].cta];
+  '--title', cfg.crests ? 'QUAL ESCUDO VENCE?' : CATEGORY_DEFAULTS[cfg.category].title, '--cta', CATEGORY_DEFAULTS[cfg.category].cta];
+if (cfg.crests) renderArgs.push('--crests', cfg.crests.join(','));
 if (args.handle) renderArgs.push('--handle', args.handle);
 if (args.music === false || args['no-music']) renderArgs.push('--no-music');
 
@@ -98,7 +102,7 @@ const extra = hadKnife ? ' Cuidado com quem pegar a faca 🔪' : '';
 const legenda = `${pick(ganchos)}${extra} Comenta seu palpite ANTES do final! 👇\n\n${tags.join(' ')}\n`;
 fs.writeFileSync(path.join(ROOT, `${base}.txt`), legenda);
 
-hist.push({ data: new Date().toISOString(), category: cfg.category, level: cfg.level, teams: cfg.teams, theme: cfg.theme, seed, winner, arquivo: `${base}.mp4` });
+hist.push({ data: new Date().toISOString(), category: cfg.category, level: cfg.level, teams: cfg.teams, crests: cfg.crests, theme: cfg.theme, seed, winner, arquivo: `${base}.mp4` });
 fs.writeFileSync(HIST, JSON.stringify(hist, null, 2) + '\n');
 
 console.log(`\n✔ Vídeo: ${base}.mp4\n✔ Legenda: ${base}.txt\n\n${legenda}`);
