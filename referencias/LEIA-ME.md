@@ -32,7 +32,7 @@ da chegada (18, 30, 54); **espirais** (33, 57); **mapa gigante simétrico** (30,
 | Print | Vídeo | Resolução | Duração | Status |
 |---|---|---|---|---|
 | `09-07c1f66c.png` | `07c1f66c6198d5d397ce5c78351ded4f.mp4` | 576x1024 | 63s | feito (pente) |
-| `10-08babe70.png` | `08babe7094eec75193ad907a18fa5473.mp4` | 576x1024 | 57s | pendente |
+| `10-08babe70.png` | `08babe7094eec75193ad907a18fa5473.mp4` | 576x1024 | 57s | feito (pilares) |
 | `11-099c992e.png` | `099c992e8a66d65dd78c8c428203e34d.mp4` | 576x1024 | 86s | pendente |
 | `12-0aed7916.png` | `0aed7916baeba11b16789e5076679146.mp4` | 720x1280 | 43s | pendente |
 | `13-0c2d8f83.png` | `0c2d8f8375f3a761ca16adffbb6cd78e.mp4` | 720x1280 | 80s | pendente |

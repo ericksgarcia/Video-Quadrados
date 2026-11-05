@@ -186,6 +186,16 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (embaixo à esquerda). Massa: topo das baias desce 4 linhas (1s), e a **varredura da direita para a esquerda só começa
   1,5s depois que o verde quebra o 1º tijolo** (`stage2After: 0`) — senão prensa o amarelo antes da corrente abrir e todos
   morrem; depois percorre a serpentina (1,3–2,6 blocos/s). Sim.: ~27/30 com vencedor, ~64s (referência 63s).
+- **Fase Pilares** — cópia do vídeo 10 (`08babe70`; mapa 14x18 unidades, `zoom 1.24`, `racerSize 40`, ~4,2 unidades/s, `brickBlock 2`,
+  `knifeKeep`): 4 baias embaixo (vermelho, verde, ciano, amarelo da esquerda para a direita; `--teams vermelho,verde,ciano,amarelo`)
+  separadas por tijolos de cor de 4 unidades: ciano (entre baias 1-2), verde (2-3), vermelho (3-4) e amarelo (saída pela direita).
+  O amarelo já nasce junto do seu tijolo e sai primeiro; verde abre p/ ciano, ciano abre p/ vermelho. Depois: corredor da direita
+  sobe → sala de cima → passagem de baixo → coluna do meio → sala da esquerda (**faca**) → chegada atrás de 3 tijolos escuros.
+  2 **pistões horizontais** medidos no vídeo: A (linha 2, nasce na parede esquerda da sala da direita, 8s, 3 unid.) e B (linha 5,
+  nasce na parede direita da coluna do meio, 10s, 3 unid.). Massa: sobe pelas 4 baias (0,4 unid/s) e **só varre a sala das baias
+  1s depois que o vermelho quebra o 1º tijolo** (`stage2After: 0`; sem isso prensava quem ainda estava preso: 24 esmagados em 30
+  corridas, agora 1); depois corredor da direita, faixa de cima, sala da direita, passagem de baixo e coluna do meio.
+  Sim.: 0/30 sem vencedor, ~68s (referência 57s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
