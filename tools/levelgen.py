@@ -434,7 +434,43 @@ def meandro():
     for c in (1, 4, 7, 10): m.put(R0 + 34, C0 + 2 * c, 'S')   # largada: 1 quadrado no fundo de cada baia
     return m.lines()
 
+def portais():
+    """Cópia do vídeo 12 (0aed7916): mapa 16x20 unidades. 4 baias à esquerda (ciano, verde, amarelo, vermelho de cima p/ baixo),
+    cada uma com 3 unidades de 'fundo' + 4 unidades de barras horizontais em corrente: barra ciano (entre baias 1-2), amarelo (2-3),
+    vermelho (3-4) e verde (teto da baia 1 = saída p/ a sala de cima). A sala de cima sai por 2 tijolos escuros p/ o corredor de cima
+    da serpentina (desce em zigue-zague até a chegada embaixo à esquerda, atrás de 2 tijolos escuros). Portal de mão única
+    no canto de cima à direita -> corredor de baixo. Faca no meio da serpentina."""
+    U = [
+        '###....B........',  # 0  sala de cima (cols 3-6); corredor de cima (portal P no canto direito)
+        '###....B........',  # 1
+        '###....######...',  # 2  parede; vão à direita (cols 13-15)
+        '###....#........',  # 3
+        '###2222#........',  # 4  barra verde (saída da baia 1)
+        '.......#........',  # 5  baia 1
+        '.......#...#####',  # 6  (parede da serpentina: vão à esquerda cols 8-10)
+        '###1111#........',  # 7  barra ciano
+        '.......#........',  # 8  baia 2
+        '.......#........',  # 9
+        '###3333######...',  # 10 barra amarela; vão à direita
+        '.......#........',  # 11 baia 3
+        '.......#........',  # 12
+        '###4444#........',  # 13 barra vermelha
+        '.......#...#####',  # 14 baia 4; vão à esquerda
+        '.......#........',  # 15
+        '########........',  # 16 corredor de baixo (portal p no canto esquerdo)
+        '#############...',  # 17 vão à direita
+        '########FB......',  # 18 chegada (col 8) atrás de 2 tijolos escuros (col 9)
+        '########FB......',  # 19
+    ]
+    R0, C0 = 4, 2
+    m = unitmap(U, {}, R0, C0)
+    for r in (5, 8, 11, 14): m.put(R0 + 2 * r + 1, C0 + 2, 'S')   # largada: 1 quadrado por baia (ciano, verde, amarelo, vermelho)
+    m.put(R0 + 0, C0 + 30, 'P')                                 # portal de entrada (canto de cima à direita)
+    m.put(R0 + 32, C0 + 16, 'p')                                # portal de saída (corredor de baixo, à esquerda)
+    m.put(R0 + 24, C0 + 18, '!')                                # faca no corredor do meio
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

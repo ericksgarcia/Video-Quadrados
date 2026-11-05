@@ -397,7 +397,7 @@ export class Renderer {
   drawPortals() {
     const g = this.g;
     for (const p of this.game.portals) {
-      g.fillStyle = p.primary ? '#8e44ff' : '#ff8a00'; g.strokeStyle = LINE; g.lineWidth = 3;
+      g.fillStyle = '#b01fb8'; g.strokeStyle = LINE; g.lineWidth = 3;
       g.beginPath(); g.arc(p.x, p.y, U * 0.4, 0, Math.PI * 2); g.fill(); g.stroke();
     }
   }
