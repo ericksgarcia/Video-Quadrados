@@ -280,9 +280,11 @@ export class Game {
       p.h = tri * (p.max ?? 4) * TILE;
       // dir 'up' (padrão): base na linha r, cresce para cima nas colunas c..c+w-1
       // dir 'right': base na coluna c, cresce para a direita nas linhas r..r+w-1
+      // dir 'down': base na linha r (borda de cima), cresce para baixo nas colunas c..c+w-1
       let x0, y0, x1, y1;
       if (p.dir === 'right') { x0 = p.c * TILE; x1 = x0 + p.h; y0 = p.r * TILE; y1 = (p.r + (p.w ?? 2)) * TILE; }
       else if (p.dir === 'left') { x1 = p.c * TILE; x0 = x1 - p.h; y0 = p.r * TILE; y1 = (p.r + (p.w ?? 2)) * TILE; }
+      else if (p.dir === 'down') { x0 = p.c * TILE; x1 = (p.c + (p.w ?? 2)) * TILE; y0 = p.r * TILE; y1 = y0 + p.h; } // base na linha r, cresce para baixo
       else { x0 = p.c * TILE; x1 = (p.c + (p.w ?? 2)) * TILE; y1 = p.r * TILE; y0 = y1 - p.h; }
       p.rect = [x0, y0, x1, y1];
       // empurra quem estiver no caminho (sem espaço nenhum: esmagado)
@@ -296,6 +298,9 @@ export class Game {
         } else if (p.dir === 'left') {
           const nx = x0 - h - 0.5;
           if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = -Math.abs(r.vx); continue; }
+        } else if (p.dir === 'down') {
+          const dn = y1 + h + 0.5;
+          if (!this.hitTiles(r, r.x, dn, true)) { r.y = dn; r.vy = Math.abs(r.vy); continue; }
         } else {
           const up = y0 - h - 0.5;
           if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
