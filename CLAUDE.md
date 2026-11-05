@@ -205,6 +205,16 @@ iteração. Se ele pedir mudança, atualize esta lista.
   máx 2 unidades. **Novo no motor: pistão `dir: 'down'`** (base na linha `r`, cresce para baixo). Massa: sobe pelas baias (0,33 unid/s),
   varre a sala das baias (começa em 10s, ~0,9 unid/s), sobe o corredor da direita, faixa de cima, desce, passagem, sobe, faixa, desce
   (tempos medidos no vídeo). Sim.: 0/30 sem vencedor, ~75s (referência ~80s), nenhum esmagado.
+- **Fase Portais** — cópia do vídeo 12 (`0aed7916`; mapa 16x20 unidades, `zoom 1.085`, `racerSize 50` (~0,9 unid.), ~4,2 unidades/s, `brickBlock 2`,
+  `knifeKeep`): 4 baias horizontais à esquerda (ciano, verde, amarelo, vermelho de cima para baixo; `--teams ciano,verde,amarelo,vermelho`),
+  cada uma com 3 unidades de fundo e, à direita, **barras horizontais de 4 unidades** em corrente: ciano (entre baias 1-2), amarelo (2-3),
+  vermelho (3-4) e verde (teto da baia 1 = saída para a sala de cima). Sala de cima → 2 tijolos escuros → corredor de cima da serpentina
+  (em zigue-zague, vãos alternando direita/esquerda, 6 corredores) → chegada embaixo à esquerda atrás de 2 tijolos escuros. **Portal de mão
+  única** (`P` no canto de cima à direita → `p` no corredor de baixo, à esquerda; atalho que pula o meio da serpentina) e **faca** no corredor
+  do meio. Massa: cresce da borda esquerda de cada baia (3 unid., 0,33 unid/s), depois **sobe pelo eixo das baias** (~1 unid/s, só começa
+  depois que o verde quebra a barra dele: `stage2After: 1`) e corre pelo corredor de cima; o resto da serpentina é extrapolado (~1 unid/s,
+  o vídeo acaba antes). Sem pistões. Largada centralizada na baia (quadrado grande). Os dois portais são desenhados roxos (como no vídeo).
+  Sim.: 0/30 sem vencedor, ~66s (referência 43s), a faca elimina em média ~2,5 dos 4 (o best-of-40 escolhe a melhor).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
