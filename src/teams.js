@@ -322,7 +322,14 @@ export function makeBadge(team, size, { flat = false } = {}) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const g = c.getContext('2d');
-  if (team.type === 'color') { g.fillStyle = team.color; g.fillRect(0, 0, size, size); return c; }
+  if (team.type === 'color') {
+    g.fillStyle = team.color; g.fillRect(0, 0, size, size);
+    if (team.crest && team.crest.img) { // escudo (PNG sem fundo) por cima da cor do quadrado
+      const im = team.crest.img, k = size * 0.8 / Math.max(im.width, im.height);
+      g.drawImage(im, (size - im.width * k) / 2, (size - im.height * k) / 2, im.width * k, im.height * k);
+    }
+    return c;
+  }
   if (team.type === 'flag' && FLAGS[team.id]) FLAGS[team.id].draw(g, size, size);
   else if (team.type === 'crest' && CLUBS[team.id]) drawCrest(g, size, size, CLUBS[team.id]);
   else if (team.type === 'image' && team.img) {
@@ -336,4 +343,23 @@ export function makeBadge(team, size, { flat = false } = {}) {
   grd.addColorStop(0, 'rgba(255,255,255,0.22)'); grd.addColorStop(0.5, 'rgba(255,255,255,0)'); grd.addColorStop(1, 'rgba(0,0,0,0.18)');
   g.fillStyle = grd; g.fillRect(0, 0, size, size);
   return c;
+}
+
+// ---------------------------------------------------------------- biblioteca de escudos (PNG sem fundo)
+// assets/escudos/*.png + src/escudos.json (gerados por tools/escudos_build.py). Um quadrado de cor
+// pode ganhar um escudo: team.crest = { id, name, src, img }.
+export const CREST_COLOR_NAMES = { vermelho: 'VERMELHO', azul: 'AZUL', amarelo: 'AMARELO', verde: 'VERDE', ciano: 'CIANO', laranja: 'LARANJA', roxo: 'ROXO', rosa: 'ROSA' };
+let crestLibP = null;
+export function loadCrestLib() {
+  return crestLibP || (crestLibP = fetch('src/escudos.json').then((r) => r.json()).catch(() => []));
+}
+export async function attachCrests(teams, crestIds) {
+  if (!crestIds || !crestIds.length) return;
+  const lib = await loadCrestLib();
+  await Promise.all(teams.map((t, i) => {
+    const c = lib.find((x) => x.id === crestIds[i]);
+    if (!c) return null;
+    t.crest = { ...c };
+    return new Promise((res) => { const img = new Image(); img.onload = () => { t.crest.img = img; res(); }; img.onerror = () => res(); img.src = c.src; });
+  }));
 }

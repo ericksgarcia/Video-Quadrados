@@ -1,0 +1,374 @@
+[
+ {
+  "id": "flamengo",
+  "name": "FLAMENGO",
+  "group": "br",
+  "src": "assets/escudos/flamengo.png"
+ },
+ {
+  "id": "palmeiras",
+  "name": "PALMEIRAS",
+  "group": "br",
+  "src": "assets/escudos/palmeiras.png"
+ },
+ {
+  "id": "corinthians",
+  "name": "CORINTHIANS",
+  "group": "br",
+  "src": "assets/escudos/corinthians.png"
+ },
+ {
+  "id": "sao-paulo",
+  "name": "SÃO PAULO",
+  "group": "br",
+  "src": "assets/escudos/sao-paulo.png"
+ },
+ {
+  "id": "santos",
+  "name": "SANTOS",
+  "group": "br",
+  "src": "assets/escudos/santos.png"
+ },
+ {
+  "id": "fluminense",
+  "name": "FLUMINENSE",
+  "group": "br",
+  "src": "assets/escudos/fluminense.png"
+ },
+ {
+  "id": "botafogo",
+  "name": "BOTAFOGO",
+  "group": "br",
+  "src": "assets/escudos/botafogo.png"
+ },
+ {
+  "id": "vasco",
+  "name": "VASCO",
+  "group": "br",
+  "src": "assets/escudos/vasco.png"
+ },
+ {
+  "id": "cruzeiro",
+  "name": "CRUZEIRO",
+  "group": "br",
+  "src": "assets/escudos/cruzeiro.png"
+ },
+ {
+  "id": "atletico-mg",
+  "name": "ATLÉTICO-MG",
+  "group": "br",
+  "src": "assets/escudos/atletico-mg.png"
+ },
+ {
+  "id": "gremio",
+  "name": "GRÊMIO",
+  "group": "br",
+  "src": "assets/escudos/gremio.png"
+ },
+ {
+  "id": "internacional",
+  "name": "INTERNACIONAL",
+  "group": "br",
+  "src": "assets/escudos/internacional.png"
+ },
+ {
+  "id": "bahia",
+  "name": "BAHIA",
+  "group": "br",
+  "src": "assets/escudos/bahia.png"
+ },
+ {
+  "id": "vitoria",
+  "name": "VITÓRIA",
+  "group": "br",
+  "src": "assets/escudos/vitoria.png"
+ },
+ {
+  "id": "bragantino",
+  "name": "BRAGANTINO",
+  "group": "br",
+  "src": "assets/escudos/bragantino.png"
+ },
+ {
+  "id": "athletico-pr",
+  "name": "ATHLETICO-PR",
+  "group": "br",
+  "src": "assets/escudos/athletico-pr.png"
+ },
+ {
+  "id": "mirassol",
+  "name": "MIRASSOL",
+  "group": "br",
+  "src": "assets/escudos/mirassol.png"
+ },
+ {
+  "id": "chapecoense",
+  "name": "CHAPECOENSE",
+  "group": "br",
+  "src": "assets/escudos/chapecoense.png"
+ },
+ {
+  "id": "coritiba",
+  "name": "CORITIBA",
+  "group": "br",
+  "src": "assets/escudos/coritiba.png"
+ },
+ {
+  "id": "remo",
+  "name": "REMO",
+  "group": "br",
+  "src": "assets/escudos/remo.png"
+ },
+ {
+  "id": "arsenal",
+  "name": "ARSENAL",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/arsenal.png"
+ },
+ {
+  "id": "chelsea",
+  "name": "CHELSEA",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/chelsea.png"
+ },
+ {
+  "id": "liverpool",
+  "name": "LIVERPOOL",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/liverpool.png"
+ },
+ {
+  "id": "man-city",
+  "name": "MAN. CITY",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/man-city.png"
+ },
+ {
+  "id": "man-united",
+  "name": "MAN. UNITED",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/man-united.png"
+ },
+ {
+  "id": "tottenham",
+  "name": "TOTTENHAM",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/tottenham.png"
+ },
+ {
+  "id": "newcastle",
+  "name": "NEWCASTLE",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/newcastle.png"
+ },
+ {
+  "id": "aston-villa",
+  "name": "ASTON VILLA",
+  "group": "eu",
+  "league": "Premier League",
+  "src": "assets/escudos/aston-villa.png"
+ },
+ {
+  "id": "real-madrid",
+  "name": "REAL MADRID",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/real-madrid.png"
+ },
+ {
+  "id": "barcelona",
+  "name": "BARCELONA",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/barcelona.png"
+ },
+ {
+  "id": "atletico-madrid",
+  "name": "ATLÉTICO MADRID",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/atletico-madrid.png"
+ },
+ {
+  "id": "sevilla",
+  "name": "SEVILLA",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/sevilla.png"
+ },
+ {
+  "id": "valencia",
+  "name": "VALENCIA",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/valencia.png"
+ },
+ {
+  "id": "villarreal",
+  "name": "VILLARREAL",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/villarreal.png"
+ },
+ {
+  "id": "athletic-bilbao",
+  "name": "ATHLETIC BILBAO",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/athletic-bilbao.png"
+ },
+ {
+  "id": "real-sociedad",
+  "name": "REAL SOCIEDAD",
+  "group": "eu",
+  "league": "LaLiga",
+  "src": "assets/escudos/real-sociedad.png"
+ },
+ {
+  "id": "milan",
+  "name": "MILAN",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/milan.png"
+ },
+ {
+  "id": "inter",
+  "name": "INTER",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/inter.png"
+ },
+ {
+  "id": "juventus",
+  "name": "JUVENTUS",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/juventus.png"
+ },
+ {
+  "id": "roma",
+  "name": "ROMA",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/roma.png"
+ },
+ {
+  "id": "napoli",
+  "name": "NAPOLI",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/napoli.png"
+ },
+ {
+  "id": "lazio",
+  "name": "LAZIO",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/lazio.png"
+ },
+ {
+  "id": "atalanta",
+  "name": "ATALANTA",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/atalanta.png"
+ },
+ {
+  "id": "fiorentina",
+  "name": "FIORENTINA",
+  "group": "eu",
+  "league": "Serie A",
+  "src": "assets/escudos/fiorentina.png"
+ },
+ {
+  "id": "bayern",
+  "name": "BAYERN",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/bayern.png"
+ },
+ {
+  "id": "dortmund",
+  "name": "DORTMUND",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/dortmund.png"
+ },
+ {
+  "id": "leverkusen",
+  "name": "LEVERKUSEN",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/leverkusen.png"
+ },
+ {
+  "id": "leipzig",
+  "name": "RB LEIPZIG",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/leipzig.png"
+ },
+ {
+  "id": "frankfurt",
+  "name": "EINTRACHT",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/frankfurt.png"
+ },
+ {
+  "id": "stuttgart",
+  "name": "STUTTGART",
+  "group": "eu",
+  "league": "Bundesliga",
+  "src": "assets/escudos/stuttgart.png"
+ },
+ {
+  "id": "psg",
+  "name": "PSG",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/psg.png"
+ },
+ {
+  "id": "marseille",
+  "name": "MARSEILLE",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/marseille.png"
+ },
+ {
+  "id": "lyon",
+  "name": "LYON",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/lyon.png"
+ },
+ {
+  "id": "monaco",
+  "name": "MONACO",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/monaco.png"
+ },
+ {
+  "id": "lille",
+  "name": "LILLE",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/lille.png"
+ },
+ {
+  "id": "lens",
+  "name": "LENS",
+  "group": "eu",
+  "league": "Ligue 1",
+  "src": "assets/escudos/lens.png"
+ }
+]

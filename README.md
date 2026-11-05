@@ -189,6 +189,6 @@ nos comentários e poste a mesma fase com seeds diferentes como série ("Dia 1",
 
 ## Fila de vídeos de referência
 
-Coloque `.mp4` em `pendente/` e, numa janela nova do Claude, escreva **"faça o próximo vídeo"**: ele analisa o
-vídeo (`tools/analisar_video.py`), cria a fase igual na paleta Concreto, renderiza, entrega e remove o arquivo
+Coloque `.mp4` em `pendente/` e, numa janela nova do Claude, escreva **"faça o próximo vídeo"**: ele vê o
+vídeo, cria a fase igual na paleta Concreto, renderiza, entrega e remove o arquivo
 da fila. Os prints dos vídeos já vistos estão em `referencias/`.

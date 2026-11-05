@@ -13,16 +13,13 @@ janela por vez (duas ao mesmo tempo pegariam o mesmo vídeo).
 
 **0. Preparo.** `git fetch origin`. Vídeo da vez = `ls pendente/*.mp4 | sort | head -1`. Se `pendente/`
 não tiver nenhum `.mp4`: avise e faça o fluxo "vídeo novo" (`npm run novo`, mais abaixo). Confirme as
-ferramentas: `ffmpeg -version`, `node -e "require('playwright')"`, `python3 -c "import numpy, PIL"`
+ferramentas: `ffmpeg -version`, `node -e "require('playwright')"`
 (se faltar Playwright: `npm install && npx playwright install chromium`).
 
-**1. Analisar o vídeo (automático).** Copie o `.mp4` para uma pasta nova do scratchpad e rode
-`python3 -I tools/analisar_video.py <video.mp4> <scratchpad>/an` (~1 min). Leia `an/analise.md` e **olhe**
-(Read mostra imagens) `an/inicio.png`, `an/folha.png` e `an/massa.png`. O relatório traz: grade (confira:
-14x18, 16x21… unidades de 2x2 blocos), mapa em ASCII (unidades e blocos), **ordem/tempo da quebra dos
-tijolos** (a corrente de cores), **mapa do instante de chegada da massa** (+ velocidade da frente),
-**pistões** (posição, período, altura, direção), velocidade/tamanho dos quadrados, posição inicial e o fim
-útil do vídeo. Veja também os prints parecidos em `referencias/` e as fases já feitas em `src/levels.js`.
+**1. Ver o vídeo.** Copie o `.mp4` para uma pasta nova do scratchpad e extraia quadros com `ffmpeg` (primeiro quadro,
+contact sheet `fps=1/3 ... tile`); **olhe** (Read mostra imagens) para ler o mapa, a ordem da quebra dos tijolos, o
+caminho da massa, os pistões e a posição inicial. Veja também os prints parecidos em `referencias/` e as fases já
+feitas em `src/levels.js`. (Não há mais analisador automático.)
 
 **2. Criar a fase** (copie a estrutura de uma parecida):
 - função nova em `tools/levelgen.py` (helper `unitmap(U, code, R0, C0)`; `R0=(48-2·alturaU)/2`,
@@ -252,7 +249,5 @@ iteração. Se ele pedir mudança, atualize esta lista.
   e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` e `colunas()` em unidades.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
-- `tools/analisar_video.py` analisa um vídeo de referência (numpy + PIL): grade, mapa ASCII, quebra dos
-  tijolos, ritmo da massa, pistões, velocidade dos quadrados, fim útil (uso no procedimento "próximo vídeo").
-  `tools/fisica.mjs` (`npm run fisica`) verifica a física. `tools/levelgen.py` tem uma função por fase.
+- `tools/fisica.mjs` (`npm run fisica`) verifica a física. `tools/levelgen.py` tem uma função por fase.
 - `npm start` abre o painel interativo em http://localhost:5173.

@@ -335,7 +335,43 @@ def colunas():
         m.put(R0 + 37, C0 + c, 'S')
     return m.lines()
 
+def pente():
+    """Cópia do vídeo 09 (07c1f66c): mapa de 19x22 BLOCOS (1 célula = 1 bloco = 28px; baias de 2 blocos, paredes e tijolos de 1).
+    4 baias no topo (verde, vermelho, ciano, amarelo da esq. p/ dir.) presas em corrente: tijolo vermelho (entre baias 1-2),
+    ciano (2-3), verde (3-4) e, por fim, o amarelo (parede da esquerda). Depois: serpentina em corredores de 3 blocos
+    (pistão no 1º corredor), 2 tijolos escuros no meio e 2 antes da chegada (embaixo à esquerda)."""
+    U = [
+        '####..#..#..#..####',  # 0  baias (largada em S)
+        '####..#..#..#..##..',  # 1  corredor da direita (cols 17-18) desce até a linha 10
+        '####..#..#..#..##..',  # 2
+        '...4..2..3..1..##..',  # 3  tijolos de cor (4 linhas): amarelo(4) vermelho(2) ciano(3) verde(1)
+        '...4..2..3..1..##..',  # 4
+        '...4..2..3..1..##..',  # 5
+        '...4..2..3..1..##..',  # 6
+        '...##############..',  # 7  piso das baias
+        '...................',  # 8  corredor 1 (pistão na col 13)
+        '...................',  # 9
+        '...................',  # 10
+        '################...',  # 11 língua de parede
+        '...................',  # 12 corredor 2 (volta p/ a esquerda)
+        '...................',  # 13
+        '...................',  # 14
+        '...################',  # 15
+        '...............B...',  # 16 corredor 3 (vai p/ a direita) + tijolo escuro na col 15
+        '...............B...',  # 17
+        '...............B...',  # 18
+        '################...',  # 19
+        'FFBB...........B...',  # 20 corredor de chegada (volta p/ a esquerda)
+        'FFBB...........B...',  # 21
+    ]
+    R0, C0 = 13, 8
+    m = M()
+    for r, row in enumerate(U):
+        for c, ch in enumerate(row): m.put(R0 + r, C0 + c, ch)
+    for c in (4, 7, 10, 13): m.put(R0, C0 + c, 'S')   # largada: 1 quadrado por baia (verde, vermelho, ciano, amarelo)
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

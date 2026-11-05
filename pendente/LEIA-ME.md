@@ -3,7 +3,7 @@
 Fila de vídeos de referência (.mp4) para virarem **fases novas**.
 
 Para processar o próximo, abra uma janela nova e escreva: **"faça o próximo vídeo"**. O Claude pega o
-primeiro arquivo (ordem alfabética), analisa (`tools/analisar_video.py`), cria a fase igual na nossa paleta
+primeiro arquivo (ordem alfabética), vê o vídeo, cria a fase igual na nossa paleta
 (Concreto), renderiza, te manda o vídeo e a legenda, **exclui o arquivo daqui** e publica tudo.
 
 Para adicionar vídeos: coloque os `.mp4` aqui (no branch `claude/affectionate-albattani-ox3ava`, que é o

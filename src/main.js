@@ -1,6 +1,6 @@
 import { Game, SIM_HZ, dramaScore } from './game.js';
 import { LEVELS, getLevel } from './levels.js';
-import { TEAMS, CATEGORIES, CATEGORY_DEFAULTS, PRESETS, teamsIn, resolveTeams, loadTeamImages } from './teams.js';
+import { TEAMS, CATEGORIES, CATEGORY_DEFAULTS, PRESETS, teamsIn, resolveTeams, loadTeamImages, attachCrests } from './teams.js';
 import { Renderer, THEMES } from './render.js';
 import { AudioEngine, Music, renderOffline } from './audio.js';
 import { seedFrom } from './rng.js';
@@ -37,6 +37,7 @@ function makeGame(cfg) {
   const teams = resolveTeams(cfg.teams.slice(0, count));
   const pool = teamsIn(cfg.category || 'cores').filter((id) => !teams.some((t) => t.id === id));
   while (teams.length < count) teams.push(...resolveTeams([...teams.map((t) => t.id), pool.shift() || Object.keys(TEAMS)[teams.length]]).slice(-1));
+  teams.forEach((t, i) => { if (cfg.crests && cfg.crests[i]) t.crestId = cfg.crests[i]; });
   return { level, teams, game: new Game({ level, teams, seed: cfg.seed, floodKills: !!cfg.floodKills }) };
 }
 
@@ -66,6 +67,7 @@ if (RENDER_MODE) {
       if (cfg.best) cfg.seed = findBestSeed(cfg, cfg.best).seed;
       const made = makeGame(cfg);
       await loadTeamImages(made.teams);
+      await attachCrests(made.teams, cfg.crests);
       try { await document.fonts.ready; } catch { /* ok */ }
       const renderer = new Renderer(canvas, { title: cfg.title, subtitle: cfg.subtitle, handle: cfg.handle, theme: cfg.theme, cta: cfg.cta });
       renderer.attach(made.game);
