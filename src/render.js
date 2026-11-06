@@ -12,8 +12,8 @@ const AW = COLS * TILE, AH = ROWS * TILE;
 export const AX = (W - AW) / 2;           // 36
 export const AY = Math.round((H - AH) / 2); // 288 — mapa centralizado, como nas referências
 // Área segura do TikTok (1080x1920): topo ~150px = barra de status + abas "Seguindo/Para você"; direita x>945 = coluna de
-// ícones; embaixo y>1500 = @, legenda e música. Título/legenda ficam em 160-410 e o mapa em SAFE.
-export const SAFE = { x0: 60, x1: 945, y0: 430, y1: 1500 };
+// ícones; embaixo y>1500 = @, legenda e música. SEM textos no vídeo (pedido do usuário): o mapa ocupa SAFE inteira, no maior zoom que cabe.
+export const SAFE = { x0: 24, x1: 945, y0: 160, y1: 1500 }; // sem textos no vídeo: o mapa usa toda a área segura
 const FONT = 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
 // Paletas completas (fundo/paredes, corredores, massa que empurra, pistões, tijolo escuro, textos).
@@ -141,7 +141,7 @@ export class Renderer {
       // ÁREA SEGURA DO TIKTOK: o mapa inteiro cabe entre a legenda do topo e a faixa do @/legenda/som embaixo, e longe da
       // coluna de ícones da direita (perfil, curtir, comentar, salvar, compartilhar). Encolhe o zoom se precisar.
       const S = SAFE, mw = (c1 - c0 + 1) * TILE, mh = (r1 - r0 + 1) * TILE;
-      this.view.z = Math.min(game.level.zoom, (S.x1 - S.x0) / mw, (S.y1 - S.y0) / mh);
+      this.view.z = Math.min((S.x1 - S.x0) / mw, (S.y1 - S.y0) / mh); // o maior possível (ignora o zoom da fase)
       this.screenC = { x: (S.x0 + S.x1) / 2, y: (S.y0 + S.y1) / 2 };
     }
     this.cam = { ...this.view };
@@ -259,6 +259,7 @@ export class Renderer {
 
   drawTitle() {
     const o = this.opts, g = this.g;
+    if (!o.texto) return; // pedido do usuário: nada de título/legenda escritos no vídeo (opts.texto = true traz de volta)
     const a = clamp(1 - (this.cam.z - this.view.z) * 2, 0, 1);
     if (a <= 0 || !o.title) return;
     g.save(); g.globalAlpha = a;

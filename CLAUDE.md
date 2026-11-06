@@ -279,8 +279,11 @@ iteração. Se ele pedir mudança, atualize esta lista.
   Sim. (30): Pilares 0 sem vencedor/0 esmagados, vitórias por baia 6/7/11/6; Meandro 0/0, 15/5/5/5 (a baia 1 vence mais);
   Portais 0/0, ~85s.
 - **Área segura do TikTok** (`SAFE` em `src/render.js`): nada importante em y<150 (barra de status + abas), x>945 entre y 700–1500
-  (ícones da direita) nem y>1500 (@, legenda, música). Título em y≈205, legenda de escudos 250–405, mapa encaixado em
-  x 60–945 / y 430–1500 (o zoom da fase é reduzido se não couber). `safe: false` nas opções do Renderer volta ao antigo.
+  (ícones da direita) nem y>1500 (@, legenda, música). O mapa ocupa x 24–945 / y 160–1500 no **maior zoom que cabe** (ignora o
+  `zoom` da fase). `safe: false` nas opções do Renderer volta ao enquadramento antigo.
+- **SEM textos no vídeo** (pedido do usuário: "não coloque legendas, mapa o maior possível"): nada de título ("QUAL ESCUDO
+  VENCE?") nem lista de escudos no topo; os escudos aparecem só dentro dos quadrados. `texto: true` nas opções do Renderer
+  traz o título/legenda de volta. A legenda do POST (TikTok/Instagram) continua normal (`.txt` do `novo`).
 
 ## Escudos nos quadrados (pedido do usuário)
 
@@ -294,8 +297,8 @@ iteração. Se ele pedir mudança, atualize esta lista.
   grossa na cor do clube + miolo branco com o escudo grande; rastro e tijolos do dono também na cor do clube (a física não depende
   da cor: os tijolos são do dono pelo índice). Tijolo de clube preto ganha "tijolinho" claro (não confunde com o tijolo escuro).
   O sorteio (`pickCrests` em `src/teams.js`) nunca junta duas cores parecidas (ex.: dois vermelhos ou dois pretos).
-- **Topo do vídeo** (título "QUAL ESCUDO VENCE?"): para cada quadrado, o escudo grande na moldura da cor do clube, o nome do
-  clube e uma barra na cor do clube. Aparece quando algum quadrado tem escudo.
+- **Topo do vídeo**: hoje SEM texto (ver "SEM textos no vídeo"). Com `texto: true`, mostra o título e, para cada quadrado, o
+  escudo na moldura da cor do clube, o nome e uma barra na cor do clube.
 - No "próximo vídeo" use `--crests sorteio` no passo 4 (e cite os escudos sorteados na legenda).
 
 ## Publicação (TikTok + Instagram via R2 e Buffer) — `publicar.py`
@@ -340,8 +343,8 @@ horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `pytho
   da mesma cor. Paleta: vermelho `#d50000`, azul `#265ef3`, amarelo `#ffd839`, verde `#007d53`,
   ciano, laranja, roxo, rosa.
 - Eliminado fica parado com um X. Faca: lâmina ciano + cabo roxo.
-- Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. Só o
-  título discreto em cima (cor da paleta, sem contorno).
+- Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. E agora também SEM título:
+  nenhum texto no vídeo, só o mapa (o maior possível na área segura do TikTok).
 - Sem zoom no final. Quando o 1º chega: ~0,5s e o vídeo acaba (sem placar).
 
 ## Como o projeto funciona
