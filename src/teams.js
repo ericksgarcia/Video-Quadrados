@@ -324,8 +324,12 @@ export function makeBadge(team, size, { flat = false } = {}) {
   const g = c.getContext('2d');
   if (team.type === 'color') {
     g.fillStyle = team.color; g.fillRect(0, 0, size, size);
-    if (team.crest && team.crest.img) { // escudo (PNG sem fundo) por cima da cor do quadrado
-      const im = team.crest.img, k = size * 0.8 / Math.max(im.width, im.height);
+    if (team.crest && team.crest.img) {
+      // escudo: moldura grossa na cor do clube + miolo branco + escudo grande (fácil de identificar)
+      const m = Math.round(size * 0.13), r = size * 0.1;
+      g.fillStyle = '#ffffff';
+      g.beginPath(); g.roundRect(m, m, size - 2 * m, size - 2 * m, r); g.fill();
+      const im = team.crest.img, k = (size - 2 * m) * 0.9 / Math.max(im.width, im.height);
       g.drawImage(im, (size - im.width * k) / 2, (size - im.height * k) / 2, im.width * k, im.height * k);
     }
     return c;
@@ -360,6 +364,24 @@ export async function attachCrests(teams, crestIds) {
     const c = lib.find((x) => x.id === crestIds[i]);
     if (!c) return null;
     t.crest = { ...c };
+    if (c.cor) t.color = c.cor; // quadrado, rastro e tijolos na cor do clube
     return new Promise((res) => { const img = new Image(); img.onload = () => { t.crest.img = img; res(); }; img.onerror = () => res(); img.src = c.src; });
   }));
+}
+
+// sorteio de escudos com cores bem diferentes (nunca dois vermelhos/pretos no mesmo vídeo)
+export function pickCrests(lib, n, rand = Math.random) {
+  const pool = lib.filter((c) => c.sorteio !== false);
+  for (let tries = 0; tries < 500; tries++) {
+    const a = [...pool];
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    const out = [];
+    for (const c of a) {
+      if (out.length >= n) break;
+      if (c.cor && out.some((o) => o.cor && colorDist(o.cor, c.cor) < 120)) continue;
+      out.push(c);
+    }
+    if (out.length >= n) return out;
+  }
+  return pool.slice(0, n);
 }

@@ -267,9 +267,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - **Sorteio só entre 25 escudos** (pedido do usuário): os 20 brasileiros + Real Madrid, Barcelona, Bayern, PSG e Man. City
   (campo `sorteio: true` em `src/escudos.json`; os outros 31 PNGs continuam na biblioteca, fora do sorteio).
 - **Cada vídeo sorteia 4 escudos** (`novo` faz isso sozinho; no render manual use `--crests sorteio` ou `--crests id1,id2,id3,id4`
-  na ordem dos índices dos quadrados). O quadrado continua da COR (a física/tijolos dependem dela) e o escudo é desenhado por cima.
-- **Topo do vídeo** (título "QUAL ESCUDO VENCE?"): para cada quadrado, o mini quadrado com o escudo, o nome do clube e o nome da cor
-  (ex.: LENS — VERDE). Aparece quando algum quadrado tem escudo.
+  na ordem dos índices dos quadrados). O `--teams` só define a ordem dos índices; com escudo, a cor vem do clube.
+- **Quadrado na COR DO CLUBE** (pedido do usuário): campo `cor` em `src/escudos.json` (preto/branco → preto). O quadrado tem moldura
+  grossa na cor do clube + miolo branco com o escudo grande; rastro e tijolos do dono também na cor do clube (a física não depende
+  da cor: os tijolos são do dono pelo índice). Tijolo de clube preto ganha "tijolinho" claro (não confunde com o tijolo escuro).
+  O sorteio (`pickCrests` em `src/teams.js`) nunca junta duas cores parecidas (ex.: dois vermelhos ou dois pretos).
+- **Topo do vídeo** (título "QUAL ESCUDO VENCE?"): para cada quadrado, o escudo grande na moldura da cor do clube, o nome do
+  clube e uma barra na cor do clube. Aparece quando algum quadrado tem escudo.
 - No "próximo vídeo" use `--crests sorteio` no passo 4 (e cite os escudos sorteados na legenda).
 
 ## Publicação (TikTok + Instagram via R2 e Buffer) — `publicar.py`

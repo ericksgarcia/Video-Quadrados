@@ -39,6 +39,7 @@ EU = [  # id, nome, liga, arquivo
  ('lille','LILLE','France - Ligue 1','LOSC Lille'),('lens','LENS','France - Ligue 1','RC Lens'),
 ]
 S = 256
+CORES = {"flamengo": "#c8102e", "palmeiras": "#006b3f", "corinthians": "#111111", "sao-paulo": "#e4002b", "santos": "#111111", "fluminense": "#7b1e3a", "botafogo": "#111111", "vasco": "#111111", "cruzeiro": "#1d3f94", "atletico-mg": "#111111", "gremio": "#0d80bf", "internacional": "#d0021b", "bahia": "#1e4c9a", "vitoria": "#d4202b", "bragantino": "#e20e1d", "athletico-pr": "#c8102e", "mirassol": "#f5cf00", "chapecoense": "#00a04e", "coritiba": "#00544d", "remo": "#0b2a5b", "real-madrid": "#febe10", "barcelona": "#a50044", "bayern": "#dc052d", "psg": "#004170", "man-city": "#6cabdd"}  # cor principal de cada clube do sorteio (preto/branco -> preto)
 
 def conv(src, dst):
     im = Image.open(src).convert('RGBA')
@@ -59,6 +60,8 @@ def main(br, eu, out):
         conv(f'{eu}/{lg}/{f}.png', f'{out}/{i}.png'); lib.append({'id': i, 'name': n, 'group': 'eu', 'league': lg.split(' - ')[1], 'src': f'assets/escudos/{i}.png'})
     SORTEIO_EU = {'real-madrid', 'barcelona', 'bayern', 'psg', 'man-city'}  # sorteio: só brasileiros + estes
     for c in lib: c['sorteio'] = c['group'] == 'br' or c['id'] in SORTEIO_EU
+    for c in lib:
+        if c['id'] in CORES: c['cor'] = CORES[c['id']]  # cor do quadrado/tijolos = cor do clube
     json.dump(lib, open(os.path.join(os.path.dirname(out.rstrip('/')), '..', 'src', 'escudos.json'), 'w'), ensure_ascii=False, indent=1)
     print(len(lib), 'escudos')
 

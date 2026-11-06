@@ -14,7 +14,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { LEVELS } from '../src/levels.js';
-import { TEAMS, CLUBS, COLORS, CATEGORY_DEFAULTS } from '../src/teams.js';
+import { TEAMS, CLUBS, COLORS, CATEGORY_DEFAULTS, pickCrests } from '../src/teams.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HIST = path.join(ROOT, 'historico.json');
@@ -52,7 +52,7 @@ function sortear() {
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);
   const theme = args.theme || 'concreto'; // paleta Concreto (prensa), escolhida pelo usuário
-  const crests = args['no-crests'] ? undefined : args.crests ? String(args.crests).split(',') : shuffle(CRESTLIB.filter((c) => c.sorteio !== false)).slice(0, teams.length).map((c) => c.id);
+  const crests = args['no-crests'] ? undefined : args.crests ? String(args.crests).split(',') : pickCrests(CRESTLIB, teams.length, () => rand(1e9) / 1e9).map((c) => c.id);
   return { category, level: level.id, levelName: level.name, teams, theme, crests };
 }
 

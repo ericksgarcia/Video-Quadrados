@@ -263,14 +263,13 @@ export class Renderer {
     text(g, title, W / 2, 44, { size: 54, maxW: 1000, fill: this.theme.title });
     const n = rs.length, cw = Math.min(260, 1040 / n), x0 = W / 2 - cw * n / 2;
     rs.forEach((r, k) => {
-      const cx = x0 + cw * (k + 0.5), s = 72;
-      g.drawImage(this.badges[r.i], cx - s / 2, 78, s, s);
-      g.strokeStyle = LINE; g.lineWidth = 3; g.strokeRect(cx - s / 2, 78, s, s);
-      text(g, r.team.crest.name, cx, 182, { size: 27, maxW: cw - 10, fill: this.theme.title });
-      const cn = r.team.name.toUpperCase();
-      g.fillStyle = 'rgba(22,25,28,0.88)';
-      g.beginPath(); g.roundRect(cx - 84, 205, 168, 40, 20); g.fill();
-      text(g, cn, cx, 226, { size: 26, maxW: 150, fill: this.colors[r.i] });
+      const cx = x0 + cw * (k + 0.5), s = 104;
+      g.drawImage(this.badges[r.i], cx - s / 2, 76, s, s);
+      g.strokeStyle = LINE; g.lineWidth = 4; g.strokeRect(cx - s / 2, 76, s, s);
+      text(g, r.team.crest.name, cx, 210, { size: 30, maxW: cw - 12, fill: this.theme.title });
+      g.fillStyle = this.colors[r.i];   // barra na cor do clube (= cor do quadrado e dos tijolos)
+      g.beginPath(); g.roundRect(cx - 60, 232, 120, 12, 6); g.fill();
+      g.strokeStyle = 'rgba(0,0,0,0.55)'; g.lineWidth = 2; g.stroke();
     });
   }
 
@@ -312,7 +311,8 @@ export class Renderer {
     for (const cl of game.clusters) {
       if (cl.hp <= 0) continue;
       const base = cl.owner == null ? BRICK_DARK : this.colorOf(cl.owner);
-      const ink = cl.owner == null ? '#0c0c0c' : shade(base, -0.78);
+      const dark = cl.owner != null && colorDist(base, '#000000') < 90; // clube preto: tijolinho claro (não confunde com o escuro comum)
+      const ink = cl.owner == null ? '#0c0c0c' : dark ? '#e9e9e9' : shade(base, -0.78);
       const sh = (cl.shake || 0) * 3;
       const ox = (Math.random() - 0.5) * sh, oy = (Math.random() - 0.5) * sh;
       const inCl = (r, c) => { const k = game.cell(r, c); return k?.cluster === cl && k.k === 'brick'; };

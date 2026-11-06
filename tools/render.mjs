@@ -100,8 +100,8 @@ const category = args.category || (args.teams ? undefined : 'cores'); // com --t
 if (args.crests === 'sorteio' || args.crests === true) {
   const lib = JSON.parse(fs.readFileSync(new URL('../src/escudos.json', import.meta.url), 'utf8')).filter((c) => c.sorteio !== false); // só os marcados para sorteio
   const n = args.teams ? String(args.teams).split(',').length : Number(args.count || 4);
-  for (let i = lib.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lib[i], lib[j]] = [lib[j], lib[i]]; }
-  args.crests = lib.slice(0, n).map((c) => c.id).join(',');
+  const { pickCrests } = await import('../src/teams.js');
+  args.crests = pickCrests(lib, n).map((c) => c.id).join(','); // cores de clube bem diferentes
   console.log('Escudos sorteados:', args.crests);
 }
 const base = {
