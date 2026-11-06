@@ -57,6 +57,8 @@ def main(br, eu, out):
         conv(f'{br}/{f}.png', f'{out}/{i}.png'); lib.append({'id': i, 'name': n, 'group': 'br', 'src': f'assets/escudos/{i}.png'})
     for i, n, lg, f in EU:
         conv(f'{eu}/{lg}/{f}.png', f'{out}/{i}.png'); lib.append({'id': i, 'name': n, 'group': 'eu', 'league': lg.split(' - ')[1], 'src': f'assets/escudos/{i}.png'})
+    SORTEIO_EU = {'real-madrid', 'barcelona', 'bayern', 'psg', 'man-city'}  # sorteio: só brasileiros + estes
+    for c in lib: c['sorteio'] = c['group'] == 'br' or c['id'] in SORTEIO_EU
     json.dump(lib, open(os.path.join(os.path.dirname(out.rstrip('/')), '..', 'src', 'escudos.json'), 'w'), ensure_ascii=False, indent=1)
     print(len(lib), 'escudos')
 

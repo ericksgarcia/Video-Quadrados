@@ -98,7 +98,7 @@ const { PRESETS, CATEGORY_DEFAULTS } = await import('../src/teams.js');
 const category = args.category || (args.teams ? undefined : 'cores'); // com --teams, a categoria é deduzida dos times
 // --crests a,b,c,d (ids de src/escudos.json, na ordem dos índices dos quadrados) ou --crests sorteio (4 aleatórios)
 if (args.crests === 'sorteio' || args.crests === true) {
-  const lib = JSON.parse(fs.readFileSync(new URL('../src/escudos.json', import.meta.url), 'utf8'));
+  const lib = JSON.parse(fs.readFileSync(new URL('../src/escudos.json', import.meta.url), 'utf8')).filter((c) => c.sorteio !== false); // só os marcados para sorteio
   const n = args.teams ? String(args.teams).split(',').length : Number(args.count || 4);
   for (let i = lib.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lib[i], lib[j]] = [lib[j], lib[i]]; }
   args.crests = lib.slice(0, n).map((c) => c.id).join(',');

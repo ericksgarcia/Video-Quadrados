@@ -52,7 +52,7 @@ function sortear() {
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
   const teams = args.teams ? String(args.teams).split(',') : shuffle(pool).slice(0, count);
   const theme = args.theme || 'concreto'; // paleta Concreto (prensa), escolhida pelo usuário
-  const crests = args['no-crests'] ? undefined : args.crests ? String(args.crests).split(',') : shuffle(CRESTLIB).slice(0, teams.length).map((c) => c.id);
+  const crests = args['no-crests'] ? undefined : args.crests ? String(args.crests).split(',') : shuffle(CRESTLIB.filter((c) => c.sorteio !== false)).slice(0, teams.length).map((c) => c.id);
   return { category, level: level.id, levelName: level.name, teams, theme, crests };
 }
 
@@ -85,11 +85,16 @@ const hadKnife = Number((out.match(/(\d+) eliminado/) || [])[1] || 0) > 0; // s�
 
 // legenda (sem spoiler do vencedor)
 const lista = names.length > 2 ? `${names.slice(0, -1).join(', ')} ou ${names[names.length - 1]}` : names.join(' ou ');
-const cores = cfg.category === 'cores';
-const tags = cores ? ['#satisfying', '#corrida', '#cores', '#oddlysatisfying', '#fyp', '#viral']
+const cores = cfg.category === 'cores' && !cfg.crests;
+const escudos = !!cfg.crests; // vídeo com escudos: legenda de futebol (os quadrados levam os escudos sorteados)
+const tags = escudos ? ['#futebol', '#brasileirao', '#satisfying', '#corrida', '#oddlysatisfying', '#fyp', '#viral'] : cores ? ['#satisfying', '#corrida', '#cores', '#oddlysatisfying', '#fyp', '#viral']
   : ['#futebol', ...cfg.teams.slice(0, 4).map((id) => '#' + (TEAMS[id]?.name || id).toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '')),
     cfg.category === 'clubes' ? '#brasileirao' : '#copadomundo', '#satisfying', '#fyp', '#viral'];
-const ganchos = cores ? [
+const ganchos = escudos ? [
+  `${lista}: quem escapa da prisão e chega primeiro? 🧱🏁`,
+  `Só um escudo cruza a chegada: ${lista}. Qual é o seu? 👀🏁`,
+  `${lista}: todo mundo começa PRESO 🔒 Quem sai primeiro?`,
+] : cores ? [
   `Todo mundo começa preso... qual cor escapa primeiro? 🟥🟦🟨🟩`,
   `${lista}: quem foge da água e chega primeiro? 🌊🏁`,
   `Só uma cor vai cruzar a chegada. Qual é a sua? 👀🏁`,

@@ -264,6 +264,8 @@ iteração. Se ele pedir mudança, atualize esta lista.
 
 - Biblioteca em `assets/escudos/*.png` (PNG sem fundo, 256x256) + `src/escudos.json`, gerada por `tools/escudos_build.py`
   (fontes no cabeçalho do script): 20 clubes da Série A 2026 e 36 grandes de Inglaterra, Espanha, Itália, Alemanha e França.
+- **Sorteio só entre 25 escudos** (pedido do usuário): os 20 brasileiros + Real Madrid, Barcelona, Bayern, PSG e Man. City
+  (campo `sorteio: true` em `src/escudos.json`; os outros 31 PNGs continuam na biblioteca, fora do sorteio).
 - **Cada vídeo sorteia 4 escudos** (`novo` faz isso sozinho; no render manual use `--crests sorteio` ou `--crests id1,id2,id3,id4`
   na ordem dos índices dos quadrados). O quadrado continua da COR (a física/tijolos dependem dela) e o escudo é desenhado por cima.
 - **Topo do vídeo** (título "QUAL ESCUDO VENCE?"): para cada quadrado, o mini quadrado com o escudo, o nome do clube e o nome da cor
