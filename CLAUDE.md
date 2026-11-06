@@ -46,7 +46,7 @@ script Playwright (`?render=1`, veja `tools/render.mjs`/`src/main.js`: `__studio
 com `an/inicio.png` e `an/folha.png`: mapa, ordem de quebra, massa, pistões. Ajuste até ficar igual.
 
 **4. Renderizar** (em segundo plano, ~2–4 min): `node tools/render.mjs --level <id> --teams <cores na ordem
-dos índices> --theme concreto --best 30 --seed <n> --out videos/<id>-concreto.mp4`. Confira com um contact
+dos índices> --crests sorteio --theme concreto --best 30 --seed <n> --out videos/<id>-concreto.mp4`. Confira com um contact
 sheet (`ffmpeg ... fps=1/5 ... tile`) e o final (sem placar, ~0,5s após o 1º chegar).
 
 **5. Entregar.** `SendUserFile` do `.mp4` + legenda de TikTok pronta (sem revelar o vencedor) e um resumo
@@ -135,16 +135,26 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
-3. Envie o `.mp4` gerado em `videos/` ao usuário (SendUserFile) e mostre a legenda do `.txt` ao lado
-   (sem revelar o vencedor). Ofereça 2–3 variações de legenda se ele pedir.
-4. Faça commit **só do `historico.json`** (os vídeos ficam fora do git) e dê push na branch da sessão.
+   O `novo` já aplica TUDO o que foi decidido: só fases copiadas, 4 escudos sorteados (brasileiros + Real Madrid, Barcelona,
+   Bayern, PSG, Man. City) com quadrado na cor do clube e sem cores repetidas, sem texto no vídeo, mapa na área segura do
+   TikTok, quique perfeito, regra de justiça (`ownerPerm` nas fases) e legenda de futebol no `.txt`.
+3. Confira antes de entregar: contact sheet (`ffmpeg -i V -vf "fps=1/5,scale=216:-1,tile=6x2" -frames:v 1 folha.png`) e o
+   quadro de 1,2s (capa): mapa inteiro, nada nas zonas do app, escudos legíveis, final sem placar.
+   Envie o `.mp4` ao usuário (SendUserFile) e mostre a legenda do `.txt` (sem revelar o vencedor).
+4. **Se o usuário pedir para agendar/publicar** ("agende", "poste", "publica"): `python3 publicar.py videos/<arquivo>.mp4`
+   (usa o `.txt` ao lado como legenda, sobe no R2 e agenda TikTok + Instagram no próximo horário livre) e mostre
+   `python3 publicar.py --fila`, `--status <slug>` e `--lista`. Detalhes na seção "Publicação". Para trocar um agendado:
+   `--cancela <slug>` e agende o novo com `--quando`.
+5. Commit de `historico.json` (e `publicados.json` se agendou) — os vídeos ficam fora do git — e push na branch da sessão
+   **e** no branch padrão (`git push origin HEAD:claude/affectionate-albattani-ox3ava`), para a próxima janela saber o que
+   já foi feito/postado (senão repete combinação ou duplica post).
 
 Não mude as regras do jogo abaixo sem o usuário pedir — elas foram definidas com ele, iteração por
 iteração. Se ele pedir mudança, atualize esta lista.
 
 ## Regras do jogo (decididas com o usuário)
 
-- **Quadrados só de cor** (categoria `cores`, título "QUAL COR VENCE?"; **com escudos**: ver abaixo). 4 cores clássicas
+- **Quadrados com ESCUDO na cor do clube** (padrão atual; ver "Escudos nos quadrados"). Sem escudo (`--no-crests`): só de cor. 4 cores clássicas
   (vermelho, azul, amarelo, verde) nas fases de 4; 8 cores na Arena 8.
 - **Mapas no estilo das referências**: corredores largos (5 blocos = 140px) em serpentina/U,
   paredes de 2 blocos, alguns tijolos escuros comuns no caminho.
@@ -335,7 +345,7 @@ horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `pytho
   não são desenhadas), corredores brancos `#f1efe9` com contorno escuro fino (~3,5px), massa
   concreto cinza-chumbo `#3c434b`, pistões quase pretos `#22262b`, tijolo escuro `#2c3035`, título
   claro `#f6f6f2`. Outras paletas em `THEMES` (render.js): pedra, geleira, roxo (índigo original). A massa nunca é
-  vermelha/azul/amarela/verde (não confunde com os quadrados). Mapa centralizado na tela.
+  vermelha/azul/amarela/verde (não confunde com os quadrados). Mapa na área segura do TikTok (ver acima), no maior zoom.
 - Tijolos: cor sólida + desenho de "tijolinho" em linhas escuras, contorno preto. Tijolo comum/da
   chegada é escuro (da paleta). Chegada quadriculada preto/branco.
 - Massa chapada (sem gradiente), frente reta de parede a parede.
