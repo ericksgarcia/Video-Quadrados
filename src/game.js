@@ -807,7 +807,7 @@ export class Game {
     }
     if (bounced) {
       const sx = Math.sign(r.vx), sy = Math.sign(r.vy);
-      this.jitter(r, 0.14);
+      this.jitter(r, this.level.bounceJitter ?? 0); // quique perfeito: ângulo de saída = ângulo de entrada (sem desvio aleatório)
       this.steer(r, sx, sy);
       r.squash = 1;
       if (bounced === 'wall' && r.sndCd <= 0) {
@@ -938,7 +938,7 @@ export class Game {
       if (horiz) { if ((B.vx - A.vx) * sg < 0) { const t = A.vx; A.vx = B.vx; B.vx = t; } }
       else if ((B.vy - A.vy) * sg < 0) { const t = A.vy; A.vy = B.vy; B.vy = t; }
       if (pa && !pb) B.pushedT = this.t; else if (pb && !pa) A.pushedT = this.t; // o empurrão passa adiante
-      this.jitter(A, 0.2); this.jitter(B, 0.2);
+      const hj = this.level.hitJitter ?? 0; this.jitter(A, hj); this.jitter(B, hj); // colisão: só troca as velocidades (sem desvio aleatório)
       this.unstick(A); this.unstick(B);
       A.squash = B.squash = 1;
       const x = (A.x + B.x) / 2, y = (A.y + B.y) / 2;

@@ -125,8 +125,9 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    fase, ordem das cores nas baias e a
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
-   - Fase padrão: sorteia entre **`gaiola`**, **`cofre`**, **`ponte`**, **`escada`**, **`pocos`** (cópias
-     dos vídeos de referência) e **`colunas`** (fase original, 5 quadrados). Se o usuário pedir algo
+   - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
@@ -243,6 +244,10 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - **Faca permanente** (`knifeKeep`): quem pega elimina **todo mundo** em que encostar. Eliminado
   mostra um X e some.
 - Largada imediata (sem 3-2-1). Quique livre, sem "instinto" (homing/steer 0). Quadrados ~275 px/s.
+- **Quique PERFEITO** (pedido do usuário: "o quadrado muda o curso do nada ao bater"): ao bater em parede/tijolo/chão a
+  velocidade só inverte o eixo da batida (ângulo de saída = de entrada), SEM desvio aleatório (`bounceJitter` padrão 0; antes era
+  ±0,14 rad). Colisão entre quadrados só troca as velocidades (`hitJitter` padrão 0; antes ±0,2). Testado nas 9 cópias: igual ou
+  melhor (menos corridas sem vencedor/esmagados), exceto a Pente (8/30 sem vencedor; o best-of-30 escolhe uma boa).
 - Fases antigas (derby/serpente/arena8) continuam disponíveis, agora também com massa sólida.
 - **Chegada**: na Gaiola é um nicho quadriculado sem tijolos (igual ao vídeo); nas fases antigas,
   tijolos duros (`finishBrickHp`).
@@ -286,6 +291,7 @@ Comando para publicar um vídeo novo (próximo horário livre de 07:50, 11:50, 1
 
     python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt
 
+Cancelar um agendado (apaga os posts no Buffer e o vídeo de pendentes/): `python3 publicar.py --cancela <slug>`.
 Opções: `--capa-s 1.2`, `--quando 2026-11-07T11:50` (Brasília), `--agora`, `--redes tiktok,instagram` (Instagram avulso usa o
 horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `python3 publicar.py --fila`, `--status <slug>`
 (slug = nome do arquivo sem `.mp4`), `--lista` (R2). Depois que os posts saírem: `python3 publicar.py --arruma` (move

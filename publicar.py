@@ -10,6 +10,7 @@ Uso:
   python3 publicar.py --status SLUG               status dos posts do vídeo
   python3 publicar.py --lista                     o que está em pendentes/ e enviados/ no R2
   python3 publicar.py --arruma                    move para enviados/ o que já foi publicado
+  python3 publicar.py --cancela SLUG              apaga os posts AGENDADOS do vídeo e o tira de pendentes/
 
 Chaves: NUNCA neste arquivo. O proxy do ambiente injeta "Authorization: Bearer ..." em api.buffer.com e
 api.cloudflare.com; se as variáveis BUFFER_TOKEN / CLOUDFLARE_API_TOKEN não existirem, vai um valor fictício.
@@ -285,11 +286,11 @@ def cmd_lista():
 
 def cmd_arruma():
     reg = le_registro()
-    slugs = sorted({x['slug'] for x in reg if x.get('chave_r2', '').startswith(PASTA_PEND)})
+    slugs = sorted({x['slug'] for x in reg if (x.get('chave_r2') or '').startswith(PASTA_PEND) and not x.get('cancelado')})
     if not slugs:
         print('Nada em pendentes/ registrado para arrumar.')
     for slug in slugs:
-        itens = [x for x in reg if x['slug'] == slug]
+        itens = [x for x in reg if x['slug'] == slug and not x.get('cancelado')]
         estados, faltou = [], False
         for x in itens:
             p = post_por_id(x['post_id'])
@@ -318,6 +319,36 @@ def cmd_arruma():
     grava_registro(reg)
 
 
+APAGA = '''mutation($i: PostId!){ deletePost(input:{id:$i}){ __typename ... on DeletePostSuccess { id } ... on VoidMutationError { message } } }'''
+
+
+def cmd_cancela(slug):
+    """Apaga os posts AGENDADOS do vídeo no Buffer, tira o vídeo de pendentes/ e marca 'cancelado' no registro."""
+    reg = le_registro()
+    itens = [x for x in reg if x['slug'] == slug and not x.get('cancelado')]
+    if not itens:
+        falha(f'nenhum post ativo registrado para "{slug}"')
+    for x in itens:
+        p = post_por_id(x['post_id'])
+        if p is None:
+            print(f'{x["rede"]}: post {x["post_id"]} não encontrado no Buffer (já apagado?)')
+        elif p['status'] != 'scheduled':
+            falha(f'{x["rede"]}: post {x["post_id"]} está "{p["status"]}" (não agendado); não cancelo post que já saiu')
+        else:
+            res = gql_ok(APAGA, {'i': x['post_id']})['deletePost']
+            if res['__typename'] != 'DeletePostSuccess':
+                falha(f'{x["rede"]}: Buffer não apagou o post: {res.get("message")}')
+            print(f'{x["rede"]}: post {x["post_id"]} apagado do Buffer')
+        x['cancelado'] = True
+        x['status'] = 'cancelado'
+        grava_registro(reg)
+    chave = itens[0].get('chave_r2')
+    if chave and chave.startswith(PASTA_PEND) and not any(x['chave_r2'] == chave and not x.get('cancelado') for x in reg):
+        if any(o['key'] == chave for o in r2_lista(chave)):
+            r2_delete(chave)
+            print(f'R2: {chave} apagado')
+
+
 def cmd_publicar(a):
     video = Path(a.video)
     if not video.is_file():
@@ -340,7 +371,7 @@ def cmd_publicar(a):
     chave = PASTA_PEND + slug + '.mp4'
     link = link_publico(chave)
     reg = le_registro()
-    ja = {x['rede']: x for x in reg if x['slug'] == slug}
+    ja = {x['rede']: x for x in reg if x['slug'] == slug and not x.get('cancelado')}
     faltam = [r for r in redes if r not in ja]
     for r in redes:
         if r in ja:
@@ -404,6 +435,7 @@ def main():
     ap.add_argument('--status')
     ap.add_argument('--lista', action='store_true')
     ap.add_argument('--arruma', action='store_true')
+    ap.add_argument('--cancela', metavar='SLUG')
     a = ap.parse_args()
     if a.fila:
         cmd_fila()
@@ -413,6 +445,8 @@ def main():
         cmd_lista()
     elif a.arruma:
         cmd_arruma()
+    elif a.cancela:
+        cmd_cancela(a.cancela)
     elif a.video:
         cmd_publicar(a)
     else:
