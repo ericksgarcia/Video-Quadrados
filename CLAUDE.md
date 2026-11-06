@@ -270,6 +270,33 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (ex.: LENS — VERDE). Aparece quando algum quadrado tem escudo.
 - No "próximo vídeo" use `--crests sorteio` no passo 4 (e cite os escudos sorteados na legenda).
 
+## Publicação (TikTok + Instagram via R2 e Buffer) — `publicar.py`
+
+Só publica vídeo que JÁ existe e que o dono aprovou (não gera nada). Canais: TikTok **aprendendo.facil99** e Instagram
+**disputadostimes**, sempre no MESMO horário. Chaves: nunca no git/chat; o proxy do ambiente injeta o `Authorization: Bearer`
+em api.buffer.com e api.cloudflare.com (sem variável: valor fictício). 401/403 = falta o segredo → pare e avise.
+
+Comando para publicar um vídeo novo (próximo horário livre de 07:50, 11:50, 16:50, 20:30 em Brasília, capa no quadro de 1,2s):
+
+    python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt
+
+Opções: `--capa-s 1.2`, `--quando 2026-11-07T11:50` (Brasília), `--agora`, `--redes tiktok,instagram` (Instagram avulso usa o
+horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `python3 publicar.py --fila`, `--status <slug>`
+(slug = nome do arquivo sem `.mp4`), `--lista` (R2). Depois que os posts saírem: `python3 publicar.py --arruma` (move
+`aprendendo-facil/pendentes/<slug>.mp4` → `enviados/`; NUNCA antes, quebraria o post agendado).
+
+- R2: bucket `xlaudebuffer` (já existe, público), SÓ as pastas `aprendendo-facil/pendentes/` e `aprendendo-facil/enviados/`.
+  O script confere que o link público `https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/<chave>` devolve 200 com o
+  arquivo inteiro antes de criar os posts.
+- Buffer: canais achados pelo NOME (`channels { id name service isDisconnected }`); para se faltar/desconectado. Post por
+  rede: `createPost` com `mode: customScheduled`, vídeo = link do R2, `thumbnailOffset` (ms), TikTok `isAiGenerated:false`,
+  Instagram `type: reel` + `shouldShareToFeed: true` + `isAiGenerated:false`.
+- `publicados.json` (no git) registra cada post (slug, rede, id no Buffer, horário, link, chave no R2, capa em ms) e impede
+  duplicata. Os 4 vídeos de escudos de 05–06/11 (pente, pilares, meandro, portais) foram postados fora do script e estão
+  registrados lá; pente/meandro/portais saíram só no TikTok.
+- Legenda: o `--legenda` aceita um `.txt` ou o próprio texto; sem ele, usa `VIDEO.txt` ao lado do vídeo (o `npm run novo` já
+  escreve esse `.txt`). Se faltar vídeo ou legenda, o script para e diz qual.
+
 ## Visual (estilo flat, copiado dos 3 vídeos de referência que o usuário mandou)
 
 - **Paleta Concreto (escolhida pelo usuário)**: fundo/paredes cinza `#5b636c` (paredes = fundo,
