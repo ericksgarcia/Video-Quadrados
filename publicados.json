@@ -68,7 +68,8 @@
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1346-colunas.mp4",
     "chave_r2": "aprendendo-facil/pendentes/20261106-1346-colunas.mp4",
     "capa_ms": 1200,
-    "status": "scheduled"
+    "status": "cancelado",
+    "cancelado": true
   },
   {
     "slug": "20261106-1346-colunas",
@@ -78,6 +79,29 @@
     "agendado": "2026-11-06T14:50:00.000Z",
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1346-colunas.mp4",
     "chave_r2": "aprendendo-facil/pendentes/20261106-1346-colunas.mp4",
+    "capa_ms": 1200,
+    "status": "cancelado",
+    "cancelado": true
+  },
+  {
+    "slug": "20261106-1405-pilares",
+    "rede": "tiktok",
+    "post_id": "6aeddf5d730edf821ad4a448",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-06T14:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "20261106-1405-pilares",
+    "rede": "instagram",
+    "post_id": "6aeddf5d730edf821ad4a47c",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-06T14:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
     "capa_ms": 1200,
     "status": "scheduled"
   }

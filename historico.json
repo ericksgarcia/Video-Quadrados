@@ -36,5 +36,26 @@
     "seed": 33434,
     "winner": "amarelo",
     "arquivo": "videos/20261106-1346-colunas.mp4"
+  },
+  {
+    "data": "2026-11-06T14:08:07.115Z",
+    "category": "cores",
+    "level": "pilares",
+    "teams": [
+      "vermelho",
+      "azul",
+      "amarelo",
+      "verde"
+    ],
+    "crests": [
+      "sao-paulo",
+      "coritiba",
+      "man-city",
+      "real-madrid"
+    ],
+    "theme": "concreto",
+    "seed": 601201,
+    "winner": "verde",
+    "arquivo": "videos/20261106-1405-pilares.mp4"
   }
 ]
