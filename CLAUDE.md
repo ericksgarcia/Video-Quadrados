@@ -322,6 +322,9 @@ Comando para publicar um vídeo novo (próximo horário livre de 07:50, 11:50, 1
     python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt
 
 Cancelar um agendado (apaga os posts no Buffer e o vídeo de pendentes/): `python3 publicar.py --cancela <slug>`.
+Se um post der ERRO no Buffer (ex.: 06/11 11:50 o TikTok respondeu "Something went wrong"; o Instagram saiu): veja com
+`--status <slug>` e reenvie SÓ o que falhou com `python3 publicar.py --reenvia <slug>` (agora) ou `--reenvia <slug> --quando
+AAAA-MM-DDTHH:MM` — **pergunte ao dono antes** (é publicação pública; o ambiente bloqueia o reenvio imediato sem confirmação).
 Opções: `--capa-s 1.2`, `--quando 2026-11-07T11:50` (Brasília), `--agora`, `--redes tiktok,instagram` (Instagram avulso usa o
 horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `python3 publicar.py --fila`, `--status <slug>`
 (slug = nome do arquivo sem `.mp4`), `--lista` (R2). Depois que os posts saírem: `python3 publicar.py --arruma` (move

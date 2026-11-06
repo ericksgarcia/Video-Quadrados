@@ -11,6 +11,7 @@ Uso:
   python3 publicar.py --lista                     o que está em pendentes/ e enviados/ no R2
   python3 publicar.py --arruma                    move para enviados/ o que já foi publicado
   python3 publicar.py --cancela SLUG              apaga os posts AGENDADOS do vídeo e o tira de pendentes/
+  python3 publicar.py --reenvia SLUG [--quando ..] reenvia SÓ os posts que deram erro (agora, ou no horário dado)
 
 Chaves: NUNCA neste arquivo. O proxy do ambiente injeta "Authorization: Bearer ..." em api.buffer.com e
 api.cloudflare.com; se as variáveis BUFFER_TOKEN / CLOUDFLARE_API_TOKEN não existirem, vai um valor fictício.
@@ -349,6 +350,58 @@ def cmd_cancela(slug):
             print(f'R2: {chave} apagado')
 
 
+EDITA = '''mutation($input: EditPostInput!){ editPost(input:$input){
+  __typename
+  ... on PostActionSuccess { post { id status dueAt channelService } }
+  ... on NotFoundError { message } ... on UnauthorizedError { message } ... on UnexpectedError { message }
+  ... on RestProxyError { message } ... on LimitReachedError { message } ... on InvalidInputError { message } } }'''
+
+
+def cmd_reenvia(slug, quando_txt=None):
+    """Reenvia SÓ os posts do vídeo que deram erro no Buffer (ex.: falha do TikTok): agora, ou em --quando."""
+    reg = le_registro()
+    itens = [x for x in reg if x['slug'] == slug and not x.get('cancelado')]
+    if not itens:
+        falha(f'nenhum post ativo registrado para "{slug}"')
+    quando = None
+    if quando_txt:
+        q = datetime.fromisoformat(quando_txt)
+        quando = (q if q.tzinfo else q.replace(tzinfo=TZ)).astimezone(timezone.utc)
+        if quando < datetime.now(timezone.utc) + MARGEM:
+            falha(f'--quando {quando_txt} não está pelo menos 5 minutos no futuro')
+    feitos = 0
+    for x in itens:
+        p = post_por_id(x['post_id'])
+        if p is None or p['status'] != 'error':
+            print(f'{x["rede"]}: post {x["post_id"]} está "{p["status"] if p else "não encontrado"}"; não reenviei')
+            continue
+        # o vídeo precisa continuar no link público (não pode ter ido para enviados/)
+        if x.get('link'):
+            r = requests.head(x['link'], timeout=60)
+            if r.status_code != 200:
+                falha(f'{x["rede"]}: o vídeo não está mais no link ({r.status_code}): {x["link"]}')
+        texto = gql_ok('query($i: PostId!){ post(input:{id:$i}) { text } }', {'i': x['post_id']})['post']['text']
+        meta = {'tiktok': {'tiktok': {'isAiGenerated': False}},
+                'instagram': {'instagram': {'type': 'reel', 'shouldShareToFeed': True, 'isAiGenerated': False}}}[x['rede']]
+        inp = {'id': x['post_id'], 'mode': 'shareNow' if quando is None else 'customScheduled', 'text': texto,
+               'assets': [{'video': {'url': x['link'], 'metadata': {'thumbnailOffset': x.get('capa_ms') or 1200}}}],
+               'metadata': meta, 'schedulingType': 'automatic'}
+        if quando is not None:
+            inp['dueAt'] = quando.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        res = gql_ok(EDITA, {'input': inp})['editPost']
+        if res['__typename'] != 'PostActionSuccess':
+            falha(f'{x["rede"]}: Buffer recusou o reenvio ({res["__typename"]}): {res.get("message")}')
+        x['status'] = res['post'].get('status')
+        x['agendado'] = res['post'].get('dueAt') or x['agendado']
+        x.setdefault('reenvios', []).append(datetime.now(timezone.utc).isoformat(timespec='seconds'))
+        grava_registro(reg)
+        feitos += 1
+        print(f'{x["rede"]}: post {x["post_id"]} reenviado -> {res["post"].get("status")} '
+              f'{"AGORA" if quando is None else br(quando)}')
+    if not feitos:
+        print('Nenhum post com erro para reenviar.')
+
+
 def cmd_publicar(a):
     video = Path(a.video)
     if not video.is_file():
@@ -436,6 +489,7 @@ def main():
     ap.add_argument('--lista', action='store_true')
     ap.add_argument('--arruma', action='store_true')
     ap.add_argument('--cancela', metavar='SLUG')
+    ap.add_argument('--reenvia', metavar='SLUG')
     a = ap.parse_args()
     if a.fila:
         cmd_fila()
@@ -447,6 +501,8 @@ def main():
         cmd_arruma()
     elif a.cancela:
         cmd_cancela(a.cancela)
+    elif a.reenvia:
+        cmd_reenvia(a.reenvia, a.quando)
     elif a.video:
         cmd_publicar(a)
     else:
