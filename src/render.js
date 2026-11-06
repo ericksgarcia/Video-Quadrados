@@ -11,6 +11,9 @@ export const H = 1920;
 const AW = COLS * TILE, AH = ROWS * TILE;
 export const AX = (W - AW) / 2;           // 36
 export const AY = Math.round((H - AH) / 2); // 288 — mapa centralizado, como nas referências
+// Área segura do TikTok (1080x1920): topo ~150px = barra de status + abas "Seguindo/Para você"; direita x>945 = coluna de
+// ícones; embaixo y>1500 = @, legenda e música. Título/legenda ficam em 160-410 e o mapa em SAFE.
+export const SAFE = { x0: 60, x1: 945, y0: 430, y1: 1500 };
 const FONT = 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
 // Paletas completas (fundo/paredes, corredores, massa que empurra, pistões, tijolo escuro, textos).
@@ -132,7 +135,15 @@ export class Renderer {
       r0 = Math.min(r0, r); r1 = Math.max(r1, r); c0 = Math.min(c0, c); c1 = Math.max(c1, c);
     }
     this.view = { z: game.level.zoom ?? 1, x: ((c0 + c1 + 1) / 2) * TILE, y: ((r0 + r1 + 1) / 2) * TILE };
+    this.screenC = { x: W / 2, y: AY + AH / 2 };
     if (!game.level.zoom) { this.view.x = AW / 2; this.view.y = AH / 2; } // fases antigas: como antes
+    else if (this.opts.safe !== false) {
+      // ÁREA SEGURA DO TIKTOK: o mapa inteiro cabe entre a legenda do topo e a faixa do @/legenda/som embaixo, e longe da
+      // coluna de ícones da direita (perfil, curtir, comentar, salvar, compartilhar). Encolhe o zoom se precisar.
+      const S = SAFE, mw = (c1 - c0 + 1) * TILE, mh = (r1 - r0 + 1) * TILE;
+      this.view.z = Math.min(game.level.zoom, (S.x1 - S.x0) / mw, (S.y1 - S.y0) / mh);
+      this.screenC = { x: (S.x0 + S.x1) / 2, y: (S.y0 + S.y1) / 2 };
+    }
     this.cam = { ...this.view };
     this.applyTheme();
     this.buildStatic();
@@ -211,7 +222,7 @@ export class Renderer {
 
     const { z, x: cx, y: cy } = this.cam;
     g.save();
-    g.translate(W / 2, AY + AH / 2); g.scale(z, z); g.translate(-cx, -cy);
+    g.translate(this.screenC.x, this.screenC.y); g.scale(z, z); g.translate(-cx, -cy);
     g.drawImage(this.floorLayer, -20, -20);
     this.drawFlood();
     this.drawPads();
@@ -253,22 +264,23 @@ export class Renderer {
     g.save(); g.globalAlpha = a;
     const crestTeams = this.game.racers.filter((r) => r.team.crest);
     if (crestTeams.length) this.drawLegend(g, o.title, crestTeams);
-    else text(g, o.title, W / 2, AY / 2 - (o.subtitle ? 22 : 0), { size: 74, maxW: 1000, fill: this.theme.title });
-    if (o.subtitle && !crestTeams.length) text(g, o.subtitle, W / 2, AY / 2 + 50, { size: 38, weight: 700, fill: this.theme.sub, maxW: 900 });
+    else text(g, o.title, W / 2, 300 - (o.subtitle ? 22 : 0), { size: 74, maxW: 940, fill: this.theme.title });
+    if (o.subtitle && !crestTeams.length) text(g, o.subtitle, W / 2, 350, { size: 38, weight: 700, fill: this.theme.sub, maxW: 900 });
     g.restore();
   }
 
   // legenda do topo (vídeos com escudos): cada escudo no quadrado da sua cor + nome + nome da cor
   drawLegend(g, title, rs) {
-    text(g, title, W / 2, 44, { size: 54, maxW: 1000, fill: this.theme.title });
-    const n = rs.length, cw = Math.min(260, 1040 / n), x0 = W / 2 - cw * n / 2;
+    // tudo abaixo de y=160 (abas do TikTok) e acima do mapa (SAFE.y0)
+    text(g, title, W / 2, 205, { size: 56, maxW: 940, fill: this.theme.title });
+    const n = rs.length, cw = Math.min(250, 960 / n), x0 = W / 2 - cw * n / 2;
     rs.forEach((r, k) => {
-      const cx = x0 + cw * (k + 0.5), s = 104;
-      g.drawImage(this.badges[r.i], cx - s / 2, 76, s, s);
-      g.strokeStyle = LINE; g.lineWidth = 4; g.strokeRect(cx - s / 2, 76, s, s);
-      text(g, r.team.crest.name, cx, 210, { size: 30, maxW: cw - 12, fill: this.theme.title });
+      const cx = x0 + cw * (k + 0.5), s = 92;
+      g.drawImage(this.badges[r.i], cx - s / 2, 250, s, s);
+      g.strokeStyle = LINE; g.lineWidth = 4; g.strokeRect(cx - s / 2, 250, s, s);
+      text(g, r.team.crest.name, cx, 370, { size: 28, maxW: cw - 12, fill: this.theme.title });
       g.fillStyle = this.colors[r.i];   // barra na cor do clube (= cor do quadrado e dos tijolos)
-      g.beginPath(); g.roundRect(cx - 60, 232, 120, 12, 6); g.fill();
+      g.beginPath(); g.roundRect(cx - 56, 390, 112, 11, 5.5); g.fill();
       g.strokeStyle = 'rgba(0,0,0,0.55)'; g.lineWidth = 2; g.stroke();
     });
   }

@@ -51,7 +51,7 @@ export class Game {
       // 'path' (padrão): a água avança pelos túneis atrás dos bonecos, como uma correnteza
       // 'gravity': enche sempre o ponto mais baixo (sobe como uma piscina)
       mode: f.mode ?? 'path', from: new Int8Array(ROWS * COLS).fill(-1),
-      maxRate: f.maxRate ?? Infinity, zoneRate: f.zoneRate, delay2: f.delay2, stage2After: f.stage2After, stage2Gap: f.stage2Gap,
+      maxRate: f.maxRate ?? Infinity, zoneRate: f.zoneRate, delay2: f.delay2, stage2After: f.stage2After != null && level.ownerPerm ? level.ownerPerm[f.stage2After] : f.stage2After, stage2Gap: f.stage2Gap,
       // massa sólida (padrão): ninguém entra nela; a frente empurra os quadrados na hora
       solid: f.solid ?? true,
       disp: new Float32Array(ROWS * COLS), ddir: new Int8Array(ROWS * COLS).fill(-1),
@@ -76,7 +76,7 @@ export class Game {
         if (ch === '#') cell.k = 'wall';
         else if (ch === 'F') { cell.k = 'finish'; this.finishTiles.push(cell); }
         else if (ch === 'B') { cell.k = 'brick'; cell.owner = null; }
-        else if (ch >= '1' && ch <= '8') { cell.k = 'brick'; cell.owner = Number(ch) - 1; }
+        else if (ch >= '1' && ch <= '8') { cell.k = 'brick'; cell.owner = this.level.ownerPerm ? this.level.ownerPerm[Number(ch) - 1] : Number(ch) - 1; } // ownerPerm: regra de justiça (tools/justica.mjs)
         else if (ch === 'D') { cell.k = 'door'; const d = { cell, r, c, open: 0, target: 0, idx: this.doors.length }; cell.door = d; this.doors.push(d); }
         else if (DIRS[ch]) cell.pad = ch;
         else if (ch === 'O') this.bumpers.push({ x: cx, y: cy, R: U * 0.34, flash: 0 });

@@ -32,6 +32,10 @@ feitas em `src/levels.js`. (Não há mais analisador automático.)
 - `massTrack` seguindo o mapa de chegada da massa (um trecho por faixa, com velocidade em blocos/s);
   `pistons` com os números do relatório; `racerSize` = tamanho(unid)×56; `racerSpeed` = vel(unid/s)×56;
   `zoom` ≈ 0,9×1080 / (largura do mapa em px do jogo); `homing:0, steer:0, snap:0` nas cópias;
+- **REGRA DE JUSTIÇA (obrigatória)**: rode `node tools/justica.mjs <id>`. O quadrado que nasce MAIS LONGE da saída tem de ser o
+  dono da parede que libera todos (a parede de cor entre a prisão e o resto do caminho). Se o script sugerir `ownerPerm: [...]`,
+  coloque na fase (o mapa continua igual ao vídeo; o motor troca os donos na leitura) e confira se `flood.stage2After` (que é o
+  dígito-1 ORIGINAL do mapa) ainda aponta para a parede certa — em geral a massa só deve varrer a prisão depois que a SAÍDA abre;
 - registre o id em `tools/novo.mjs` (listas `pick([...])`) e documente a fase aqui (seção Regras);
 - **elementos que o motor ainda NÃO tem** (martelo, portais, quadrado lilás, bloco verde na chegada…):
   se aparecerem no vídeo, aproxime com o que existe (ou implemente no motor se for simples) e **diga
@@ -264,6 +268,19 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - Categorias opcionais com bandeira/escudo: Seleções x Times (clubes), cada uma com título próprio
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
+
+## Regra de justiça e área segura do TikTok (pedidos do usuário)
+
+- **Justiça**: quem nasce mais longe da saída é o dono da parede que libera todos. `tools/justica.mjs` acha a parede de saída,
+  mede a distância de cada largada e propõe a troca mínima de donos (`ownerPerm` na fase) que mantém a corrente solucionável.
+  Aplicado: **Pilares** `[3,1,2,0]` (saída passa à baia 1; `stage2After: 3` = a massa só varre depois que a saída abre),
+  **Meandro** `[2,1,0,3]` (saída passa à baia 1), **Portais** `[0,3,2,1]` (barra de saída passa à baia 4). Já cumpriam: Gaiola,
+  Cofre, Escada, Pente. Não se aplica: Poços (todos nascem juntos, 4 poços) e Ponte (chegada cercada pelas 4 cores).
+  Sim. (30): Pilares 0 sem vencedor/0 esmagados, vitórias por baia 6/7/11/6; Meandro 0/0, 15/5/5/5 (a baia 1 vence mais);
+  Portais 0/0, ~85s.
+- **Área segura do TikTok** (`SAFE` em `src/render.js`): nada importante em y<150 (barra de status + abas), x>945 entre y 700–1500
+  (ícones da direita) nem y>1500 (@, legenda, música). Título em y≈205, legenda de escudos 250–405, mapa encaixado em
+  x 60–945 / y 430–1500 (o zoom da fase é reduzido se não couber). `safe: false` nas opções do Renderer volta ao antigo.
 
 ## Escudos nos quadrados (pedido do usuário)
 

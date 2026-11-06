@@ -29,6 +29,7 @@ export const LEVELS = [
     name: 'Portais',
     maxRacers: 4,
     racers: 4,
+    ownerPerm: [0, 3, 2, 1], // REGRA DE JUSTIÇA: quem nasce mais longe da saída é o dono da parede que libera todos (barra de saída (verde, teto da baia 1) passa ao quadrado da baia 4 (mais longe); a barra 3-4 passa ao da baia 2)
     zoom: 1.085,        // mapa 16x20 unidades
     racerSize: 50,      // ~0,9 unidade
     racerSpeed: 235, homing: 0, steer: 0, snap: 0, // ~4,2 unidades/s, quique livre
@@ -115,6 +116,7 @@ export const LEVELS = [
     name: 'Meandro',
     maxRacers: 4,
     racers: 4,
+    ownerPerm: [2, 1, 0, 3], // REGRA DE JUSTIÇA: quem nasce mais longe da saída é o dono da parede que libera todos (saída (col 11) passa ao quadrado da baia 1 (mais longe); o tijolo entre baias 2-3 passa ao da baia 3)
     zoom: 1.24,         // mapa 14x18 unidades
     racerSize: 40,      // ~0,75 unidade
     racerSpeed: 235, homing: 0, steer: 0, snap: 0, // ~4,2 unidades/s, quique livre
@@ -200,6 +202,7 @@ export const LEVELS = [
     name: 'Pilares',
     maxRacers: 4,
     racers: 4,
+    ownerPerm: [3, 1, 2, 0], // REGRA DE JUSTIÇA: quem nasce mais longe da saída é o dono da parede que libera todos (saída (amarelo, col 11) passa ao quadrado da baia 1 (mais longe); o tijolo entre baias 3-4 passa ao da baia 4)
     zoom: 1.24,         // mapa 14x18 unidades
     racerSize: 40,      // ~0,75 unidade
     racerSpeed: 235, homing: 0, steer: 0, snap: 0, // ~4,2 unidades/s, quique livre
@@ -207,7 +210,7 @@ export const LEVELS = [
     colorBrickHp: 1,
     brickHp: 1,
     knifeKeep: true,
-    flood: { delay: 0.8, zoneRate: 0.8, delay2: 9.5, stage2After: 0, stage2Gap: 1, rate: 1.8, accel: 0 }, // a varredura só começa 1s depois que o vermelho quebra o 1º tijolo dele (senão prensa quem ainda está nas baias)
+    flood: { delay: 0.8, zoneRate: 0.8, delay2: 9.5, stage2After: 3, stage2Gap: 1, rate: 1.8, accel: 0 }, // a varredura só começa 1s depois que a SAÍDA (col 11; dígito 4 -> ownerPerm) abre (senão prensa quem ainda está nas baias)
     massTrack: {
       unit: 2, origin: [6, 4], // coordenadas em unidades (mapa 14x18); velocidades em blocos/s
       stage1: [ // sobe pelo fundo das 4 baias (~0,4 unidade/s)
