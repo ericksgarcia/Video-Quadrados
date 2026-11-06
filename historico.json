@@ -57,5 +57,26 @@
     "seed": 601201,
     "winner": "verde",
     "arquivo": "videos/20261106-1405-pilares.mp4"
+  },
+  {
+    "data": "2026-11-06T14:31:45.842Z",
+    "category": "cores",
+    "level": "cofre",
+    "teams": [
+      "amarelo",
+      "vermelho",
+      "verde",
+      "azul"
+    ],
+    "crests": [
+      "chapecoense",
+      "mirassol",
+      "sao-paulo",
+      "cruzeiro"
+    ],
+    "theme": "concreto",
+    "seed": 457791,
+    "winner": "azul",
+    "arquivo": "videos/20261106-1429-cofre.mp4"
   }
 ]

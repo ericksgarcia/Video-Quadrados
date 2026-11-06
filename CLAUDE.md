@@ -280,7 +280,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   Portais 0/0, ~85s.
 - **Área segura do TikTok** (`SAFE` em `src/render.js`): nada importante em y<150 (barra de status + abas), x>945 entre y 700–1500
   (ícones da direita) nem y>1500 (@, legenda, música). O mapa ocupa x 24–945 / y 160–1500 no **maior zoom que cabe** (ignora o
-  `zoom` da fase). `safe: false` nas opções do Renderer volta ao enquadramento antigo.
+  `zoom` da fase; vale para TODAS as fases, inclusive Gaiola/Cofre que não têm `zoom` — antes elas escapavam da área segura). `safe: false` nas opções do Renderer volta ao enquadramento antigo.
 - **SEM textos no vídeo** (pedido do usuário: "não coloque legendas, mapa o maior possível"): nada de título ("QUAL ESCUDO
   VENCE?") nem lista de escudos no topo; os escudos aparecem só dentro dos quadrados. `texto: true` nas opções do Renderer
   traz o título/legenda de volta. A legenda do POST (TikTok/Instagram) continua normal (`.txt` do `novo`).

@@ -136,14 +136,13 @@ export class Renderer {
     }
     this.view = { z: game.level.zoom ?? 1, x: ((c0 + c1 + 1) / 2) * TILE, y: ((r0 + r1 + 1) / 2) * TILE };
     this.screenC = { x: W / 2, y: AY + AH / 2 };
-    if (!game.level.zoom) { this.view.x = AW / 2; this.view.y = AH / 2; } // fases antigas: como antes
-    else if (this.opts.safe !== false) {
+    if (this.opts.safe !== false) { // vale para TODAS as fases (inclusive as sem 'zoom', como Gaiola e Cofre)
       // ÁREA SEGURA DO TIKTOK: o mapa inteiro cabe entre a legenda do topo e a faixa do @/legenda/som embaixo, e longe da
       // coluna de ícones da direita (perfil, curtir, comentar, salvar, compartilhar). Encolhe o zoom se precisar.
       const S = SAFE, mw = (c1 - c0 + 1) * TILE, mh = (r1 - r0 + 1) * TILE;
       this.view.z = Math.min((S.x1 - S.x0) / mw, (S.y1 - S.y0) / mh); // o maior possível (ignora o zoom da fase)
       this.screenC = { x: (S.x0 + S.x1) / 2, y: (S.y0 + S.y1) / 2 };
-    }
+    } else if (!game.level.zoom) { this.view.x = AW / 2; this.view.y = AH / 2; } // enquadramento antigo
     this.cam = { ...this.view };
     this.applyTheme();
     this.buildStatic();
