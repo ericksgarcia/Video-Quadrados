@@ -13,5 +13,28 @@
     "seed": 653492,
     "winner": "for",
     "arquivo": "videos/20261102-2119-tunel.mp4"
+  },
+  {
+    "data": "2026-11-06T13:50:50.207Z",
+    "category": "cores",
+    "level": "colunas",
+    "teams": [
+      "roxo",
+      "verde",
+      "laranja",
+      "amarelo",
+      "ciano"
+    ],
+    "crests": [
+      "real-madrid",
+      "vasco",
+      "chapecoense",
+      "man-city",
+      "sao-paulo"
+    ],
+    "theme": "concreto",
+    "seed": 33434,
+    "winner": "amarelo",
+    "arquivo": "videos/20261106-1346-colunas.mp4"
   }
 ]
