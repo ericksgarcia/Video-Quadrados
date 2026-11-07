@@ -90,9 +90,10 @@
     "canal": "aprendendo.facil99",
     "agendado": "2026-11-06T14:50:00.000Z",
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
-    "chave_r2": "aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
+    "chave_r2": "aprendendo-facil/enviados/20261106-1405-pilares.mp4",
     "capa_ms": 1200,
-    "status": "scheduled"
+    "status": "sent",
+    "link_atual": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/enviados/20261106-1405-pilares.mp4"
   },
   {
     "slug": "20261106-1405-pilares",
@@ -101,9 +102,10 @@
     "canal": "disputadostimes",
     "agendado": "2026-11-06T14:50:00.000Z",
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
-    "chave_r2": "aprendendo-facil/pendentes/20261106-1405-pilares.mp4",
+    "chave_r2": "aprendendo-facil/enviados/20261106-1405-pilares.mp4",
     "capa_ms": 1200,
-    "status": "scheduled"
+    "status": "sent",
+    "link_atual": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/enviados/20261106-1405-pilares.mp4"
   },
   {
     "slug": "20261106-1429-cofre",
@@ -112,9 +114,10 @@
     "canal": "aprendendo.facil99",
     "agendado": "2026-11-06T19:50:00.000Z",
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1429-cofre.mp4",
-    "chave_r2": "aprendendo-facil/pendentes/20261106-1429-cofre.mp4",
+    "chave_r2": "aprendendo-facil/enviados/20261106-1429-cofre.mp4",
     "capa_ms": 1200,
-    "status": "scheduled"
+    "status": "sent",
+    "link_atual": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/enviados/20261106-1429-cofre.mp4"
   },
   {
     "slug": "20261106-1429-cofre",
@@ -123,8 +126,9 @@
     "canal": "disputadostimes",
     "agendado": "2026-11-06T19:50:00.000Z",
     "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/20261106-1429-cofre.mp4",
-    "chave_r2": "aprendendo-facil/pendentes/20261106-1429-cofre.mp4",
+    "chave_r2": "aprendendo-facil/enviados/20261106-1429-cofre.mp4",
     "capa_ms": 1200,
-    "status": "scheduled"
+    "status": "sent",
+    "link_atual": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/enviados/20261106-1429-cofre.mp4"
   }
 ]
