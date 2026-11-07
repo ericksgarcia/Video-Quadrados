@@ -112,7 +112,9 @@ for (const level of LEVELS.filter((l) => (ids.length ? ids.includes(l.id) : true
     if (!longe.includes(p[digitos[0] - 1])) continue;
     if (!solucionavel(A, p)) continue;
     const muda = p.filter((x, i) => x !== i).length;
-    if (!melhor || muda < melhor.muda) melhor = { p, muda };
+    // prefere a troca em que cada parede fica PERTO do seu dono (corrente rápida); depois, a que muda menos donos
+    const custo = A.walls.reduce((acc, w) => acc + distancias(A, w)[p[w.d - 1]], 0);
+    if (!melhor || custo < melhor.custo || (custo === melhor.custo && muda < melhor.muda)) melhor = { p, muda, custo };
   }
   const txt = `dist. até a saída por quadrado [${dist.join(', ')}]; mais longe: ${longe.join('/')}; dono atual da saída: ${donoAtual}`;
   if (longe.includes(donoAtual)) console.log(`${level.id}: OK${level.ownerPerm ? ' (com ownerPerm [' + level.ownerPerm.join(', ') + '])' : ''} (${txt})`);
