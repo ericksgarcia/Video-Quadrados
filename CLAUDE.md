@@ -252,6 +252,12 @@ iteração. Se ele pedir mudança, atualize esta lista.
   2 tijolos escuros antes da chegada, **2 pistões horizontais na linha 5** (nascem nos pilares das cols 3 e 8; 6s e 10s/fase 7; 2 unid.).
   **Aproximado**: o quadrado lilás parado no canto de cima à esquerda do vídeo NÃO foi copiado (o motor não tem; ninguém interage com
   ele no vídeo). Sim.: 0/30 sem vencedor, ~86s (referência ~50s), 0 esmagados.
+- **Fase Salão** — cópia do vídeo 16 (`21ea1037`; mapa 14x18 unidades, `racerSize 40`, ~4,2 unid/s, `brickBlock 2`, `knifeKeep`): 4 baias
+  embaixo (vermelho, verde, ciano, amarelo; `--teams vermelho,verde,ciano,amarelo`) com tijolos de cor de 3 unidades. **Justiça**
+  `ownerPerm [2,1,0,3]`: a saída (col 11) é do quadrado da baia 1; `stage2After: 2`. Saída → corredor da direita sobe → **salão** (linhas
+  8-10) com **faca** no meio → sobe pela esquerda → corredor das linhas 4-6 (**pistão** sobe da parede na col 4, 3 unid., 6s) → sobe à
+  direita → faixa de cima → 6 tijolos escuros → chegada no canto de cima à esquerda. Massa medida até ~48s. Sim.: 1/30 sem vencedor,
+  ~79s (referência ~50s), 0 esmagados; a faca elimina em média ~2,9 dos 4 (o best-of-30 escolhe a melhor).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
