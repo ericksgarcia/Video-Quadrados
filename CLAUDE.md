@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -230,6 +230,14 @@ iteração. Se ele pedir mudança, atualize esta lista.
   depois que o verde quebra a barra dele: `stage2After: 1`) e corre pelo corredor de cima; o resto da serpentina é extrapolado (~1 unid/s,
   o vídeo acaba antes). Sem pistões. Largada centralizada na baia (quadrado grande). Os dois portais são desenhados roxos (como no vídeo).
   Sim.: 0/30 sem vencedor, ~66s (referência 43s), a faca elimina em média ~2,5 dos 4 (o best-of-40 escolhe a melhor).
+- **Fase Grade** — cópia do vídeo 13 (`0c2d8f83`; mapa 16x21 unidades, variação da Gaiola, `racerSize 38`, ~4,2 unid/s, `brickBlock 2`,
+  sem faca): 4 baias horizontais à direita (verde, amarelo, vermelho, ciano de cima p/ baixo; `--teams verde,amarelo,vermelho,ciano`)
+  com barras de 4 unidades em corrente: verde (1-2), amarelo (2-3), vermelho (3-4) e ciano em cima (saída = do último, o mais longe:
+  já cumpre a justiça). Saída → faixa de cima p/ a esquerda → coluna da esquerda desce → canto de baixo → sobe cols 3-4 (**pistão
+  horizontal** na linha 16, nasce no pilar da col 2, 2 unid., 8s) → atravessa → desce cols 6-7 → corredor de baixo → sobe à direita →
+  1 tijolo escuro → chegada. "H" com ilha no topo (sala sem saída). Massa (medida): entra pela borda direita das baias (~0,4 unid/s),
+  sobe pelo eixo das baias (~1 unid/s, só depois que a saída abre: `stage2After: 3`), faixa de cima rápida (~2 unid/s), desce, sobe,
+  desce; o fim (corredor de baixo) é extrapolado. Sim.: 1/30 sem vencedor, ~84s (referência ~76s), 0 esmagados, vitórias 6/7/8/8.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
