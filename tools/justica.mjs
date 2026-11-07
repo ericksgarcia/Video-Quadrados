@@ -96,7 +96,7 @@ for (const level of LEVELS.filter((l) => (ids.length ? ids.includes(l.id) : true
   const saidas = A.walls.filter((w) => w.regs.has(A.finReg));
   const digitos = [...new Set(saidas.map((w) => w.d))];
   const ident = [...Array(n).keys()];
-  if (!solucionavel(A, ident)) { console.log(`${level.id}: a corrente ORIGINAL não fecha nesta análise (portal/arranjo especial); pulei`); continue; }
+  if (!solucionavel(A, level.ownerPerm || ident)) { console.log(`${level.id}: a corrente ORIGINAL não fecha nesta análise (portal/arranjo especial); pulei`); continue; }
   if (digitos.length !== 1) {
     console.log(`${level.id}: ${digitos.length} cores encostam na saída (${digitos.join(',')}): a regra não se aplica direto (largada junta/duas saídas); fica como está`);
     continue;
@@ -105,7 +105,8 @@ for (const level of LEVELS.filter((l) => (ids.length ? ids.includes(l.id) : true
   const dist = distancias(A, exitWalls.reduce((a, w) => ({ cells: [...a.cells, ...w.cells] }), { cells: [] }));
   const max = Math.max(...dist);
   const longe = dist.map((d, i) => (d === max ? i : -1)).filter((i) => i >= 0);
-  const donoAtual = digitos[0] - 1;
+  const base = level.ownerPerm || ident; // fase que já tem ownerPerm: avalia com ele
+  const donoAtual = base[digitos[0] - 1];
   let melhor = null;
   for (const p of perms(ident)) {
     if (!longe.includes(p[digitos[0] - 1])) continue;
@@ -114,7 +115,7 @@ for (const level of LEVELS.filter((l) => (ids.length ? ids.includes(l.id) : true
     if (!melhor || muda < melhor.muda) melhor = { p, muda };
   }
   const txt = `dist. até a saída por quadrado [${dist.join(', ')}]; mais longe: ${longe.join('/')}; dono atual da saída: ${donoAtual}`;
-  if (longe.includes(donoAtual)) console.log(`${level.id}: OK (${txt})`);
+  if (longe.includes(donoAtual)) console.log(`${level.id}: OK${level.ownerPerm ? ' (com ownerPerm [' + level.ownerPerm.join(', ') + '])' : ''} (${txt})`);
   else if (!melhor) console.log(`${level.id}: SEM permutação válida (${txt})`);
   else console.log(`${level.id}: ownerPerm: [${melhor.p.join(', ')}]  (${melhor.muda} donos trocados; ${txt})`);
 }
