@@ -245,6 +245,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   → faixa de cima → desce cols 4-5 → sobe a coluna 7 (1 unidade) → desce cols 9-10 → sobe cols 12-13 → tijolos escuros → chegada no
   canto de cima à direita. Pistões medidos: P1 sobe do topo do pilar da col 3 (2 unid., 8s) e P2 **desce** do pé da parede da col 11
   (3 unid., 8s). Massa medida até ~57s (o resto é extrapolado). Sim.: 0/30 sem vencedor, ~81s (referência ~58s), 0 esmagados.
+- **Fase Corredor** — cópia do vídeo 15 (`1528db85`; mapa 14x18 unidades, parente da Trilha, `racerSize 42`, ~4,2 unid/s, `brickBlock 2`,
+  sem faca): 4 baias embaixo (ciano, verde, amarelo, vermelho; `--teams ciano,verde,amarelo,vermelho`) com tijolos de cor de 3 unidades.
+  **Justiça** `ownerPerm [1,2,3,0]`: a saída (col 11) é do quadrado da baia 1 (mais longe) e cada tijolo entre baias é do vizinho da
+  direita (corrente rápida: a troca mínima `[3,1,2,0]` dava ~97s e 3/30 travadas); `stage2After: 3`. Corredor do meio de 2 unidades,
+  2 tijolos escuros antes da chegada, **2 pistões horizontais na linha 5** (nascem nos pilares das cols 3 e 8; 6s e 10s/fase 7; 2 unid.).
+  **Aproximado**: o quadrado lilás parado no canto de cima à esquerda do vídeo NÃO foi copiado (o motor não tem; ninguém interage com
+  ele no vídeo). Sim.: 0/30 sem vencedor, ~86s (referência ~50s), 0 esmagados.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
@@ -297,7 +304,8 @@ iteração. Se ele pedir mudança, atualize esta lista.
 ## Regra de justiça e área segura do TikTok (pedidos do usuário)
 
 - **Justiça**: quem nasce mais longe da saída é o dono da parede que libera todos. `tools/justica.mjs` acha a parede de saída,
-  mede a distância de cada largada e propõe a troca mínima de donos (`ownerPerm` na fase) que mantém a corrente solucionável.
+  mede a distância de cada largada e propõe a troca de donos (`ownerPerm` na fase) que mantém a corrente solucionável, preferindo
+  a que deixa cada parede PERTO do seu dono (corrente rápida) e, depois, a que muda menos donos.
   Aplicado: **Pilares** `[3,1,2,0]` (saída passa à baia 1; `stage2After: 3` = a massa só varre depois que a saída abre),
   **Meandro** `[2,1,0,3]` (saída passa à baia 1), **Portais** `[0,3,2,1]` (barra de saída passa à baia 4). Já cumpriam: Gaiola,
   Cofre, Escada, Pente. Não se aplica: Poços (todos nascem juntos, 4 poços) e Ponte (chegada cercada pelas 4 cores).
