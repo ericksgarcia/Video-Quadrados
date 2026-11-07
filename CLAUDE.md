@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -238,6 +238,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   1 tijolo escuro → chegada. "H" com ilha no topo (sala sem saída). Massa (medida): entra pela borda direita das baias (~0,4 unid/s),
   sobe pelo eixo das baias (~1 unid/s, só depois que a saída abre: `stage2After: 3`), faixa de cima rápida (~2 unid/s), desce, sobe,
   desce; o fim (corredor de baixo) é extrapolado. Sim.: 1/30 sem vencedor, ~84s (referência ~76s), 0 esmagados, vitórias 6/7/8/8.
+- **Fase Trilha** — cópia do vídeo 14 (`0e02eeee`; mapa 14x18 unidades, `racerSize 38`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias
+  embaixo (verde, azul, amarelo, vermelho da esq. p/ dir.; `--teams verde,azul,amarelo,vermelho`) com tijolos de cor de 3 unidades.
+  **Justiça** `ownerPerm [2,1,0,3]`: a saída (col 11) é do quadrado da baia 1 (mais longe); `stage2After: 2` (a massa só varre a prisão
+  depois que a saída abre). Saída → corredor da direita sobe → **corredor de 1 unidade** (linha 10) p/ a esquerda → sala da esquerda sobe
+  → faixa de cima → desce cols 4-5 → sobe a coluna 7 (1 unidade) → desce cols 9-10 → sobe cols 12-13 → tijolos escuros → chegada no
+  canto de cima à direita. Pistões medidos: P1 sobe do topo do pilar da col 3 (2 unid., 8s) e P2 **desce** do pé da parede da col 11
+  (3 unid., 8s). Massa medida até ~57s (o resto é extrapolado). Sim.: 0/30 sem vencedor, ~81s (referência ~58s), 0 esmagados.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
