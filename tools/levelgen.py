@@ -599,7 +599,78 @@ def salao():
     m.put(R0 + 19, C0 + 13, '!')   # faca no meio do salão (linha 9, col 6)
     return m.lines()
 
+def teto():
+    """Cópia do vídeo 17 (21fe3eb7): mapa 15x18 unidades. 4 baias penduradas no TOPO (vermelho, ciano, amarelo, verde da esq.
+    p/ dir.), tijolos de cor de 3 unidades à direita de cada baia: vermelho (1-2), ciano (2-3), amarelo (3-4), verde (saída p/ o
+    corredor da direita). Saída -> desce a direita -> corredor largo (linhas 7-10) p/ a esquerda -> desce a esquerda -> corredor
+    de baixo p/ a direita -> sobe à direita -> 1 tijolo escuro -> chegada (col 10, linhas 12-13). Sala em U sem saída com ilha
+    no meio. Faca no canto de baixo à esquerda. Sem pistões."""
+    U = [
+        '#..#..#..#..###',  # 0  baias (a massa desce do topo delas)
+        '#..#..#..#..###',  # 1
+        '#..#..#..#..###',  # 2
+        '#..1..2..3..4..',  # 3  tijolos de cor (3 linhas): vermelho, ciano, amarelo, verde (saída)
+        '#..1..2..3..4..',  # 4
+        '#..1..2..3..4..',  # 5
+        '#############..',  # 6
+        '...............',  # 7  corredor largo
+        '...............',  # 8
+        '...............',  # 9
+        '...............',  # 10
+        '...############',  # 11
+        '...#.....#FB...',  # 12 sala em U (cols 4-8) | chegada (col 10) atrás de 1 tijolo escuro (col 11)
+        '...#.....#FB...',  # 13
+        '...#.###.####..',  # 14 ilha (cols 5-7)
+        '...............',  # 15 corredor de baixo
+        '...............',  # 16 (faca)
+        '...............',  # 17
+    ]
+    R0, C0 = 6, 3
+    m = unitmap(U, {}, R0, C0)
+    for c in (2, 5, 8, 11): m.put(R0 + 2, C0 + 2 * c, 'S')   # largada: no alto de cada baia, junto da parede da direita
+    m.put(R0 + 33, C0 + 3, '!')                              # faca (linha 16, col 1)
+    return m.lines()
+
+def xadrez():
+    """Cópia do vídeo 18 (243a6531): mapa de 19x22 BLOCOS (1 célula = 1 bloco, como a Pente). 4 baias no topo (ciano, verde,
+    vermelho, amarelo da esq. p/ dir.) com tijolos de cor de 1x4 à direita de cada baia: verde (1-2), ciano (2-3), amarelo (3-4),
+    vermelho (saída p/ a direita). Saída -> corredor de 2 blocos com tijolos escuros em XADREZ p/ a esquerda -> desce a esquerda
+    -> corredor do meio (colunas de tijolos escuros nas duas pontas) p/ a direita -> desce a direita -> corredor de baixo (faca;
+    tijolos escuros nas pontas) p/ a esquerda -> desce a esquerda -> corredor final -> 6 tijolos escuros -> chegada (col 17).
+    (O bloco verde-limão à direita da chegada no vídeo virou parede: o motor não tem esse elemento.)"""
+    U = [
+        '####..#..#..#..####',  # 0  baias (a massa desce do topo)
+        '####..#..#..#..####',  # 1
+        '####..#..#..#..####',  # 2
+        '####..2..1..4..3...',  # 3  tijolos de cor (4 linhas): verde, ciano, amarelo, vermelho (saída)
+        '####..2..1..4..3...',  # 4
+        '####..2..1..4..3...',  # 5
+        '####..2..1..4..3...',  # 6
+        '################...',  # 7
+        '....B...B...B......',  # 8  corredor com tijolos escuros em xadrez
+        '......B...B...B....',  # 9
+        '...################',  # 10
+        '...B...........B...',  # 11 corredor do meio (colunas de tijolos escuros nas pontas)
+        '...B...........B...',  # 12
+        '...B...........B...',  # 13
+        '################...',  # 14
+        '...B...........B...',  # 15 corredor de baixo (faca no meio)
+        '...B...........B...',  # 16
+        '...B...........B...',  # 17
+        '...################',  # 18
+        '...............BBF#',  # 19 corredor final -> 2x3 tijolos escuros -> chegada (col 17); bloco verde do vídeo = parede
+        '...............BBF#',  # 20
+        '...............BBF#',  # 21
+    ]
+    R0, C0 = 13, 8
+    m = M()
+    for r, row in enumerate(U):
+        for c, ch in enumerate(row): m.put(R0 + r, C0 + c, ch)
+    for c in (5, 8, 11, 14): m.put(R0 + 1, C0 + c, 'S')   # largada: 1 quadrado por baia
+    m.put(R0 + 16, C0 + 8, '!')                           # faca
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
