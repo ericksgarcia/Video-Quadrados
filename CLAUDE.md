@@ -272,6 +272,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   colunas de 3 tijolos escuros → corredor final → 6 tijolos escuros → chegada (col 17). **Aproximado**: o bloco verde-limão à direita
   da chegada virou parede. Massa medida até o fim (~61s). Sim.: 0/30 sem vencedor, ~69s (referência 63s), 1 esmagado; a faca elimina
   em média ~3.
+- **Fase Portões** — cópia do vídeo 19 (`263d8cf4`; mapa 14x18 unidades, `racerSize 42`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias
+  embaixo (vermelho, verde, azul, amarelo; `--teams vermelho,verde,azul,amarelo`) com tijolos de cor de 4 unidades; a saída (vermelha,
+  col 11) já é do quadrado mais longe no vídeo (justiça ok sem `ownerPerm`; `stage2After: 0`). Corredores de 3 unidades com **tijolos de
+  cor SOLTOS** (1 unidade, só o dono quebra, não fecham a passagem): corredor do meio p/ a esquerda → sobe a esquerda → corredor de cima
+  p/ a direita → desce pela passagem de 1 unidade ao lado do bloco lilás → corredor interno → 2 tijolos escuros → chegada. **Aproximado**:
+  o quadrado lilás virou parede. Massa medida até ~60s; a frente do corredor de cima para uma coluna antes da passagem (antes prensava
+  3 em 30 no canto). Sim.: 0/30 sem vencedor, ~68s (referência ~63s), 0 esmagados.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada

@@ -262,5 +262,27 @@
     "chave_r2": "aprendendo-facil/pendentes/xadrez-concreto.mp4",
     "capa_ms": 1200,
     "status": "scheduled"
+  },
+  {
+    "slug": "portoes-concreto",
+    "rede": "tiktok",
+    "post_id": "6aefcc6851492b796e0df9e5",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-08T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/portoes-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/portoes-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "portoes-concreto",
+    "rede": "instagram",
+    "post_id": "6aefcc69004e4879a78ce2b8",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-08T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/portoes-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/portoes-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
   }
 ]
