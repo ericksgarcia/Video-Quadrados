@@ -670,7 +670,71 @@ def xadrez():
     m.put(R0 + 16, C0 + 8, '!')                           # faca
     return m.lines()
 
+def portoes():
+    """Cópia do vídeo 19 (263d8cf4): mapa 14x18 unidades. 4 baias embaixo (vermelho, verde, azul, amarelo da esq. p/ dir.) com
+    tijolos de cor de 4 unidades: verde (1-2), azul (2-3), amarelo (3-4) e vermelho (saída à direita: já é do quadrado mais longe).
+    Corredores de 3 unidades com TIJOLOS DE COR SOLTOS (1 unidade, só o dono quebra; não fecham a passagem). Saída -> corredor da
+    direita sobe -> corredor do meio (linhas 6-8) p/ a esquerda -> sobe a esquerda -> corredor de cima (linhas 0-2) p/ a direita ->
+    desce ao lado do bloco lilás -> corredor da chegada (linha 4) p/ a esquerda -> 2 tijolos escuros -> chegada.
+    (O quadrado lilás do vídeo virou parede: o motor não tem esse elemento; a passagem ao lado dele continua livre.)"""
+    U = [
+        '.....1.....4..',  # 0  corredor de cima (3 linhas) com tijolos soltos: vermelho, amarelo
+        '..............',  # 1
+        '..3.....2.....',  # 2  azul, verde
+        '..###########.',  # 3  col 12 = bloco lilás do vídeo (parede); col 13 = passagem
+        '..#FFBB.......',  # 4  corredor da chegada: chegada (cols 3-4) atrás de 2 tijolos escuros
+        '..############',  # 5
+        '..1.....3.....',  # 6  corredor do meio (3 linhas): vermelho, azul
+        '..............',  # 7
+        '.....4.....2..',  # 8  amarelo, verde
+        '############..',  # 9
+        '..2..3..4..1..',  # 10 tijolos de cor (4 linhas): verde, azul, amarelo, vermelho (saída)
+        '..2..3..4..1..',  # 11
+        '..2..3..4..1..',  # 12
+        '..2..3..4..1..',  # 13
+        '..#..#..#..###',  # 14 baias (a massa nasce no fundo)
+        '..#..#..#..###',  # 15
+        '..#..#..#..###',  # 16
+        '..#..#..#..###',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (1, 4, 7, 10): m.put(R0 + 32, C0 + 2 * c, 'S')
+    return m.lines()
+
+def bolsao():
+    """Cópia do vídeo 20 (2ac9f100): mapa 14x18 unidades. 4 baias embaixo (vermelho, amarelo, verde, azul da esq. p/ dir.) com
+    tijolos de cor de 4 unidades: vermelho (1-2), verde (2-3), azul (3-4), amarelo (saída à direita). Saída -> corredor da direita
+    sobe (embaixo dele, um BOLSÃO sem saída) -> 2 tijolos escuros -> desce a sala da direita -> atravessa por baixo -> sobe a sala
+    do meio -> 2 tijolos escuros -> sala da faca -> 3 tijolos escuros -> chegada (canto esquerdo). 2 pistões horizontais na linha 3,
+    um de cada parede do U (6s, 3 unid.). (O quadrado lilás no fundo do bolsão virou parede: o motor não tem esse elemento.)"""
+    U = [
+        '...B...#...B..',  # 0  sala da faca (cols 0-2) | escuros (col 3) | sala do meio | escuros (col 11) | corredor da direita
+        '...B...#...B..',  # 1
+        '...#...#...#..',  # 2
+        '...#...#...#..',  # 3  pistões A (nasce na col 3, cresce p/ a direita) e B (nasce na col 11, cresce p/ a esquerda)
+        '...#...#...#..',  # 4
+        '...#...#...#..',  # 5
+        'BBB#.......#..',  # 6  3 tijolos escuros antes da chegada; travessa do U (linhas 6-8)
+        'FFF#.......#..',  # 7  chegada
+        'FFF#.......#..',  # 8
+        '############..',  # 9
+        '..1..3..4..2..',  # 10 tijolos de cor (4 linhas): vermelho, verde, azul, amarelo (saída)
+        '..1..3..4..2..',  # 11
+        '..1..3..4..2..',  # 12
+        '..1..3..4..2..',  # 13
+        '..#..#..#..#.#',  # 14 baias | bolsão (cols 12-13) com dente
+        '..#..#..#..#..',  # 15
+        '..#..#..#..#..',  # 16
+        '..#..#..#..##.',  # 17 (col 12 = quadrado lilás do vídeo -> parede)
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (1, 4, 7, 10): m.put(R0 + 32, C0 + 2 * c, 'S')
+    m.put(R0 + 7, C0 + 3, '!')   # faca na sala de cima à esquerda
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

@@ -93,7 +93,8 @@ for (const level of LEVELS.filter((l) => (ids.length ? ids.includes(l.id) : true
   const A = analisa(level);
   const n = A.spawns.length;
   // parede de saída: parede de cor que encosta na região da chegada (o resto do caminho)
-  const saidas = A.walls.filter((w) => w.regs.has(A.finReg));
+  // (tijolos soltos que só encostam no lado de fora não contam: a saída separa a prisão do resto do caminho)
+  const saidas = A.walls.filter((w) => w.regs.has(A.finReg) && [...w.regs].some((g) => g !== A.finReg));
   const digitos = [...new Set(saidas.map((w) => w.d))];
   const ident = [...Array(n).keys()];
   if (!solucionavel(A, level.ownerPerm || ident)) { console.log(`${level.id}: a corrente ORIGINAL não fecha nesta análise (portal/arranjo especial); pulei`); continue; }
