@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -258,6 +258,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   8-10) com **faca** no meio → sobe pela esquerda → corredor das linhas 4-6 (**pistão** sobe da parede na col 4, 3 unid., 6s) → sobe à
   direita → faixa de cima → 6 tijolos escuros → chegada no canto de cima à esquerda. Massa medida até ~48s. Sim.: 1/30 sem vencedor,
   ~79s (referência ~50s), 0 esmagados; a faca elimina em média ~2,9 dos 4 (o best-of-30 escolhe a melhor).
+- **Fase Teto** — cópia do vídeo 17 (`21fe3eb7`; mapa 15x18 unidades, `racerSize 38`, ~4,2 unid/s, `brickBlock 2`, `knifeKeep`): 4 baias
+  **penduradas no topo** (vermelho, ciano, amarelo, verde; `--teams vermelho,ciano,amarelo,verde`), tijolos de cor de 3 unidades à
+  direita de cada baia (no vídeo cada um nasce colado no seu). **Justiça** `ownerPerm [1,2,3,0]`: a saída (col 12, verde no vídeo) é do
+  quadrado da baia 1 e cada tijolo entre baias é do vizinho da direita; `stage2After: 3`. Saída → desce a direita → corredor largo
+  (linhas 7-10) → desce a esquerda → corredor de baixo (**faca** no canto) → sobe à direita → 1 tijolo escuro → chegada no meio. Sala
+  em U sem saída com ilha. Sem pistões. Massa medida: desce das baias (~0,4 unid/s), varre a sala dos tijolos (~1,6 unid/s), corredor
+  da direita, corredor largo rápido, esquerda, baixo. Sim.: 1/30 sem vencedor, ~54s (referência 37s), 0 esmagados.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
