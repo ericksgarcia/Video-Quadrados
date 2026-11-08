@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -265,6 +265,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (linhas 7-10) → desce a esquerda → corredor de baixo (**faca** no canto) → sobe à direita → 1 tijolo escuro → chegada no meio. Sala
   em U sem saída com ilha. Sem pistões. Massa medida: desce das baias (~0,4 unid/s), varre a sala dos tijolos (~1,6 unid/s), corredor
   da direita, corredor largo rápido, esquerda, baixo. Sim.: 1/30 sem vencedor, ~54s (referência 37s), 0 esmagados.
+- **Fase Xadrez** — cópia do vídeo 18 (`243a6531`; mapa de 19x22 **blocos** como a Pente, `brickBlock 1`, `racerSize 26`, `racerSpeed 170`,
+  `knifeKeep`): 4 baias no topo (ciano, verde, vermelho, amarelo; `--teams ciano,verde,vermelho,amarelo`) com tijolos de cor 1x4.
+  **Justiça** `ownerPerm [2,1,0,3]`: a saída (col 15) é do quadrado da baia 1; `stage2After: 2`. Saída → corredor de 2 blocos com
+  **tijolos escuros em xadrez** → desce a esquerda → corredor do meio e corredor de baixo (com **faca**), cada um fechado nas pontas por
+  colunas de 3 tijolos escuros → corredor final → 6 tijolos escuros → chegada (col 17). **Aproximado**: o bloco verde-limão à direita
+  da chegada virou parede. Massa medida até o fim (~61s). Sim.: 0/30 sem vencedor, ~69s (referência 63s), 1 esmagado; a faca elimina
+  em média ~3.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada

@@ -40,7 +40,7 @@ da chegada (18, 30, 54); **espirais** (33, 57); **mapa gigante simétrico** (30,
 | `15-1528db85.png` | `1528db85c5b9c454ed34eeba30412e00.mp4` | 576x1024 | 51s | feito (corredor) |
 | `16-21ea1037.png` | `21ea10379c2050aec2b4919598d16976.mp4` | 576x1024 | 53s | feito (salao) |
 | `17-21fe3eb7.png` | `21fe3eb776a3d38ed209e3f8c7cccd3c.mp4` | 576x1024 | 37s | feito (teto) |
-| `18-243a6531.png` | `243a65310b9df8a1f41d37c7ae794de7.mp4` | 576x1024 | 63s | pendente |
+| `18-243a6531.png` | `243a65310b9df8a1f41d37c7ae794de7.mp4` | 576x1024 | 63s | feito (xadrez) |
 | `19-263d8cf4.png` | `263d8cf4c6483de9a37b0bde67a81c5c.mp4` | 576x1024 | 67s | pendente |
 | `20-2ac9f100.png` | `2ac9f1002c358d7d2139baf14f3d0ecc.mp4` | 720x1280 | 66s | pendente |
 | `21-2c710cfe.png` | `2c710cfee6750233a9787316834c3844.mp4` | 576x1024 | 75s | pendente |
