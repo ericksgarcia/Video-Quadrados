@@ -279,6 +279,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   p/ a direita → desce pela passagem de 1 unidade ao lado do bloco lilás → corredor interno → 2 tijolos escuros → chegada. **Aproximado**:
   o quadrado lilás virou parede. Massa medida até ~60s; a frente do corredor de cima para uma coluna antes da passagem (antes prensava
   3 em 30 no canto). Sim.: 0/30 sem vencedor, ~68s (referência ~63s), 0 esmagados.
+- **Fase Bolsão** — cópia do vídeo 20 (`2ac9f100`; mapa 14x18 unidades, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, `knifeKeep`): 4 baias
+  embaixo (vermelho, amarelo, verde, azul; `--teams vermelho,amarelo,verde,azul`) com tijolos de cor de 4 unidades. **Justiça**
+  `ownerPerm [1,0,2,3]`: a saída (col 11, amarela no vídeo) é do quadrado da baia 1; `stage2After: 1`. Saída → corredor da direita sobe
+  (embaixo dele, um **bolsão** sem saída) → 2 tijolos escuros → desce a sala da direita → atravessa → sobe a sala do meio → 2 tijolos
+  escuros → sala da **faca** → 3 tijolos escuros → chegada. **2 pistões horizontais na linha 3** (um de cada parede do U, 6s, 3 unid.).
+  **Aproximado**: o quadrado lilás no fundo do bolsão virou parede. Massa medida até ~62s. Sim.: 0/30 sem vencedor, ~68s (referência
+  ~64s), 1 esmagado.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
