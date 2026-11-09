@@ -78,5 +78,26 @@
     "seed": 457791,
     "winner": "azul",
     "arquivo": "videos/20261106-1429-cofre.mp4"
+  },
+  {
+    "data": "2026-11-09T15:39:16.855Z",
+    "category": "cores",
+    "level": "ponte",
+    "teams": [
+      "vermelho",
+      "azul",
+      "amarelo",
+      "verde"
+    ],
+    "crests": [
+      "athletico-pr",
+      "vasco",
+      "cruzeiro",
+      "man-city"
+    ],
+    "theme": "concreto",
+    "seed": 753325,
+    "winner": "amarelo",
+    "arquivo": "videos/20261109-1536-ponte.mp4"
   }
 ]
