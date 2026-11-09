@@ -304,6 +304,12 @@ iteração. Se ele pedir mudança, atualize esta lista.
   sobe do pilar da col 13 e fecha a passagem, 6s, 2 unid.) → corredor da direita desce → sala de baixo → sobe → 2 tijolos escuros →
   sala do meio → desce → corredor de baixo → 1 tijolo escuro → chegada. Sala sem saída no alto. **Aproximado**: os 2 quadrados lilás
   viraram parede (estavam em cantos, sem uso). Sim.: 0/30 sem vencedor, ~89s (referência ~69s), 2 esmagados em 30.
+- **Fase Lilás** — cópia do vídeo 24 (`3b8f8bdd`; mapa 15x18 unidades, planta da Teto, `racerSize 36`, ~4,2 unid/s, `brickBlock 2`, sem faca):
+  4 baias penduradas no topo com tijolos de cor de 3 unidades. **Justiça** `ownerPerm [1,2,3,0]`; `stage2After: 3`. Saída → desce a direita
+  → corredor largo → desce a esquerda (coluna de tijolos escuros) → corredor de baixo (**pistão** `dir:'down'` desce do teto, 6s, 3 unid.)
+  → sobe → chegada no meio. **QUADRADO LILÁS** (novo no motor: `L` no mapa; quem encosta primeiro cresce ×`growScale` (1,8) e fica
+  grande até o fim; só funciona uma vez). Sim.: 0/30 sem vencedor, ~57s (referência 47s). Nem toda corrida usa o lilás: na hora de
+  renderizar, escolha uma seed em que alguém encosta nele (o vídeo de 09/11 usou a seed 2443).
 - **Fase Martelo** — cópia do vídeo 25 (`3cd48485`; mapa 14x18 unidades, `racerSize 40`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias
   embaixo com tijolos de cor de 4 unidades. **Justiça** `ownerPerm [2,1,0,3]`: a saída (col 11) passa ao quadrado da baia 1; `stage2After: 2`.
   Saída → corredor da direita sobe → desce a sala da direita → travessa do U → sobe a sala do meio → faixa de cima → desce a esquerda →
