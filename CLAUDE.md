@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -286,6 +286,11 @@ iteração. Se ele pedir mudança, atualize esta lista.
   escuros → sala da **faca** → 3 tijolos escuros → chegada. **2 pistões horizontais na linha 3** (um de cada parede do U, 6s, 3 unid.).
   **Aproximado**: o quadrado lilás no fundo do bolsão virou parede. Massa medida até ~62s. Sim.: 0/30 sem vencedor, ~68s (referência
   ~64s), 1 esmagado.
+- **Fase Escadaria** — cópia do vídeo 21 (`2c710cfe`; mapa 16x20 unidades, família da Portais, `racerSize 48`, ~4,2 unid/s, `brickBlock 2`,
+  sem faca, sem pistões): 4 baias horizontais à esquerda (verde, ciano, vermelho, amarelo de cima p/ baixo; `--teams verde,ciano,vermelho,amarelo`)
+  com barras de 4 unidades; a saída (amarela, em cima) já é do quadrado da última baia (justiça ok; `stage2After: 3`). Saída → sala de cima →
+  faixa do topo (bolsinho sem saída no canto) → serpentina descendo, alternando sala da direita e sala do meio, ligadas por **7 colunas de
+  tijolos escuros** → chegada embaixo no meio. Massa medida até ~63s. Sim.: 0/30 sem vencedor, ~77s (referência ~75s), 2 esmagados em 30.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada

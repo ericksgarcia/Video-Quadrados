@@ -804,7 +804,41 @@ def cortina():
     m.put(R0 + 20, C0 + 16, '!')
     return m.lines()
 
+def mirante():
+    """Cópia do vídeo 23 (36054105): mapa 16x21 unidades (família da Escadaria). 4 baias horizontais à esquerda (azul, verde,
+    amarelo, vermelho de cima p/ baixo) com barras de 4 unidades: azul em cima (saída), verde (1-2), amarela (2-3), vermelha (3-4).
+    Saída -> sala de cima -> topo p/ a direita (pistão sobe do pilar da col 13 e fecha a passagem) -> corredor da direita desce ->
+    sala de baixo -> sobe cols 11-12 -> 2 tijolos escuros -> sala do meio -> desce cols 8-9 -> corredor de baixo -> sobe à
+    esquerda -> 1 tijolo escuro -> chegada (cols 5-6). Sala sem saída no alto (cols 8-12). Os 2 quadrados lilás viraram parede."""
+    U = [
+        '####............',  # 0  topo (col 3 = lilás -> parede)
+        '###.............',  # 1
+        '###....#.###.#..',  # 2  pistão no topo do pilar da col 13
+        '###....#.....#..',  # 3
+        '###1111#.....#..',  # 4  barra azul (saída)
+        '.......#.....#..',  # 5  baia 1 (azul)
+        '.......#######..',  # 6
+        '###2222##....#..',  # 7  barra verde; col 8 = lilás -> parede
+        '.......#.....#..',  # 8  baia 2 (verde)
+        '.......#..#BB#..',  # 9  2 tijolos escuros (cols 11-12)
+        '###3333#..#..#..',  # 10 barra amarela
+        '.......#..#..#..',  # 11 baia 3 (amarelo)
+        '.......#..#..#..',  # 12
+        '###4444#..#..#..',  # 13 barra vermelha
+        '.......#..#..#..',  # 14 baia 4 (vermelho)
+        '.......#..#..#..',  # 15
+        '########..#..#..',  # 16
+        '....BFF#..#.....',  # 17 sala da chegada: 1 escuro (col 4) + chegada (cols 5-6)
+        '....BFF#..#.....',  # 18
+        '..######..#.....',  # 19
+        '..........#.....',  # 20 corredor de baixo
+    ]
+    R0, C0 = 3, 2
+    m = unitmap(U, {}, R0, C0)
+    for r in (5, 8, 11, 14): m.put(R0 + 2 * r + 1, C0 + 2, 'S')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
