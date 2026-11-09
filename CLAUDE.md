@@ -304,6 +304,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   sobe do pilar da col 13 e fecha a passagem, 6s, 2 unid.) → corredor da direita desce → sala de baixo → sobe → 2 tijolos escuros →
   sala do meio → desce → corredor de baixo → 1 tijolo escuro → chegada. Sala sem saída no alto. **Aproximado**: os 2 quadrados lilás
   viraram parede (estavam em cantos, sem uso). Sim.: 0/30 sem vencedor, ~89s (referência ~69s), 2 esmagados em 30.
+- **Fase Martelo** — cópia do vídeo 25 (`3cd48485`; mapa 14x18 unidades, `racerSize 40`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias
+  embaixo com tijolos de cor de 4 unidades. **Justiça** `ownerPerm [2,1,0,3]`: a saída (col 11) passa ao quadrado da baia 1; `stage2After: 2`.
+  Saída → corredor da direita sobe → desce a sala da direita → travessa do U → sobe a sala do meio → faixa de cima → desce a esquerda →
+  3 tijolos escuros → chegada. **4 pistões horizontais na linha 10** (2 em cada pilar, um p/ cada lado; 6s). **MARTELO** (novo no motor:
+  `H` no mapa, no topo à esquerda; quem pega quebra qualquer tijolo, de qualquer cor, com 1 batida; não volta). **Aproximado**: no vídeo
+  não dá para ver o martelo quebrando nada — a regra "quebra qualquer tijolo" foi escolha nossa (não mata ninguém). Massa medida até o
+  fim do vídeo; o resto é extrapolado. Sim.: 0/30 sem vencedor, ~63s (referência ~58s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
