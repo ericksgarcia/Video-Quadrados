@@ -52,6 +52,11 @@ sheet (`ffmpeg ... fps=1/5 ... tile`) e o final (sem placar, ~0,5s após o 1º c
 **5. Entregar.** `SendUserFile` do `.mp4` + legenda de TikTok pronta (sem revelar o vencedor) e um resumo
 curto do que foi copiado/aproximado.
 
+**5b. AGENDAR (obrigatório, pedido do usuário em 09/11: "quero que sempre agende depois de fazer").** Todo vídeo pronto
+(da fila OU do `npm run novo`) é agendado na hora, sem perguntar: `python3 publicar.py videos/<arquivo>.mp4 --legenda
+videos/<arquivo>.txt` (próximo horário livre). Vários vídeos = um por horário, na ordem em que foram feitos. Só pergunte se
+for para postar AGORA (`--agora`) ou reenviar um post com erro. Depois do agendamento, commit de `publicados.json`.
+
 **6. Fechar (obrigatório, não esqueça).**
 - print do início em `referencias/NN-nome.png` se ainda não existir (os 58 primeiros já existem; o nome traz
   os 8 primeiros caracteres do arquivo de vídeo) e linha da tabela de `referencias/LEIA-ME.md` →
@@ -141,7 +146,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
 3. Confira antes de entregar: contact sheet (`ffmpeg -i V -vf "fps=1/5,scale=216:-1,tile=6x2" -frames:v 1 folha.png`) e o
    quadro de 1,2s (capa): mapa inteiro, nada nas zonas do app, escudos legíveis, final sem placar.
    Envie o `.mp4` ao usuário (SendUserFile) e mostre a legenda do `.txt` (sem revelar o vencedor).
-4. **Se o usuário pedir para agendar/publicar** ("agende", "poste", "publica"): `python3 publicar.py videos/<arquivo>.mp4`
+4. **AGENDE SEMPRE** (pedido do usuário: todo vídeo feito é agendado, sem perguntar): `python3 publicar.py videos/<arquivo>.mp4`
    (usa o `.txt` ao lado como legenda, sobe no R2 e agenda TikTok + Instagram no próximo horário livre) e mostre
    `python3 publicar.py --fila`, `--status <slug>` e `--lista`. Detalhes na seção "Publicação". Para trocar um agendado:
    `--cancela <slug>` e agende o novo com `--quando`.

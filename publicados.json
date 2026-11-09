@@ -322,5 +322,115 @@
     "capa_ms": 1200,
     "status": "sent",
     "link_atual": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/enviados/bolsao-concreto.mp4"
+  },
+  {
+    "slug": "escadaria-concreto",
+    "rede": "tiktok",
+    "post_id": "6af1e89707b8501775fda0b6",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-09T15:36:55.818Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/escadaria-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/escadaria-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "sending"
+  },
+  {
+    "slug": "escadaria-concreto",
+    "rede": "instagram",
+    "post_id": "6af1e8a25e3b5af1e0013a37",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-09T15:37:06.801Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/escadaria-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/escadaria-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "sending"
+  },
+  {
+    "slug": "cortina-concreto",
+    "rede": "tiktok",
+    "post_id": "6af1e8b87fbb6ac6d2f05d44",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-09T19:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/cortina-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/cortina-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "cortina-concreto",
+    "rede": "instagram",
+    "post_id": "6af1e8b96a38b0c77dd9d93b",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-09T19:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/cortina-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/cortina-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "mirante-concreto",
+    "rede": "tiktok",
+    "post_id": "6af1e8bee102af84b68032e8",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-09T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/mirante-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/mirante-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "mirante-concreto",
+    "rede": "instagram",
+    "post_id": "6af1e8bf5e3b5af1e0013fe3",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-09T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/mirante-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/mirante-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "lilas-concreto",
+    "rede": "tiktok",
+    "post_id": "6af1e8c36a38b0c77dd9db60",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-10T10:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/lilas-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/lilas-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "lilas-concreto",
+    "rede": "instagram",
+    "post_id": "6af1e8c4e102af84b68035c4",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-10T10:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/lilas-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/lilas-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "martelo-concreto",
+    "rede": "tiktok",
+    "post_id": "6af1e8c807b8501775fdab94",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-10T14:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/martelo-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/martelo-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "martelo-concreto",
+    "rede": "instagram",
+    "post_id": "6af1e8c96a38b0c77dd9dd8f",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-10T14:50:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/martelo-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/martelo-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
   }
 ]
