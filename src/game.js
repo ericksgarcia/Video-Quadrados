@@ -83,6 +83,7 @@ export class Game {
         else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 0.9), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
         else if ('PpQq'.includes(ch)) { const p = { x: cx, y: cy, key: ch.toUpperCase(), primary: ch === ch.toUpperCase(), pulse: 0 }; this.portals.push(p); (portalMap[p.key] ||= []).push(p); }
         else if (ch === '!') this.pickups.push({ kind: 'knife', x: cx, y: cy, active: true, respawn: Infinity });
+        else if (ch === 'H') this.pickups.push({ kind: 'hammer', x: cx + TILE / 2, y: cy + TILE / 2, active: true, respawn: Infinity }); // martelo (centro da unidade): quebra QUALQUER tijolo com 1 batida
         else if (ch === 'L') this.pickups.push({ kind: 'grow', x: cx + TILE / 2, y: cy + TILE / 2, active: true, respawn: 0 }); // quadrado lilás (1 unidade, centro entre 4 blocos): quem encosta CRESCE
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === '?') this.pickups.push({ kind: 'mystery', x: cx, y: cy, active: true, respawn: 0 });
@@ -825,13 +826,13 @@ export class Game {
     for (const cell of cells) {
       if (!cell || cell.k !== 'brick') continue;
       const cl = cell.cluster;
-      const can = cl.owner == null || cl.owner === r.i || r.sword > 0;
+      const can = cl.owner == null || cl.owner === r.i || r.sword > 0 || r.hammer;
       if (!can) continue;
       result = 'brick';
       if (r.hitCd > 0) continue;
       r.hitCd = 0.08;
       const x = (cell.c + 0.5) * TILE, y = (cell.r + 0.5) * TILE;
-      cl.hp -= r.sword > 0 ? 99 : 1;
+      cl.hp -= r.sword > 0 || r.hammer ? 99 : 1;
       cl.shake = 1;
       if (cl.hp <= 0) {
         for (const k of cl.cells) { k.k = 'floor'; k.broken = true; }
@@ -1041,9 +1042,10 @@ export class Game {
         continue;
       }
       if (Math.hypot(r.x - p.x, r.y - p.y) < U * 0.55) {
-        p.active = false; p.respawn = p.kind === 'knife' ? Infinity : 12;
+        p.active = false; p.respawn = p.kind === 'knife' || p.kind === 'hammer' ? Infinity : 12;
         let kind = p.kind;
         if (kind === 'knife') r.knife = true;
+        if (kind === 'hammer') r.hammer = true;
         if (kind === 'mystery') kind = this.rng.pick(['sword', 'zap', 'freeze']);
         if (kind === 'sword') r.sword = 7;
         if (kind === 'zap') r.zap = 5;

@@ -869,7 +869,38 @@ def lilas():
     m.put(R0 + 22, C0 + 8, 'L')   # quadrado lilás (unidade 11,4)
     return m.lines()
 
+def martelo():
+    """Cópia do vídeo 25 (3cd48485): mapa 14x18 unidades. 4 baias embaixo (azul, vermelho, amarelo, verde) com tijolos de cor de
+    4 unidades: vermelho (1-2), azul (2-3), verde (3-4), amarelo (saída à direita). Saída -> corredor da direita sobe -> sala da
+    direita desce -> travessa do U -> sala do meio sobe -> topo à esquerda (MARTELO) -> sala da esquerda -> 3 tijolos escuros ->
+    chegada. 4 pistões horizontais na linha 2, dois em cada pilar (um p/ cada lado), 6s."""
+    U = [
+        '.......#......',  # 0  topo (martelo na col 3)
+        '.......#......',  # 1
+        '...#...#...#..',  # 2  pistões: pilar col 3 (esq. e dir.) e pilar col 11 (esq. e dir.)
+        '...#...#...#..',  # 3
+        '...#...#...#..',  # 4
+        '...#...#...#..',  # 5
+        'BBB#.......#..',  # 6  3 tijolos escuros antes da chegada; travessa do U
+        'FFF#.......#..',  # 7  chegada
+        'FFF#.......#..',  # 8
+        '############..',  # 9
+        '..2..1..4..3..',  # 10 tijolos de cor (4 linhas): vermelho, azul, verde, amarelo (saída)
+        '..2..1..4..3..',  # 11
+        '..2..1..4..3..',  # 12
+        '..2..1..4..3..',  # 13
+        '..#..#..#..###',  # 14 baias (a massa nasce no fundo)
+        '..#..#..#..###',  # 15
+        '..#..#..#..###',  # 16
+        '..#..#..#..###',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (1, 4, 7, 10): m.put(R0 + 32, C0 + 2 * c, 'S')
+    m.put(R0 + 0, C0 + 6, 'H')   # martelo (unidade 0,3)
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

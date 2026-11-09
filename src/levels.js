@@ -23,6 +23,93 @@
 
 export const LEVELS = [
   {
+    // cópia do vídeo 25 (3cd48485): 4 baias embaixo com tijolos de cor (saída amarela à direita), U com 4 pistões horizontais
+    // (2 por pilar), MARTELO no topo (novo no motor: quem pega quebra qualquer tijolo), chegada atrás de 3 tijolos escuros
+    id: 'martelo',
+    name: 'Martelo',
+    maxRacers: 4,
+    racers: 4,
+    ownerPerm: [2, 1, 0, 3], // REGRA DE JUSTIÇA: a saída (col 11) passa ao quadrado da baia 1 (mais longe); o tijolo 2-3 passa ao da baia 3
+    racerSize: 40,      // ~0,73 unidade
+    racerSpeed: 235, homing: 0, steer: 0, snap: 0,
+    brickBlock: 2,
+    colorBrickHp: 1,
+    brickHp: 1,
+    flood: { delay: 0.5, zoneRate: 1.0, delay2: 10, stage2After: 2, stage2Gap: 1, rate: 2.0, accel: 0 }, // a varredura só começa 1s depois que a SAÍDA abre
+    massTrack: {
+      unit: 2, origin: [6, 4], // unidades (mapa 14x18); velocidades em blocos/s (medidas no vídeo)
+      stage1: [ // sobe pelo fundo das 4 baias (~0,5 unid/s)
+        [14, 0, 17, 1, 'up'], [14, 3, 17, 4, 'up'], [14, 6, 17, 7, 'up'], [14, 9, 17, 10, 'up'],
+      ],
+      stage2: [
+        [10, 0, 13, 11, 'right', 1.9],  // varre a sala das baias para a direita
+        [0, 12, 13, 13, 'up', 1.6],     // sobe o corredor da direita (o pistão D segura)
+        [0, 8, 1, 11, 'left', 2.0],
+        [2, 8, 8, 10, 'down', 2.4],     // desce a sala da direita (o pistão C segura)
+        [6, 4, 8, 7, 'left', 3.0],      // travessa do U
+        [2, 4, 5, 6, 'up', 1.6],        // sobe a sala do meio (o pistão B segura)
+        [0, 0, 1, 6, 'left', 2.0],      // (extrapolado daqui em diante: o vídeo acaba)
+        [2, 0, 5, 2, 'down', 2.0],
+      ],
+    },
+    pistons: [
+      { c: 10, r: 10, w: 2, max: 6, period: 6, phase: 0, dir: 'left' },  // A: pilar col 3, cresce p/ a esquerda (cols 0-2)
+      { c: 12, r: 10, w: 2, max: 6, period: 6, phase: 0, dir: 'right' }, // B: pilar col 3, cresce p/ a direita (cols 4-6)
+      { c: 26, r: 10, w: 2, max: 6, period: 6, phase: 0, dir: 'left' },  // C: pilar col 11, cresce p/ a esquerda (cols 8-10)
+      { c: 28, r: 10, w: 2, max: 4, period: 6, phase: 0, dir: 'right' }, // D: pilar col 11, cresce p/ a direita (cols 12-13)
+    ],
+    map: [
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####......H.......##............####',
+      '####..............##............####',
+      '####..............##............####',
+      '####..............##............####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####......##......##......##....####',
+      '####BBBBBB##..............##....####',
+      '####BBBBBB##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '####FFFFFF##..............##....####',
+      '############################....####',
+      '############################....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....22....11....44....33....####',
+      '####....##....##....##....##########',
+      '####....##....##....##....##########',
+      '####....##....##....##....##########',
+      '####....##....##....##....##########',
+      '####..S.##..S.##..S.##..S.##########',
+      '####....##....##....##....##########',
+      '####....##....##....##....##########',
+      '####....##....##....##....##########',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+    ],
+  },
+  {
     // cópia do vídeo 24 (3b8f8bdd): planta da Teto com coluna de tijolos escuros e pistão que desce no corredor de baixo,
     // e o QUADRADO LILÁS (novo no motor: quem encosta cresce x1,8)
     id: 'lilas',

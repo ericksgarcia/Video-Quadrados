@@ -82,6 +82,16 @@ function brickGlyph(g, x, y, s, color) {
 }
 
 // faca das referências: lâmina ciano, cabo roxo com pontinhos
+// martelo (vídeo de referência 25): cabo de madeira + cabeça cinza, chapado com contorno
+function drawHammer(g, x, y, len, ang) {
+  g.save(); g.translate(x, y); g.rotate(ang);
+  g.fillStyle = '#d29a3a'; g.strokeStyle = LINE; g.lineWidth = 2.5;
+  g.fillRect(-len * 0.06, -len * 0.45, len * 0.12, len * 0.9); g.strokeRect(-len * 0.06, -len * 0.45, len * 0.12, len * 0.9);
+  g.fillStyle = '#8a929b';
+  g.fillRect(-len * 0.28, -len * 0.55, len * 0.56, len * 0.22); g.strokeRect(-len * 0.28, -len * 0.55, len * 0.56, len * 0.22);
+  g.restore();
+}
+
 function drawKnife(g, x, y, s, rot = -Math.PI / 4) {
   g.save(); g.translate(x, y); g.rotate(rot); g.scale(s / 40, s / 40);
   g.fillStyle = '#3ad6ec';
@@ -374,6 +384,7 @@ export class Renderer {
     for (const p of this.game.pickups) {
       if (!p.active) continue;
       if (p.kind === 'knife') drawKnife(g, p.x, p.y, 48, Math.PI / 4);
+      else if (p.kind === 'hammer') drawHammer(g, p.x, p.y, 50, -Math.PI / 4);
       else if (p.kind === 'grow') { // quadrado lilás (1 unidade) com quadradinho dentro, como no vídeo
         const h = U * 0.42;
         g.fillStyle = '#9d7bf5'; g.fillRect(p.x - h, p.y - h, 2 * h, 2 * h);
@@ -476,6 +487,7 @@ export class Renderer {
       g.beginPath(); g.moveTo(-s / 2 + 5, -s / 2 + 5); g.lineTo(s / 2 - 5, s / 2 - 5); g.moveTo(s / 2 - 5, -s / 2 + 5); g.lineTo(-s / 2 + 5, s / 2 - 5); g.stroke();
     }
     if (r.state === 'alive' && r.knife) drawKnife(g, s / 2 + 10, -2, 34, Math.PI / 4 + Math.sin(this.time * 10) * 0.2);
+    if (r.state === 'alive' && r.hammer) drawHammer(g, s / 2 + 8, -s / 2 - 4, 34, -Math.PI / 4 + Math.sin(this.time * 10) * 0.2);
     g.restore();
   }
 
