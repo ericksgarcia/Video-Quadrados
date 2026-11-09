@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -297,6 +297,13 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (a massa varre RUMO à saída, então só começa depois que ela abre). Saída → sala da esquerda → serpentina de 4 corredores com **3
   tijolos escuros em cada curva** → corredor final (**faca**) → 1 escuro → chegada embaixo à esquerda. Bolsinho sem saída à direita
   das baias. Massa medida até ~47s. Sim.: 0/30 sem vencedor, ~64s (referência 49s), 0 esmagados.
+- **Fase Mirante** — cópia do vídeo 23 (`36054105`; mapa 16x21 unidades, família da Escadaria, `racerSize 48`, ~4,2 unid/s, `brickBlock 2`,
+  sem faca): 4 baias horizontais à esquerda (azul, verde, amarelo, vermelho de cima p/ baixo; `--teams azul,verde,amarelo,vermelho`).
+  **Justiça** `ownerPerm [3,0,1,2]`: a barra de saída (em cima) passa ao quadrado da baia 4 e cada barra entre baias a quem está logo
+  acima; `stage2After: 0`, `stage2Gap: 3` (com 1s a massa prensava 5 em 30 sob os pedaços da barra de saída). Saída → topo (**pistão**
+  sobe do pilar da col 13 e fecha a passagem, 6s, 2 unid.) → corredor da direita desce → sala de baixo → sobe → 2 tijolos escuros →
+  sala do meio → desce → corredor de baixo → 1 tijolo escuro → chegada. Sala sem saída no alto. **Aproximado**: os 2 quadrados lilás
+  viraram parede (estavam em cantos, sem uso). Sim.: 0/30 sem vencedor, ~89s (referência ~69s), 2 esmagados em 30.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
