@@ -734,7 +734,77 @@ def bolsao():
     m.put(R0 + 7, C0 + 3, '!')   # faca na sala de cima à esquerda
     return m.lines()
 
+def escadaria():
+    """Cópia do vídeo 21 (2c710cfe): mapa 16x20 unidades (família da Portais). 4 baias horizontais à esquerda (verde, ciano,
+    vermelho, amarelo de cima p/ baixo) com barras de 4 unidades em corrente: verde (1-2), ciano (2-3), vermelho (3-4) e amarela
+    em cima (saída, do último = mais longe). Saída -> sala de cima -> faixa do topo p/ a direita (bolsinho sem saída no canto de
+    cima à esquerda) -> serpentina descendo, alternando sala da direita e sala do meio, ligadas por 7 colunas de tijolos escuros
+    -> chegada embaixo no meio. Sem pistões, sem faca."""
+    U = [
+        '............B...',  # 0  faixa do topo (escuros na col 12)
+        '............B...',  # 1
+        '..#....######...',  # 2  bolsinho (cols 0-1) | sala da saída (cols 3-6)
+        '..#....#...B....',  # 3  sala do meio (cols 8-10) | escuros col 11 | sala da direita
+        '###4444#...B....',  # 4  barra amarela (saída)
+        '.......#...B....',  # 5  baia 1 (verde)
+        '.......#...#####',  # 6
+        '###1111#....B...',  # 7  barra verde
+        '.......#....B...',  # 8  baia 2 (ciano)
+        '.......#....B...',  # 9
+        '###2222######...',  # 10 barra ciano
+        '.......#...B....',  # 11 baia 3 (vermelho)
+        '.......#...B....',  # 12
+        '###3333#...B....',  # 13 barra vermelha
+        '.......#...#####',  # 14 baia 4 (amarelo)
+        '.......#....B...',  # 15
+        '########....B...',  # 16
+        '#############...',  # 17
+        '########FF.B....',  # 18 chegada (cols 8-9) atrás de escuros (col 11)
+        '########FF.B....',  # 19
+    ]
+    R0, C0 = 4, 2
+    m = unitmap(U, {}, R0, C0)
+    for r in (5, 8, 11, 14): m.put(R0 + 2 * r + 1, C0 + 2, 'S')
+    return m.lines()
+
+def cortina():
+    """Cópia do vídeo 22 (34170bc5): mapa de 19x22 BLOCOS. 4 baias no topo (vermelho, azul, amarelo, verde da esq. p/ dir.) com
+    tijolos de cor 1x4: azul (col 3 = SAÍDA à esquerda, p/ a sala da esquerda), vermelho (1-2), verde (2-3), amarelo (3-4). Saída ->
+    sala da esquerda -> corredor 1 p/ a direita -> 3 escuros -> corredor 2 p/ a esquerda -> 3 escuros -> corredor 3 p/ a direita ->
+    3 escuros -> corredor final (faca) p/ a esquerda -> 1 escuro -> chegada (cols 0-1). Bolsinho sem saída à direita das baias."""
+    U = [
+        '####..#..#..#..####',  # 0  baias (a massa desce do topo)
+        '####..#..#..#..####',  # 1
+        '####..#..#..#..####',  # 2
+        '...2..1..4..3..####',  # 3  tijolos de cor (4 linhas): azul (saída), vermelho, verde, amarelo
+        '...2..1..4..3..#...',  # 4  bolsinho (cols 16-18)
+        '...2..1..4..3..#...',  # 5
+        '...2..1..4..3..#...',  # 6
+        '...##############..',  # 7
+        '...................',  # 8  corredor 1
+        '...................',  # 9
+        '################BBB',  # 10
+        '...................',  # 11 corredor 2
+        '...................',  # 12
+        '...................',  # 13
+        'BBB################',  # 14
+        '...................',  # 15 corredor 3
+        '...................',  # 16
+        '...................',  # 17
+        '################BBB',  # 18
+        'FFB................',  # 19 corredor final (faca) -> 1 escuro -> chegada
+        'FFB................',  # 20
+        'FFB................',  # 21
+    ]
+    R0, C0 = 13, 8
+    m = M()
+    for r, row in enumerate(U):
+        for c, ch in enumerate(row): m.put(R0 + r, C0 + c, ch)
+    for c in (5, 8, 11, 14): m.put(R0 + 1, C0 + c, 'S')
+    m.put(R0 + 20, C0 + 16, '!')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
