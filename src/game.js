@@ -83,6 +83,7 @@ export class Game {
         else if (ch === '*') this.spinners.push({ x: cx, y: cy, L: U * (this.level.spinnerSize ?? 0.9), a: 0, w: (this.spinners.length % 2 ? -1 : 1) * 1.9 });
         else if ('PpQq'.includes(ch)) { const p = { x: cx, y: cy, key: ch.toUpperCase(), primary: ch === ch.toUpperCase(), pulse: 0 }; this.portals.push(p); (portalMap[p.key] ||= []).push(p); }
         else if (ch === '!') this.pickups.push({ kind: 'knife', x: cx, y: cy, active: true, respawn: Infinity });
+        else if (ch === 'L') this.pickups.push({ kind: 'grow', x: cx + TILE / 2, y: cy + TILE / 2, active: true, respawn: 0 }); // quadrado lilás (1 unidade, centro entre 4 blocos): quem encosta CRESCE
         else if (ch === 'z') this.pickups.push({ kind: 'zap', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === '?') this.pickups.push({ kind: 'mystery', x: cx, y: cy, active: true, respawn: 0 });
         else if (ch === 'S') this.spawns.push(cell);
@@ -1032,6 +1033,13 @@ export class Game {
     // power-ups
     for (const p of this.pickups) {
       if (!p.active) { p.respawn -= dt; if (p.respawn <= 0) { p.active = true; this.emit('pickupSpawn', { x: p.x, y: p.y }); } continue; }
+      if (p.kind === 'grow') { // fica no mapa; cada quadrado cresce uma vez só (como no vídeo de referência 24)
+        if (!r.grown && Math.abs(r.x - p.x) < (r.size + U * 0.8) / 2 && Math.abs(r.y - p.y) < (r.size + U * 0.8) / 2) {
+          r.grown = true; r.size *= this.level.growScale ?? 1.8; this.unstick(r);
+          this.emit('pickup', { x: p.x, y: p.y, kind: 'grow', i: r.i });
+        }
+        continue;
+      }
       if (Math.hypot(r.x - p.x, r.y - p.y) < U * 0.55) {
         p.active = false; p.respawn = p.kind === 'knife' ? Infinity : 12;
         let kind = p.kind;

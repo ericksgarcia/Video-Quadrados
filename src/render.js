@@ -374,6 +374,12 @@ export class Renderer {
     for (const p of this.game.pickups) {
       if (!p.active) continue;
       if (p.kind === 'knife') drawKnife(g, p.x, p.y, 48, Math.PI / 4);
+      else if (p.kind === 'grow') { // quadrado lilás (1 unidade) com quadradinho dentro, como no vídeo
+        const h = U * 0.42;
+        g.fillStyle = '#9d7bf5'; g.fillRect(p.x - h, p.y - h, 2 * h, 2 * h);
+        g.strokeStyle = LINE; g.lineWidth = 3; g.strokeRect(p.x - h, p.y - h, 2 * h, 2 * h);
+        g.strokeStyle = 'rgba(40,20,90,.55)'; g.lineWidth = 2; g.strokeRect(p.x - h * 0.55, p.y - h * 0.55, h * 1.1, h * 1.1);
+      }
       else {
         g.fillStyle = p.kind === 'zap' ? '#ffd839' : '#8e44ff';
         g.fillRect(p.x - 14, p.y - 14, 28, 28);

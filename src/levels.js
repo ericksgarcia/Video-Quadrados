@@ -23,6 +23,89 @@
 
 export const LEVELS = [
   {
+    // cópia do vídeo 24 (3b8f8bdd): planta da Teto com coluna de tijolos escuros e pistão que desce no corredor de baixo,
+    // e o QUADRADO LILÁS (novo no motor: quem encosta cresce x1,8)
+    id: 'lilas',
+    name: 'Lilás',
+    maxRacers: 4,
+    racers: 4,
+    ownerPerm: [1, 2, 3, 0], // REGRA DE JUSTIÇA: a saída (col 12) passa ao quadrado da baia 1 (mais longe); cada tijolo entre baias passa ao vizinho da direita
+    racerSize: 36,      // ~0,6 unidade (como no vídeo; quem pega o lilás fica ~2x maior)
+    racerSpeed: 235, homing: 0, steer: 0, snap: 0,
+    brickBlock: 2,
+    colorBrickHp: 1,
+    brickHp: 1,
+    growScale: 1.8,
+    flood: { delay: 0.5, zoneRate: 0.8, delay2: 8, stage2After: 3, stage2Gap: 1, rate: 2.0, accel: 0 }, // a varredura só começa 1s depois que a SAÍDA abre
+    massTrack: {
+      unit: 2, origin: [6, 3], // unidades (mapa 15x18); velocidades em blocos/s (medidas no vídeo)
+      stage1: [ // desce do topo das 4 baias (~0,4 unid/s)
+        [0, 1, 2, 2, 'down'], [0, 4, 2, 5, 'down'], [0, 7, 2, 8, 'down'], [0, 10, 2, 11, 'down'],
+      ],
+      stage2: [
+        [3, 1, 5, 12, 'right', 3.2],   // varre a sala dos tijolos para a direita
+        [3, 13, 9, 14, 'down', 2.8],   // desce o corredor da direita
+        [7, 0, 9, 12, 'left', 4.0],    // corredor largo, rápido
+        [10, 0, 17, 2, 'down', 2.0],   // desce a esquerda
+        [15, 3, 17, 14, 'right', 2.2], // corredor de baixo (o pistão segura)
+        [11, 12, 14, 14, 'up', 2.0],   // (extrapolado: o vídeo acaba)
+      ],
+    },
+    pistons: [
+      { c: 21, r: 36, w: 2, max: 6, period: 6, phase: 0, dir: 'down' }, // col 9: desce do pé da parede da linha 14 e fecha o corredor de baixo
+    ],
+    map: [
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '#####....##....##....##....#########',
+      '#####....##....##....##....#########',
+      '#####..S.##..S.##..S.##..S.#########',
+      '#####....##....##....##....#########',
+      '#####....##....##....##....#########',
+      '#####....##....##....##....#########',
+      '#####....11....22....33....44....###',
+      '#####....11....22....33....44....###',
+      '#####....11....22....33....44....###',
+      '#####....11....22....33....44....###',
+      '#####....11....22....33....44....###',
+      '#####....11....22....33....44....###',
+      '#############################....###',
+      '#############################....###',
+      '###..............................###',
+      '###..............................###',
+      '###..............................###',
+      '###..............................###',
+      '###..............................###',
+      '###..............................###',
+      '###......###########################',
+      '###......###########################',
+      '###......##L.........##FFBB......###',
+      '###......##..........##FFBB......###',
+      '###......##..........##FFBB......###',
+      '###......##..........##FFBB......###',
+      '###......##..........##FFBB......###',
+      '###......##..........##FFBB......###',
+      '###......##..######..########....###',
+      '###......##..######..########....###',
+      '###......BB......................###',
+      '###......BB......................###',
+      '###......BB......................###',
+      '###......BB......................###',
+      '###......BB......................###',
+      '###......BB......................###',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+      '####################################',
+    ],
+  },
+  {
     // cópia do vídeo 23 (36054105): baias horizontais à esquerda com barras em corrente (saída azul em cima), pistão no topo do
     // pilar da direita, serpentina com sala de baixo, tijolos escuros e chegada à esquerda embaixo
     id: 'mirante',
