@@ -130,7 +130,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -291,6 +291,12 @@ iteração. Se ele pedir mudança, atualize esta lista.
   com barras de 4 unidades; a saída (amarela, em cima) já é do quadrado da última baia (justiça ok; `stage2After: 3`). Saída → sala de cima →
   faixa do topo (bolsinho sem saída no canto) → serpentina descendo, alternando sala da direita e sala do meio, ligadas por **7 colunas de
   tijolos escuros** → chegada embaixo no meio. Massa medida até ~63s. Sim.: 0/30 sem vencedor, ~77s (referência ~75s), 2 esmagados em 30.
+- **Fase Cortina** — cópia do vídeo 22 (`34170bc5`; mapa de 19x22 **blocos**, `brickBlock 1`, `racerSize 26`, `racerSpeed 170`, `knifeKeep`):
+  4 baias no topo (vermelho, azul, amarelo, verde; `--teams vermelho,azul,amarelo,verde`) com tijolos 1x4; a saída é o tijolo à
+  **esquerda** da baia 1 (col 3). **Justiça** `ownerPerm [0,3,2,1]`: a saída passa ao quadrado da baia 4 (mais longe); `stage2After: 1`
+  (a massa varre RUMO à saída, então só começa depois que ela abre). Saída → sala da esquerda → serpentina de 4 corredores com **3
+  tijolos escuros em cada curva** → corredor final (**faca**) → 1 escuro → chegada embaixo à esquerda. Bolsinho sem saída à direita
+  das baias. Massa medida até ~47s. Sim.: 0/30 sem vencedor, ~64s (referência 49s), 0 esmagados.
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
