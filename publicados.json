@@ -520,5 +520,27 @@
     "chave_r2": "aprendendo-facil/pendentes/serra-concreto.mp4",
     "capa_ms": 1200,
     "status": "scheduled"
+  },
+  {
+    "slug": "lamina-concreto",
+    "rede": "tiktok",
+    "post_id": "6af44764d18307dbac67a691",
+    "canal": "aprendendo.facil99",
+    "agendado": "2026-11-11T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/lamina-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/lamina-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
+  },
+  {
+    "slug": "lamina-concreto",
+    "rede": "instagram",
+    "post_id": "6af447654335c02d1df1fb43",
+    "canal": "disputadostimes",
+    "agendado": "2026-11-11T23:30:00.000Z",
+    "link": "https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev/aprendendo-facil/pendentes/lamina-concreto.mp4",
+    "chave_r2": "aprendendo-facil/pendentes/lamina-concreto.mp4",
+    "capa_ms": 1200,
+    "status": "scheduled"
   }
 ]
