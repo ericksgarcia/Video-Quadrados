@@ -900,7 +900,181 @@ def martelo():
     m.put(R0 + 0, C0 + 6, 'H')   # martelo (unidade 0,3)
     return m.lines()
 
+def degraus():
+    """Cópia do vídeo 26 (46b15019): mapa 16x21 unidades (família da Escadaria). 4 baias horizontais à esquerda (verde, vermelho,
+    amarelo, ciano de cima p/ baixo) com barras de 4 unidades: ciano em cima (saída, do último = mais longe), verde (1-2), amarela
+    (2-3), vermelha (3-4). Saída -> sala de cima -> topo p/ a direita (pistão sobe do pilar da col 7) -> desce cols 8-9 -> fundo do U
+    -> sobe cols 11-12 -> topo (pistão do pilar da col 13) -> desce cols 14-15 -> sala com DEGRAUS de tijolos escuros nos cantos ->
+    desce -> corredor de baixo p/ a esquerda (degraus no canto) -> 1 escuro -> chegada (cols 0-1). Bolsinho sem saída em cima à
+    esquerda. Sem faca."""
+    U = [
+        '..........#.....',  # 0  bolsinho (cols 0-2) | topo
+        '..#.......#.....',  # 1
+        '..#....#..#..#..',  # 2  pistões no topo dos pilares das cols 7 e 13
+        '###....#..#..#..',  # 3
+        '###4444#..#..#..',  # 4  barra ciano (saída)
+        '.......#..#..#..',  # 5  baia 1 (verde)
+        '.......#..#..#..',  # 6
+        '###1111#..#..#..',  # 7  barra verde
+        '.......#..#..#..',  # 8  baia 2 (vermelho)
+        '.......#..#..#..',  # 9
+        '###3333#..#..#..',  # 10 barra amarela
+        '.......#.....#..',  # 11 baia 3 (amarelo) | fundo do U
+        '.......#.....#..',  # 12
+        '###2222#.....#..',  # 13 barra vermelha
+        '.......#######..',  # 14 baia 4 (ciano)
+        '.......##BB.....',  # 15 sala dos degraus
+        '#########B.....B',  # 16
+        '#########.....BB',  # 17
+        '#########...####',  # 18
+        'FFB........B####',  # 19 corredor de baixo -> 1 escuro -> chegada
+        'FFB.......BB####',  # 20
+    ]
+    R0, C0 = 3, 2
+    m = unitmap(U, {}, R0, C0)
+    for r in (5, 8, 11, 14): m.put(R0 + 2 * r + 1, C0 + 2, 'S')
+    return m.lines()
+
+def jaula():
+    """Cópia do vídeo 27 (4ab7ab02): mapa 16x21 unidades (família da Degraus). 4 baias horizontais à esquerda (amarelo, ciano,
+    verde, vermelho de cima p/ baixo) com barras de 4 unidades: ciano em cima (saída), amarela (1-2), verde (2-3), vermelha (3-4).
+    Saída -> sala de cima -> faixa do topo p/ a direita -> desce cols 14-15 (porta da sala do QUADRADO LILÁS) -> corredor das linhas
+    7-8 p/ a esquerda (pistão sobe do pilar da col 10 e fecha) -> desce cols 8-9 -> corredor das linhas 13-14 p/ a direita (em cima,
+    a JAULA com piso de 4 tijolos de cor) -> desce cols 14-15 -> corredor de baixo p/ a esquerda -> sobe cols 6-7 -> 8 tijolos
+    escuros -> sala da chegada (canto de baixo à esquerda). O quadrado roxo preso na jaula do vídeo NÃO foi copiado."""
+    U = [
+        '###.............',  # 0  faixa do topo
+        '###.............',  # 1
+        '###....#######..',  # 2
+        '###....#.....#..',  # 3  sala do lilás (cols 8-12)
+        '###2222#........',  # 4  barra ciano (saída) | porta da sala do lilás (col 13)
+        '.......#.....#..',  # 5  baia 1 (amarelo)
+        '.......#######..',  # 6
+        '###1111#........',  # 7  barra amarela | corredor p/ a esquerda
+        '.......#........',  # 8  baia 2 (ciano)
+        '.......#..######',  # 9  pistão no topo do pilar da col 10
+        '###3333#..#....#',  # 10 barra verde | jaula (cols 11-14)
+        '.......#..#....#',  # 11 baia 3 (verde)
+        '.......#..#1234#',  # 12 piso da jaula: amarelo, ciano, verde, vermelho
+        '###4444#........',  # 13 barra vermelha | corredor p/ a direita
+        '.......#........',  # 14 baia 4 (vermelho)
+        '.......#######..',  # 15
+        '##############..',  # 16
+        '..BBBB..######..',  # 17 8 tijolos escuros
+        '..BBBB..######..',  # 18
+        '..####..........',  # 19 corredor de baixo
+        'FF####..........',  # 20 chegada (cols 0-1)
+    ]
+    R0, C0 = 3, 2
+    m = unitmap(U, {}, R0, C0)
+    for r in (5, 8, 11, 14): m.put(R0 + 2 * r + 1, C0 + 2, 'S')
+    m.put(R0 + 8, C0 + 20, 'L')   # quadrado lilás (unidade 4,10)
+    return m.lines()
+
+def serra():
+    """Cópia do vídeo 28 (542e6ec4): mapa 14x18 unidades. 4 baias embaixo (amarelo, verde, ciano, vermelho da esq. p/ dir.) com
+    tijolos de cor de 3 unidades: amarelo (1-2), ciano (2-3), verde (3-4) e vermelho (saída à direita). Saída -> corredor da direita
+    sobe (embaixo, um bolsinho sem saída) -> corredor da linha 10 p/ a esquerda -> sobe a esquerda -> topo -> desce cols 4-5 -> sobe
+    a coluna 7 (4 tijolos escuros) -> topo do meio -> desce cols 9-10 -> sobe cols 12-13 -> 2 tijolos escuros -> chegada no canto de
+    cima à direita. Sem pistões, sem faca."""
+    U = [
+        '......#....#FF',  # 0  chegada (cols 12-13)
+        '......#.#..#FF',  # 1
+        '...#..#B#..#BB',  # 2  escuros: coluna 7 (4) e linha 2 (2)
+        '...#..#B#..#..',  # 3
+        '...#..#B#..#..',  # 4
+        '...#..#B#..#..',  # 5
+        '...#..#.#.....',  # 6
+        '...#....#.....',  # 7
+        '...#....#.....',  # 8
+        '...###########',  # 9
+        '..............',  # 10 corredor p/ a esquerda
+        '############..',  # 11
+        '..1..3..2..4..',  # 12 tijolos de cor (3 linhas): amarelo, ciano, verde, vermelho (saída)
+        '..1..3..2..4..',  # 13
+        '..1..3..2..4..',  # 14
+        '..#..#..#..##.',  # 15 bolsinho (cols 12-13, linhas 15-17)
+        '..#..#..#..#..',  # 16
+        '..#..#..#..#..',  # 17
+    ]
+    R0, C0 = 6, 4
+    m = unitmap(U, {}, R0, C0)
+    for c in (0, 3, 6, 9): m.put(R0 + 2 * 16, C0 + 2 * c + 1, 'S')
+    return m.lines()
+
+def lamina():
+    """Cópia do vídeo 29 (5bc64a9d): mapa 18x22 unidades. 4 baias horizontais à esquerda (ciano, vermelho, amarelo, verde de cima
+    p/ baixo) com barras de 3 unidades: verde em cima (saída, do último = mais longe), ciano (1-2), vermelha (2-3), amarela (3-4).
+    Saída -> sala de cima -> desce o corredor da esquerda (cols 7-9, 3 tijolos escuros soltos nas paredes) -> 4 tijolos escuros no pé
+    da parede da col 10 -> sobe o corredor do meio (cols 11-13, 3 escuros soltos) -> faixa do topo com a FACA -> desce o corredor
+    da direita -> 2 linhas de tijolos escuros -> chegada (linha 21). Sem pistões."""
+    U = [
+        '###.......#.......',  # 0  sala de cima | faixa do topo (faca na col 14)
+        '###.......#.......',  # 1
+        '###.......#.......',  # 2
+        '###444#...#...#...',  # 3  barra verde (saída)
+        '......#...#...#...',  # 4  baia 1 (ciano)
+        '......#B..#...#...',  # 5  escuro solto (col 7)
+        '......#...#...#...',  # 6
+        '###111#...#B..#...',  # 7  barra ciano | escuro solto (col 11)
+        '......#...#...#...',  # 8  baia 2 (vermelho)
+        '......#..B#...#...',  # 9  escuro solto (col 9)
+        '......#...#...#...',  # 10
+        '###222#...#..B#...',  # 11 barra vermelha | escuro solto (col 13)
+        '......#...#...#...',  # 12 baia 3 (amarelo)
+        '......#B..#...#...',  # 13 escuro solto (col 7)
+        '......#...#...#...',  # 14
+        '###333#...#B..#...',  # 15 barra amarela | escuro solto (col 11)
+        '......#...#...#...',  # 16 baia 4 (verde)
+        '......#...#...#...',  # 17
+        '......#...B...#...',  # 18 4 tijolos escuros (col 10) ligam os dois corredores
+        '#######...B...#BBB',  # 19 2 linhas de escuros antes da chegada
+        '#######...B...#BBB',  # 20
+        '#######...B...#FFF',  # 21 chegada
+    ]
+    R0, C0 = 2, 0
+    m = unitmap(U, {}, R0, C0)
+    for r in (4, 8, 12, 16): m.put(R0 + 2 * r + 2, C0 + 2, 'S')
+    m.put(R0 + 2, C0 + 28, '!')   # faca (unidade 1,14)
+    return m.lines()
+
+def prensa():
+    """Cópia do vídeo 30 (66ad3ff5): mapa de 20x23 BLOCOS. Os 4 quadrados nascem juntos no corredor de baixo (vermelho, azul,
+    amarelo, verde da esq. p/ dir.). Coluna central de 8 blocos com 3 pares de braços laterais (3 blocos de altura); de cada braço sai
+    uma PRENSA (pistão horizontal) que atravessa o braço e entra na coluna até deixar só 0,6 bloco de vão: quem estiver na faixa é
+    esmagado. Chegada no topo (cols 9-10) atrás de 1 linha de tijolos escuros. Sem prisão, sem massa."""
+    U = [
+        '####################',  # 0  (bloco verde-limão do vídeo -> parede)
+        '#########FF#########',  # 1  chegada
+        '#########BB#########',  # 2  tijolos escuros
+        '....................',  # 3  braços 1 (prensas)
+        '....................',  # 4
+        '....................',  # 5
+        '######........######',  # 6
+        '######........######',  # 7
+        '######........######',  # 8
+        '....................',  # 9  braços 2
+        '....................',  # 10
+        '....................',  # 11
+        '######........######',  # 12
+        '######........######',  # 13
+        '######........######',  # 14
+        '....................',  # 15 braços 3
+        '....................',  # 16
+        '....................',  # 17
+        '######........######',  # 18
+        '######........######',  # 19
+        '######........######',  # 20
+        '.........SSSS.......',  # 21 largada (os 4 juntos)
+        '....................',  # 22
+    ]
+    R0, C0 = 12, 8
+    m = M()
+    for r, row in enumerate(U):
+        for c, ch in enumerate(row): m.put(R0 + r, C0 + c, ch)
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')

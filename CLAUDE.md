@@ -135,7 +135,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `prensa`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -322,6 +322,12 @@ iteração. Se ele pedir mudança, atualize esta lista.
   `H` no mapa, no topo à esquerda; quem pega quebra qualquer tijolo, de qualquer cor, com 1 batida; não volta). **Aproximado**: no vídeo
   não dá para ver o martelo quebrando nada — a regra "quebra qualquer tijolo" foi escolha nossa (não mata ninguém). Massa medida até o
   fim do vídeo; o resto é extrapolado. Sim.: 0/30 sem vencedor, ~63s (referência ~58s).
+- **Fase Degraus** — cópia do vídeo 26 (`46b15019`; mapa 16x21 unidades, família da Escadaria, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`,
+  sem faca): 4 baias horizontais à esquerda (verde, vermelho, amarelo, ciano de cima p/ baixo; `--teams verde,vermelho,amarelo,ciano`)
+  com barras de 4 unidades; a saída (ciano, em cima) já é do quadrado da última baia (justiça ok; `stage2After: 3`). Saída → sala de cima
+  (bolsinho sem saída à esquerda) → topo → desce cols 8-9 → fundo do U → sobe cols 11-12 → topo → desce cols 14-15 → sala com
+  **degraus de tijolos escuros** nos cantos → corredor de baixo → 1 escuro → chegada embaixo à esquerda. **2 pistões** sobem do topo
+  dos pilares das cols 7 e 13 (8s, 2 unid., juntos) e fecham o topo. Massa medida até ~75s. Sim.: 1/30 sem vencedor, ~92s (referência 80s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada

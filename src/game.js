@@ -275,6 +275,8 @@ export class Game {
   // { c, w, r, max, period, phase }: colunas c..c+w-1, crescem para cima a partir da linha r até max blocos
   updatePistons() {
     const rt = this.raceTime;
+    const crush = this.level.pistonCrush;
+    if (crush) for (const r of this.racers) r.pistonHit = false;
     for (const p of this.pistons) {
       const per = p.period ?? 8;
       const ph = (((rt + (p.phase ?? 0)) % per) + per) % per / per; // 0..1
@@ -294,25 +296,42 @@ export class Game {
         if (r.state !== 'alive') continue;
         const h = r.size / 2;
         if (r.x + h <= x0 || r.x - h >= x1 || r.y + h <= y0 || r.y - h >= y1) continue;
+        r.pistonHit = true;
         if (p.dir === 'right') {
           const nx = x1 + h + 0.5;
-          if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = Math.abs(r.vx); continue; }
+          if (!this.hitTiles(r, nx, r.y, true) && !this.inOtherPiston(r, nx, r.y, p)) { r.x = nx; r.vx = Math.abs(r.vx); continue; }
         } else if (p.dir === 'left') {
           const nx = x0 - h - 0.5;
-          if (!this.hitTiles(r, nx, r.y, true)) { r.x = nx; r.vx = -Math.abs(r.vx); continue; }
+          if (!this.hitTiles(r, nx, r.y, true) && !this.inOtherPiston(r, nx, r.y, p)) { r.x = nx; r.vx = -Math.abs(r.vx); continue; }
         } else if (p.dir === 'down') {
           const dn = y1 + h + 0.5;
-          if (!this.hitTiles(r, r.x, dn, true)) { r.y = dn; r.vy = Math.abs(r.vy); continue; }
+          if (!this.hitTiles(r, r.x, dn, true) && !this.inOtherPiston(r, r.x, dn, p)) { r.y = dn; r.vy = Math.abs(r.vy); continue; }
         } else {
           const up = y0 - h - 0.5;
-          if (!this.hitTiles(r, r.x, up, true)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
+          if (!this.hitTiles(r, r.x, up, true) && !this.inOtherPiston(r, r.x, up, p)) { r.y = up; r.vy = -Math.abs(r.vy); continue; }
         }
-        if (!this.squeeze(r)) {
+        // pistonCrush (fase Prensa): entre duas prensas não há escapatória lateral; só sai quem andar para fora da faixa em 0,6s
+        if (crush) { // (relógio próprio: o pushOut da massa zera o pinT a cada passo)
+          r.pinP ??= this.t;
+          if (this.t - r.pinP > (this.level.pinGrace ?? 0.6)) { r.state = 'dead'; r.deathT = this.raceTime; this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true }); }
+        } else if (!this.squeeze(r)) {
           r.pinT ??= this.t; // pistão: também dá 0,6s de graça
           if (this.t - r.pinT > 0.6) { r.state = 'dead'; r.deathT = this.raceTime; this.emit('eliminate', { i: r.i, x: r.x, y: r.y, crushed: true }); }
         }
       }
     }
+    if (crush) for (const r of this.racers) if (!r.pistonHit) r.pinP = null;
+  }
+
+  // o lugar para onde o pistão empurraria o quadrado está dentro de OUTRO pistão? (duas prensas frente a frente: sem saída)
+  inOtherPiston(r, x, y, self) {
+    const h = r.size / 2 - 0.5;
+    for (const q of this.pistons) {
+      if (q === self || !q.rect) continue;
+      const m = q.rect;
+      if (m[2] - m[0] > 0.5 && m[3] - m[1] > 0.5 && x + h > m[0] && x - h < m[2] && y + h > m[1] && y - h < m[3]) return true;
+    }
+    return false;
   }
 
   pistonCovers(row, col) {
