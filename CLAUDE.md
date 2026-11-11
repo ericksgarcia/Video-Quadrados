@@ -328,6 +328,34 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (bolsinho sem saída à esquerda) → topo → desce cols 8-9 → fundo do U → sobe cols 11-12 → topo → desce cols 14-15 → sala com
   **degraus de tijolos escuros** nos cantos → corredor de baixo → 1 escuro → chegada embaixo à esquerda. **2 pistões** sobem do topo
   dos pilares das cols 7 e 13 (8s, 2 unid., juntos) e fecham o topo. Massa medida até ~75s. Sim.: 1/30 sem vencedor, ~92s (referência 80s).
+- **Fase Jaula** — cópia do vídeo 27 (`4ab7ab02`; mapa 16x21 unidades, família da Degraus, `racerSize 36`, ~4,2 unid/s, `brickBlock 2`, sem faca):
+  4 baias horizontais à esquerda (amarelo, ciano, verde, vermelho de cima p/ baixo; `--teams amarelo,ciano,verde,vermelho`). **Justiça**
+  `ownerPerm [0,3,1,2]`: a barra de saída (ciano no vídeo) passa ao quadrado da baia 4 e cada barra entre baias a quem está logo acima
+  (o `justica.mjs` não analisa esta fase sozinho: o piso da jaula encosta em duas regiões); `stage2After: 1`. Saída → topo → desce a
+  direita (porta da sala do **quadrado lilás**, `L`: quem encosta cresce) → corredor das linhas 7-8 (**pistão** sobe do pilar da col 10,
+  8s, 2 unid.) → desce cols 8-9 → corredor das linhas 13-14 (em cima, a **jaula** com piso de 4 tijolos de cor) → desce a direita →
+  corredor de baixo → sobe → 8 tijolos escuros → chegada embaixo à esquerda. **Aproximado**: o quadrado roxo com olhos preso na jaula
+  (vira um 5º corredor quando soltam) NÃO foi copiado; a jaula fica vazia. Sim.: 0/30 sem vencedor, ~83s (referência 76s). Escolha
+  uma seed em que alguém pega o lilás (o vídeo de 11/11 usou a 2719).
+- **Fase Serra** — cópia do vídeo 28 (`542e6ec4`; mapa 14x18 unidades, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias embaixo
+  (amarelo, verde, ciano, vermelho; `--teams amarelo,verde,ciano,vermelho`) com tijolos de cor de 3 unidades. **Justiça** `ownerPerm [1,3,2,0]`:
+  a saída (vermelha, col 11) passa ao quadrado da baia 1 e cada tijolo entre baias ao vizinho da direita; `stage2After: 3`. Saída → corredor
+  da direita sobe (embaixo, bolsinho sem saída) → corredor da linha 10 → sobe a esquerda → topo → desce cols 4-5 → sobe a coluna 7 (**4
+  tijolos escuros**) → topo do meio → desce → sobe cols 12-13 → 2 escuros → chegada no canto de cima à direita. Sem pistões. Massa
+  medida até ~58s. Sim.: 1/30 sem vencedor, ~82s (referência 62s), 1 esmagado.
+- **Fase Lâmina** — cópia do vídeo 29 (`5bc64a9d`; mapa 18x22 unidades, `racerSize 42`, ~4,2 unid/s, `brickBlock 2`, `knifeKeep`): 4 baias
+  horizontais à esquerda (ciano, vermelho, amarelo, verde; `--teams ciano,vermelho,amarelo,verde`) com barras de 3 unidades; a saída (verde,
+  em cima) já é do quadrado da última baia (justiça ok; `stage2After: 3`). Saída → sala de cima → desce o corredor da esquerda (tijolos
+  escuros soltos nas paredes) → **4 escuros** no pé da parede ligam ao corredor do meio → sobe → faixa do topo com a **faca** → desce a
+  direita → 2 linhas de escuros → chegada. Sem pistões. Massa medida até ~46s. Sim.: 2/30 sem vencedor, ~87s (referência 50s).
+- **Fase Prensa** — cópia do vídeo 30 (`66ad3ff5`; mapa de 20x23 **blocos**, `brickBlock 1`, `racerSize 24`, `racerSpeed 90` (medido: ~3
+  blocos/s), sem massa): **sem prisão**, os 4 nascem juntos no corredor de baixo (vermelho, azul, amarelo, verde). Coluna central de 8
+  blocos com 3 pares de braços; **6 PRENSAS** (pistões horizontais, todas juntas, 14s) atravessam os braços e entram na coluna até deixar
+  só 0,6 bloco de vão. **Novo no motor**: `pistonCrush: true` + `pinGrace` (0,17s) = quem fica entre duas prensas é esmagado (antes o
+  pistão empurrava o quadrado para dentro do outro pistão e ninguém morria; `inOtherPiston`). Chegada no topo atrás de 2 tijolos escuros.
+  **Aproximado**: o bloco verde-limão acima da chegada virou parede; as prensas são desenhadas como pistões (escuras), não roxas. Mata
+  muito (3 de 4 em média; 1/3 das corridas sem vencedor): escolha a seed à mão (o vídeo de 11/11 usou a 3156: 51s, 2 esmagados, como
+  na referência). Justiça não se aplica (largada junta).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
