@@ -135,7 +135,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `prensa`. A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `cruz`, `bigorna`, `caracol`, `gancho` (a `prensa` fica FORA do sorteio: mata demais, a seed tem de ser escolhida à mão). A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -356,6 +356,27 @@ iteração. Se ele pedir mudança, atualize esta lista.
   **Aproximado**: o bloco verde-limão acima da chegada virou parede; as prensas são desenhadas como pistões (escuras), não roxas. Mata
   muito (3 de 4 em média; 1/3 das corridas sem vencedor): escolha a seed à mão (o vídeo de 11/11 usou a 3156: 51s, 2 esmagados, como
   na referência). Justiça não se aplica (largada junta).
+- **Fase Cruz** — cópia do vídeo 31 (`6f20aceb`; mapa 16x21 unidades, planta da Degraus, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, sem faca):
+  4 baias horizontais à esquerda (amarelo, azul, vermelho, verde de cima p/ baixo; `--teams amarelo,azul,vermelho,verde`); a saída (verde,
+  em cima) já é do quadrado da última baia (justiça ok; `stage2After: 3`). Mesmo caminho da Degraus, sem bolsinho, com **tijolos escuros em
+  "T"** nas pontas dos 3 pilares; embaixo, **2 pistões** (6s, pico em 3s): um sobe do chão da sala de baixo (col 12, 3 unid.) e outro desce do
+  teto do corredor de baixo (col 8, 2 unid.); chegada atrás de 4 escuros. Massa medida até ~68s. Sim.: 0/30 sem vencedor, ~85s (referência 71s).
+- **Fase Bigorna** — cópia do vídeo 32 (`6f324bf3`; mapa 14x18 unidades, `racerSize 46`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias embaixo
+  (vermelho, verde, azul, amarelo; `--teams vermelho,verde,azul,amarelo`) com tijolos de cor de 4 unidades; a saída (vermelha, col 11) já é do
+  quadrado da baia 1 (justiça ok; `stage2After: 0`). Saída → corredor da direita → corredor das linhas 7-8 (**quadrado lilás** `L` na ponta,
+  `growScale 1.5`; **pistão** sobe da parede na col 6) → sobe a esquerda → faixa do topo (**pistão** do pilar da col 3) → desce à direita
+  (**martelo** `H`) → sala da chegada → escuros → chegada. Pistões 10s, pico em 5s. Massa medida até ~53s. Sim.: 1/30 sem vencedor, ~78s
+  (referência 59s).
+- **Fase Caracol** — cópia do vídeo 33 (`71b4f380`; mapa 16x21 unidades em **espiral**, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, sem faca):
+  4 baias embaixo (ciano, amarelo, verde, vermelho; `--teams ciano,amarelo,verde,vermelho`); a saída (ciano, col 11) já é do quadrado da baia 1
+  (justiça ok; `stage2After: 0`). Saída → sobe a direita → topo p/ a esquerda → desce a esquerda → faixa de baixo → sobe cols 10-11 → sala de
+  dentro (**pistão** sobe da parede da col 6, 8s) → chegada no **centro**. 12 tijolos escuros soltos nas paredes; bolsinho sem saída embaixo à
+  direita. Massa medida até ~66s. Sim.: 0/30 sem vencedor, ~79s (referência 69s).
+- **Fase Gancho** — cópia do vídeo 34 (`73bab6b7`; mapa 14x18 unidades, família da Serra, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, sem faca):
+  4 baias embaixo (amarelo, vermelho, verde, ciano; `--teams amarelo,vermelho,verde,ciano`); a saída (amarela, col 11) já é do quadrado da baia
+  1 (justiça ok; `stage2After: 0`). Saída → corredor da direita (bolsinho embaixo) → corredor das linhas 7-8 (**pistão** col 11) → sobe a
+  esquerda (2 escuros soltos) → faixa do topo (**pistão** col 2) → desce à direita → sala da chegada → 6 escuros → chegada estreita (col 3).
+  Pistões 10s, pico em 5s, 2 unid. Massa medida até ~57s. Sim.: 0/30 sem vencedor, ~81s (referência 60s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
