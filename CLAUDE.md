@@ -313,7 +313,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   4 baias penduradas no topo com tijolos de cor de 3 unidades. **Justiça** `ownerPerm [1,2,3,0]`; `stage2After: 3`. Saída → desce a direita
   → corredor largo → desce a esquerda (coluna de tijolos escuros) → corredor de baixo (**pistão** `dir:'down'` desce do teto, 6s, 3 unid.)
   → sobe → chegada no meio. **QUADRADO LILÁS** (novo no motor: `L` no mapa; quem encosta primeiro cresce ×`growScale` (1,8) e fica
-  grande até o fim; só funciona uma vez). Sim.: 0/30 sem vencedor, ~57s (referência 47s). Nem toda corrida usa o lilás: na hora de
+  grande até o fim; cada quadrado só cresce uma vez, e o lilás continua lá para os outros). Sim.: 0/30 sem vencedor, ~57s (referência 47s). Nem toda corrida usa o lilás: na hora de
   renderizar, escolha uma seed em que alguém encosta nele (o vídeo de 09/11 usou a seed 2443).
 - **Fase Martelo** — cópia do vídeo 25 (`3cd48485`; mapa 14x18 unidades, `racerSize 40`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias
   embaixo com tijolos de cor de 4 unidades. **Justiça** `ownerPerm [2,1,0,3]`: a saída (col 11) passa ao quadrado da baia 1; `stage2After: 2`.
