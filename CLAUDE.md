@@ -135,7 +135,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `cruz`, `bigorna`, `caracol`, `gancho` (a `prensa` fica FORA do sorteio: mata demais, a seed tem de ser escolhida à mão). A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `cruz`, `bigorna`, `caracol`, `gancho`, `catraca`, `coroa`, `atalho`, `chamine`, `zigue` (a `prensa` fica FORA do sorteio: mata demais, a seed tem de ser escolhida à mão). A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -377,6 +377,29 @@ iteração. Se ele pedir mudança, atualize esta lista.
   1 (justiça ok; `stage2After: 0`). Saída → corredor da direita (bolsinho embaixo) → corredor das linhas 7-8 (**pistão** col 11) → sobe a
   esquerda (2 escuros soltos) → faixa do topo (**pistão** col 2) → desce à direita → sala da chegada → 6 escuros → chegada estreita (col 3).
   Pistões 10s, pico em 5s, 2 unid. Massa medida até ~57s. Sim.: 0/30 sem vencedor, ~81s (referência 60s).
+- **Fase Catraca** — cópia do vídeo 35 (`76a579e5`; mapa 16x20 unidades, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, sem faca): 4 baias horizontais
+  à esquerda (vermelho, verde, azul, amarelo de cima p/ baixo; `--teams vermelho,verde,azul,amarelo`). **Justiça** `ownerPerm [3,1,2,0]` (feita à
+  mão: o `justica.mjs` confunde o último portão com a saída): a barra de saída passa ao quadrado da baia 4 e cada barra entre baias a quem está
+  logo acima; `stage2After: 0`. Saída → faixa do topo → zigue-zague com **4 PORTÕES de cor** (3 unidades, só o dono quebra; os donos trocam
+  junto com o `ownerPerm`) → chegada embaixo. A massa no zigue-zague é mais lenta que no vídeo (1,1 bloco/s): quem espera o dono do portão era
+  prensado. Sim.: 7/30 sem vencedor, ~87s (referência 78s), ~1 esmagado por corrida (o best-of-30 escolhe uma sem).
+- **Fase Coroa** — cópia do vídeo 36 (`7792dbe0`; mapa 14x18 unidades, família da Serra, `racerSize 44`, ~4,2 unid/s, `brickBlock 2`, `knifeKeep`):
+  4 baias embaixo (amarelo, azul, verde, vermelho; `--teams amarelo,azul,verde,vermelho`); a saída (amarela, col 11) já é do quadrado da baia 1
+  (justiça ok; `stage2After: 0`). Um **"M"**: sobe a direita → topo → desce → fundo do "M" com a **faca** (escuros em "L" nos cantos) → sobe →
+  topo → desce a esquerda → 2 escuros → chegada. **2 pistões horizontais** na linha 3 (6s): sai do pilar da col 2 p/ a esquerda (2 unid.) e do
+  pilar da col 10 p/ a direita (3 unid.). Sim.: 1/30 sem vencedor, ~74s (referência 54s), a faca elimina ~2,7 dos 4.
+- **Fase Atalho** — cópia do vídeo 37 (`82a98258`; mapa 14x18 unidades, planta da Coroa sem os escuros dos cantos, `racerSize 44`, `knifeKeep`):
+  4 baias embaixo (ciano, amarelo, vermelho, verde; `--teams ciano,amarelo,vermelho,verde`). **Justiça** `ownerPerm [3,1,2,0]`: a saída (verde,
+  col 11) passa ao quadrado da baia 1; `stage2After: 3`. **Pistão desce** do pé do pilar do meio (8s, 3 unid.). **Portal de mão única**: entra no
+  canto de cima à esquerda (`P`, perto da faca) e sai no bolsinho embaixo à direita (`p`), lá atrás. Sim.: 6/30 sem vencedor, ~64s (referência 51s).
+- **Fase Chaminé** — cópia do vídeo 38 (`83f2bead`; mapa 14x18 unidades, **sem prisão**, `racerSize 42`, `growScale 1.25`): os 4 nascem juntos na
+  sala de baixo (vermelho, verde, ciano, amarelo); **2 quadrados lilás** nos cantos; 4 chaminés de 1 unidade com 1 escuro no topo; a massa sobe
+  devagar e igual (0,27 bloco/s, como a Poços); **pistão** na faixa do topo (8s); chegada no canto de cima à esquerda atrás de 2 escuros. Quem
+  fica na sala de baixo quando a massa chega ao teto é esmagado (21 em 30 corridas; o best-of-30 escolhe uma sem). Sim.: 1/30 sem vencedor,
+  ~59s (referência 58s). Justiça não se aplica.
+- **Fase Zigue-zague** — cópia do vídeo 39 (`887cd998`; mapa 14x18 unidades, **sem prisão**, `racerSize 40`): os 4 nascem juntos no canto de baixo
+  à esquerda com a massa logo atrás (1,6–2 blocos/s); serpentina de 5 corredores de 3 unidades com **9 pistões** (8s, pico em 4s: em cada
+  parede um sobe, um desce e um sai da ponta); chegada no canto de cima à direita, sem tijolos. Sim.: 0/30 sem vencedor, ~94s (referência 76s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada
