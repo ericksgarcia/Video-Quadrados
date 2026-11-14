@@ -135,7 +135,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    corrida mais emocionante entre 30 — **sem repetir** combinações já registradas em
    `historico.json`.
    - Fase padrão: sorteia **SÓ entre as cópias dos vídeos de referência** (pedido do usuário): `gaiola`, `cofre`, `ponte`,
-     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `cruz`, `bigorna`, `caracol`, `gancho`, `catraca`, `coroa`, `atalho`, `chamine`, `zigue` (a `prensa` fica FORA do sorteio: mata demais, a seed tem de ser escolhida à mão). A original `colunas` (5 quadrados, com "instinto") NÃO entra
+     `escada`, `pocos`, `pente`, `pilares`, `meandro`, `portais`, `grade`, `trilha`, `corredor`, `salao`, `teto`, `xadrez`, `portoes`, `bolsao`, `escadaria`, `cortina`, `mirante`, `lilas`, `martelo`, `degraus`, `jaula`, `serra`, `lamina`, `cruz`, `bigorna`, `caracol`, `gancho`, `catraca`, `coroa`, `atalho`, `chamine`, `zigue`, `galeria`, `balcao`, `estufa`, `espelho` (a `prensa` fica FORA do sorteio: mata demais, a seed tem de ser escolhida à mão). A original `colunas` (5 quadrados, com "instinto") NÃO entra
      no sorteio; só com `--level colunas` se o usuário pedir. Se o usuário pedir algo
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
@@ -400,6 +400,26 @@ iteração. Se ele pedir mudança, atualize esta lista.
 - **Fase Zigue-zague** — cópia do vídeo 39 (`887cd998`; mapa 14x18 unidades, **sem prisão**, `racerSize 40`): os 4 nascem juntos no canto de baixo
   à esquerda com a massa logo atrás (1,6–2 blocos/s); serpentina de 5 corredores de 3 unidades com **9 pistões** (8s, pico em 4s: em cada
   parede um sobe, um desce e um sai da ponta); chegada no canto de cima à direita, sem tijolos. Sim.: 0/30 sem vencedor, ~94s (referência 76s).
+- **Fase Galeria** — cópia do vídeo 40 (`8c5a8a28`; mapa de 19x22 **blocos** como a Cortina, `brickBlock 1`, `racerSize 26`, `racerSpeed 170`,
+  `knifeKeep`): 4 baias penduradas no topo (vermelho, amarelo, verde, azul; `--teams vermelho,amarelo,verde,azul`) com tijolos 1x4 à direita;
+  a saída (vermelha, col 15) já é do quadrado da baia 1 (justiça ok; `stage2After: 0`). Depois, 5 colunas compridas ligadas por grupos de **4
+  tijolos escuros** (alternando em cima/embaixo), **faca** no pé da 2ª coluna, chegada embaixo à esquerda atrás de 3 escuros. Massa medida até
+  ~55s. Sim.: 0/30 sem vencedor, ~74s (referência 56s); a faca elimina ~3 (quem pega costuma vencer).
+- **Fase Balcão** — cópia do vídeo 41 (`98ade87a`; mapa 15x18 unidades, planta da Teto, `racerSize 40`, `knifeKeep`): 4 baias penduradas no topo
+  (amarelo, ciano, vermelho, verde; `--teams amarelo,ciano,vermelho,verde`), cada uma com o próprio tijolo à direita. **Justiça** `ownerPerm
+  [1,2,3,0]` (como a Teto); `stage2After: 3`. Corredor do meio com **pistão que desce** (col 9, 6s, 3 unid.) → 3 escuros → desce a esquerda →
+  corredor de baixo → 3 escuros → sobe → sala da **faca** → 3 escuros → chegada. Sala sem saída com ilha. Sim.: 0/30 sem vencedor, ~58s
+  (referência 50s).
+- **Fase Estufa** — cópia do vídeo 42 (`a93d4b41`; mapa 16x21 unidades, família da Mirante, `racerSize 44`, `growScale 1.5`): 4 baias à esquerda
+  (amarelo, azul, vermelho, verde de cima p/ baixo; `--teams amarelo,azul,vermelho,verde`). **Justiça** `ownerPerm [3,1,2,0]`; `stage2After: 0`,
+  `stage2Gap: 3`. Faixa do topo com porta de 1 unidade para a sala do **quadrado lilás** (quem cresce fica preso lá, como no vídeo) → desce a
+  direita → corredor de baixo → sobe → desce → corredor de baixo → sala da chegada. **3 pistões** (6s, 2 unid., todos sobem). Massa medida até
+  ~81s. Sim.: 0/30 sem vencedor, ~93s (referência 88s).
+- **Fase Espelho** — cópia do vídeo 43 (`aa2a65f1`; mapa 14x18 unidades, "M" da Coroa com a saída pela **esquerda**, `racerSize 40`, `knifeKeep`):
+  4 baias embaixo (amarelo, vermelho, verde, ciano; `--teams amarelo,vermelho,verde,ciano`); a saída (ciano, col 2) já é do quadrado da baia 4,
+  o mais longe (justiça ok; `stage2After: 3`, a varredura vai rumo à saída). Sobe a esquerda (bolsinho embaixo) → topo → fundo do "M" (**pistão
+  desce** do pilar do meio, 8s) → sobe → topo da direita (**faca**) → 2 linhas de escuros → chegada. Escuros em "T" no topo dos pilares.
+  Sim.: 0/30 sem vencedor, ~71s (referência 67s).
 - **Fase Colunas** (ORIGINAL, criada a partir do padrão dos 58 prints; **5 quadrados**, `racers: 5`, mapa
   17x20 unidades, `zoom 1.08`, `racerSize 36`, ~4,6 unidades/s, `homing 0.2 / steer 0.1 / snap 0.05`
   levemente guiado, senão os corredores estreitos demoram demais): 5 colunas na base, 1 quadrado em cada

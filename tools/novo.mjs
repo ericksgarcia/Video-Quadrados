@@ -46,7 +46,7 @@ function sortear() {
   // padrão: quadrados só de cor (estilo das referências)
   const category = args.category || 'cores';
   // padrão: sorteia SÓ entre as cópias dos vídeos de referência (pedido do usuário; a original 'colunas' fica fora); --level escolhe outra
-  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'pente', 'pilares', 'meandro', 'portais', 'grade', 'trilha', 'corredor', 'salao', 'teto', 'xadrez', 'portoes', 'bolsao', 'escadaria', 'cortina', 'mirante', 'lilas', 'martelo', 'degraus', 'jaula', 'serra', 'lamina', 'cruz', 'bigorna', 'caracol', 'gancho', 'catraca', 'coroa', 'atalho', 'chamine', 'zigue']))) || LEVELS[0];
+  const level = LEVELS.find((l) => l.id === (args.level || pick(['gaiola', 'cofre', 'ponte', 'escada', 'pocos', 'pente', 'pilares', 'meandro', 'portais', 'grade', 'trilha', 'corredor', 'salao', 'teto', 'xadrez', 'portoes', 'bolsao', 'escadaria', 'cortina', 'mirante', 'lilas', 'martelo', 'degraus', 'jaula', 'serra', 'lamina', 'cruz', 'bigorna', 'caracol', 'gancho', 'catraca', 'coroa', 'atalho', 'chamine', 'zigue', 'galeria', 'balcao', 'estufa', 'espelho']))) || LEVELS[0];
   const count = Number(args.count) || level.racers || Math.min(level.maxRacers, level.maxRacers >= 8 ? 8 : 4);
   const CORES = count > 4 ? Object.keys(COLORS) : ['vermelho', 'azul', 'amarelo', 'verde'];
   const pool = category === 'cores' ? CORES : category === 'clubes' ? CLUBES_POP : SELECOES_POP;
