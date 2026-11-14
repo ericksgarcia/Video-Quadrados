@@ -414,7 +414,7 @@ iteração. Se ele pedir mudança, atualize esta lista.
   (amarelo, azul, vermelho, verde de cima p/ baixo; `--teams amarelo,azul,vermelho,verde`). **Justiça** `ownerPerm [3,1,2,0]`; `stage2After: 0`,
   `stage2Gap: 3`. Faixa do topo com porta de 1 unidade para a sala do **quadrado lilás** (quem cresce fica preso lá, como no vídeo) → desce a
   direita → corredor de baixo → sobe → desce → corredor de baixo → sala da chegada. **3 pistões** (6s, 2 unid., todos sobem). Massa medida até
-  ~81s. Sim.: 0/30 sem vencedor, ~93s (referência 88s).
+  ~81s. Sim.: 0/30 sem vencedor, ~93s (referência 88s). Escolha uma seed em que alguém pega o lilás (o vídeo de 14/11 usou a 4221).
 - **Fase Espelho** — cópia do vídeo 43 (`aa2a65f1`; mapa 14x18 unidades, "M" da Coroa com a saída pela **esquerda**, `racerSize 40`, `knifeKeep`):
   4 baias embaixo (amarelo, vermelho, verde, ciano; `--teams amarelo,vermelho,verde,ciano`); a saída (ciano, col 2) já é do quadrado da baia 4,
   o mais longe (justiça ok; `stage2After: 3`, a varredura vai rumo à saída). Sobe a esquerda (bolsinho embaixo) → topo → fundo do "M" (**pistão
