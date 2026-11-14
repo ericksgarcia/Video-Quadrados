@@ -63,7 +63,7 @@ da chegada (18, 30, 54); **espirais** (33, 57); **mapa gigante simétrico** (30,
 | `38-83f2bead.png` | `83f2bead2d823cfea79549c1b47522a3.mp4` | 720x1280 | 58s | feito (chamine) |
 | `39-887cd998.png` | `887cd998b2b6f5ab82c369a60699f9ee.mp4` | 720x1280 | 76s | feito (zigue) |
 | `40-8c5a8a28.png` | `8c5a8a2898bcaed11f84257b96c856c9.mp4` | 576x1024 | 56s | feito (galeria) |
-| `41-98ade87a.png` | `98ade87a9ea64f78e42688de4ac76e00.mp4` | 720x1280 | 50s | pendente |
+| `41-98ade87a.png` | `98ade87a9ea64f78e42688de4ac76e00.mp4` | 720x1280 | 50s | feito (balcao) |
 | `42-a93d4b41.png` | `a93d4b41d4c277fa5b1010d4d48f9607.mp4` | 576x1024 | 88s | pendente |
 | `43-aa2a65f1.png` | `aa2a65f10b8305833cc435ea2e254186.mp4` | 576x1024 | 67s | pendente |
 | `44-aaf804cd.png` | `aaf804cd1cdf9756d9a69ab4993ba447.mp4` | 576x1024 | 76s | pendente |
