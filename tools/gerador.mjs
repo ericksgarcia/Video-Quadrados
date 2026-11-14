@@ -338,7 +338,7 @@ function montar(P, rng, seed) {
   const level = {
     id: `gen-${seed}`, name: `Gerada ${seed}`, maxRacers: 4, racers: 4,
     racerSize: P.tipo === 'juntos' ? 40 : rng.pick([40, 42, 44, 46]), racerSpeed: 235, homing: 0, steer: 0, snap: 0,
-    brickBlock: 2, colorBrickHp: 1, brickHp: 1,
+    brickBlock: 2, colorBrickHp: 1, brickHp: 1, efeitos: true,
     ...(P.knife ? { knifeKeep: true } : {}), ...(P.grow ? { growScale: P.grow } : {}),
     flood: P.tipo === 'juntos' ? { delay: 0.5, delay2: 0.5, rate: v0, accel: 0 }
       : { delay: 0.5, zoneRate: 0.8, delay2: 8, stage2After: donos.e, stage2Gap: 1, rate: v0, accel: 0 },
@@ -566,6 +566,7 @@ function fonteLevel(R, seed) {
   if (R.P.notas.length) o.push(`    // ${R.P.notas.join('; ')}.`);
   o.push(`    id: '${L.id}',`, `    name: '${L.name}',`, '    maxRacers: 4,', '    racers: 4,');
   o.push(`    racerSize: ${L.racerSize},`, `    racerSpeed: ${L.racerSpeed}, homing: 0, steer: 0, snap: 0,`, '    brickBlock: 2,', '    colorBrickHp: 1,', '    brickHp: 1,');
+  o.push('    efeitos: true, // efeitos visuais discretos no render (src/render.js)');
   if (L.knifeKeep) o.push('    knifeKeep: true,');
   if (L.growScale) o.push(`    growScale: ${L.growScale},`);
   o.push(`    flood: ${js(L.flood)},${L.flood.stage2After != null ? ' // a massa só varre a prisão depois que a SAÍDA abre' : ''}`);

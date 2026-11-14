@@ -17,6 +17,7 @@
 //   --kill               a água elimina quem encosta (padrão: a onda só empurra)
 //   --out arquivo.mp4    saída (padrão: videos/<fase>-<seed>.mp4)
 //   --batch <n>          gera n vídeos com seeds diferentes de uma vez
+//   --efeitos / --sem-efeitos   liga/desliga os efeitos visuais discretos (padrão: ligados só nas fases do gerador)
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -111,6 +112,7 @@ const base = {
   theme: args.theme, subtitle: args.subtitle, handle: args.handle, cta: args.cta ?? (category ? CATEGORY_DEFAULTS[category].cta : undefined),
   music: args.music !== false,
   floodKills: !!args.kill,
+  efeitos: args.efeitos ? true : args['sem-efeitos'] ? false : undefined, // padrão: os da fase (as do gerador vêm com efeitos)
   crests: args.crests ? String(args.crests).split(',') : undefined,
   title: args.crests ? (args.title ?? 'QUAL ESCUDO VENCE?') : (args.title ?? (category ? CATEGORY_DEFAULTS[category].title : undefined)),
 };

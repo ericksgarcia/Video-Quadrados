@@ -586,6 +586,12 @@ horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `pytho
 - Sem HUD: nada de contagem 3-2-1, popups, faixas, chips, cronômetro, tremida ou flash. E agora também SEM título:
   nenhum texto no vídeo, só o mapa (o maior possível na área segura do TikTok).
 - Sem zoom no final. Quando o 1º chega: ~0,5s e o vídeo acaba (sem placar).
+- **Efeitos visuais discretos** (`src/render.js`, só desenho: não mexem na física, na velocidade nem no estilo chapado). Ligados nas
+  fases do gerador (`efeitos: true` na fase) e, em qualquer outra, com `node tools/render.mjs ... --efeitos` (`--sem-efeitos` desliga).
+  As cópias aprovadas continuam como estavam. São: sombra interna chapada nas paredes (7px, 7,5% de preto), linha mais escura na frente
+  da massa, listras diagonais nos pistões, anel quadrado fino na cor do quadrado quando ele bate na parede, onda quadrada na cor do
+  tijolo que quebra, quadrado achata ~13% na batida e volta em ~0,2s, redemoinho girando nos portais (+ anel ao teleportar), lilás
+  pulsando de leve, faca/martelo balançando, estilhaços na cor do quadrado esmagado. Nada de flash, tremida, brilho, gradiente ou texto.
 
 ## Como o projeto funciona
 

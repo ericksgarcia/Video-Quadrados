@@ -34,6 +34,7 @@ export const LEVELS = [
     brickBlock: 2,
     colorBrickHp: 1,
     brickHp: 1,
+    efeitos: true, // efeitos visuais discretos no render (src/render.js)
     flood: { delay: 0.5, zoneRate: 0.8, delay2: 8, stage2After: 3, stage2Gap: 1, rate: 3.2, accel: 0 }, // a massa só varre a prisão depois que a SAÍDA abre
     massTrack: {
       unit: 2, origin: [3, 2], // unidades (planta 16x21); velocidades em blocos/s

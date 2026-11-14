@@ -154,6 +154,8 @@ export class Renderer {
       this.screenC = { x: (S.x0 + S.x1) / 2, y: (S.y0 + S.y1) / 2 };
     } else if (!game.level.zoom) { this.view.x = AW / 2; this.view.y = AH / 2; } // enquadramento antigo
     this.cam = { ...this.view };
+    // EFEITOS (só visuais, discretos, no estilo flat): ligados nas fases do gerador (level.efeitos) ou por --efeitos no render
+    this.fx = this.opts.efeitos ?? !!game.level.efeitos;
     this.applyTheme();
     this.buildStatic();
   }
@@ -176,6 +178,18 @@ export class Renderer {
         g.fillStyle = (r + c) % 2 ? CHECK_DARK : CHECK_LIGHT;
         g.fillRect(x, y, TILE, TILE);
       } else { g.fillStyle = FLOOR; g.fillRect(x - 0.5, y - 0.5, TILE + 1, TILE + 1); }
+    }
+    if (this.fx) { // sombra interna chapada (sem gradiente) embaixo/à direita das paredes: dá profundidade sem mudar o estilo
+      g.fillStyle = 'rgba(0,0,0,.075)';
+      const S = 7;
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const cell = game.grid[r][c];
+        if (cell.k === 'wall' || cell.k === 'finish') continue;
+        const x = c * TILE, y = r * TILE;
+        if (solid(r - 1, c)) g.fillRect(x, y, TILE, S);
+        if (solid(r, c - 1)) g.fillRect(x, y, S, TILE);
+        if (solid(r - 1, c - 1) && !solid(r - 1, c) && !solid(r, c - 1)) g.fillRect(x, y, S, S);
+      }
     }
     this.floorLayer = fc;
 
@@ -209,7 +223,28 @@ export class Renderer {
       case 'results': this.resultsT = 0; break;
       default: break;
     }
+    if (!this.fx) return;
+    switch (name) {
+      case 'brickBreak': { // onda quadrada na cor do tijolo
+        const col = p.owner == null ? BRICK_DARK : this.colorOf(p.owner);
+        const xs = p.cells.map(([c]) => c), ys = p.cells.map(([, r]) => r);
+        const cx = ((Math.min(...xs) + Math.max(...xs) + 1) / 2) * TILE, cy = ((Math.min(...ys) + Math.max(...ys) + 1) / 2) * TILE;
+        this.ring(cx, cy, (Math.max(...xs) - Math.min(...xs) + 1) * TILE * 0.5, col, 0.35, 5);
+        break;
+      }
+      case 'bounce': { // marquinha de impacto na parede (anel fino na cor do quadrado)
+        const r = this.game.racers[p.i];
+        if (r) this.ring(p.x, p.y, r.size * 0.5, this.colorOf(p.i), 0.22, 3);
+        break;
+      }
+      case 'eliminate': if (p.crushed) this.debris(p.x, p.y, 8, this.colorOf(p.i)); break;
+      case 'portal': this.ring(p.x, p.y, U * 0.4, '#b01fb8', 0.35, 4); this.ring(p.x2, p.y2, U * 0.4, '#b01fb8', 0.35, 4); break;
+      case 'pickup': this.ring(p.x, p.y, U * 0.45, p.kind === 'grow' ? '#9d7bf5' : '#5ad1e8', 0.4, 4); break;
+      default: break;
+    }
   }
+
+  ring(x, y, r0, color, life, lw) { this.particles.push({ ring: true, x, y, r0, color, life, max: life, lw }); }
 
   debris(x, y, n, color) {
     for (let i = 0; i < n; i++) {
@@ -317,6 +352,20 @@ export class Renderer {
         else if (d === 2) g.rect(x, y - 0.5, k, TILE + 1);
         else g.rect(x + TILE - k, y - 0.5, k, TILE + 1);
       }
+      if (this.fx) { // frente da massa: uma linha reta mais escura (continua chapada)
+        g.fill(); g.beginPath();
+        g.fillStyle = shade(this.theme.water, -0.5);
+        const E = 6;
+        for (let i = 0; i < DL.length; i++) {
+          const lv = DL[i];
+          if (lv <= 0.02 || lv >= 1) continue;
+          const x = (i % COLS) * TILE, y = ((i / COLS) | 0) * TILE, d = DD[i], k = lv * TILE;
+          if (d === 0) g.rect(x - 0.5, y + k - E, TILE + 1, E);
+          else if (d === 1) g.rect(x - 0.5, y + TILE - k, TILE + 1, E);
+          else if (d === 2) g.rect(x + k - E, y - 0.5, E, TILE + 1);
+          else g.rect(x + TILE - k, y - 0.5, E, TILE + 1);
+        }
+      }
     } else {
       for (let i = 0; i < L.length; i++) {
         const lv = Math.min(1, L[i]);
@@ -375,6 +424,13 @@ export class Renderer {
       if (!p.rect || p.h < 0.5) continue;
       const [x0, y0, x1, y1] = p.rect;
       g.fillStyle = this.theme.piston; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+      if (this.fx) { // listras diagonais (aviso de perigo), na mesma família de cor
+        g.save(); g.beginPath(); g.rect(x0, y0, x1 - x0, y1 - y0); g.clip();
+        g.strokeStyle = shade(this.theme.piston, 0.22); g.lineWidth = 7;
+        g.beginPath();
+        for (let t = x0 - (y1 - y0) - ((x0 + y0) % 26); t < x1; t += 26) { g.moveTo(t, y1); g.lineTo(t + (y1 - y0), y0); }
+        g.stroke(); g.restore();
+      }
       g.strokeStyle = LINE; g.lineWidth = LW; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
     }
   }
@@ -383,10 +439,11 @@ export class Renderer {
     const g = this.g;
     for (const p of this.game.pickups) {
       if (!p.active) continue;
-      if (p.kind === 'knife') drawKnife(g, p.x, p.y, 48, Math.PI / 4);
-      else if (p.kind === 'hammer') drawHammer(g, p.x, p.y, 50, -Math.PI / 4);
+      const bob = this.fx ? Math.sin(this.time * 4 + p.x) * 0.12 : 0;
+      if (p.kind === 'knife') drawKnife(g, p.x, p.y, 48, Math.PI / 4 + bob);
+      else if (p.kind === 'hammer') drawHammer(g, p.x, p.y, 50, -Math.PI / 4 + bob);
       else if (p.kind === 'grow') { // quadrado lilás (1 unidade) com quadradinho dentro, como no vídeo
-        const h = U * 0.42;
+        const h = U * 0.42 * (this.fx ? 1 + Math.sin(this.time * 5) * 0.05 : 1);
         g.fillStyle = '#9d7bf5'; g.fillRect(p.x - h, p.y - h, 2 * h, 2 * h);
         g.strokeStyle = LINE; g.lineWidth = 3; g.strokeRect(p.x - h, p.y - h, 2 * h, 2 * h);
         g.strokeStyle = 'rgba(40,20,90,.55)'; g.lineWidth = 2; g.strokeRect(p.x - h * 0.55, p.y - h * 0.55, h * 1.1, h * 1.1);
@@ -428,6 +485,11 @@ export class Renderer {
     for (const p of this.game.portals) {
       g.fillStyle = '#b01fb8'; g.strokeStyle = LINE; g.lineWidth = 3;
       g.beginPath(); g.arc(p.x, p.y, U * 0.4, 0, Math.PI * 2); g.fill(); g.stroke();
+      if (this.fx) { // dois arcos claros girando (entrada gira p/ um lado, saída p/ o outro)
+        const a = this.time * (p.primary ? 3 : -3);
+        g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 3;
+        for (const [rr, off] of [[0.26, 0], [0.14, Math.PI]]) { g.beginPath(); g.arc(p.x, p.y, U * rr, a + off, a + off + Math.PI * 1.2); g.stroke(); }
+      }
     }
   }
   drawSpinners() {
@@ -479,6 +541,10 @@ export class Renderer {
     if (r.state === 'dead' && this.game.raceTime - r.deathT > 0.7) return;
     g.save();
     g.translate(Math.round(r.x), Math.round(r.y));
+    if (this.fx && r.state === 'alive' && r.squash > 0.05) { // achata na direção da batida e volta (~0,2s)
+      const q = r.squash * 0.13, hor = Math.abs(r.vx) > Math.abs(r.vy);
+      g.scale(hor ? 1 - q : 1 + q, hor ? 1 + q : 1 - q);
+    }
     g.drawImage(this.badges[r.i], -s / 2, -s / 2, s, s);
     g.strokeStyle = LINE; g.lineWidth = 3; g.strokeRect(-s / 2, -s / 2, s, s);
     if (r.state === 'dead') {
@@ -496,6 +562,12 @@ export class Renderer {
     this.particles = this.particles.filter((p) => {
       p.life -= dt;
       if (p.life <= 0) return false;
+      if (p.ring) { // quadrado vazado que cresce e some
+        const k = 1 - p.life / p.max, h = p.r0 * (1 + k * 0.9);
+        g.save(); g.globalAlpha = (1 - k) * 0.85; g.strokeStyle = p.color; g.lineWidth = p.lw * (1 - k * 0.5);
+        g.strokeRect(p.x - h, p.y - h, 2 * h, 2 * h); g.restore();
+        return true;
+      }
       p.vy += 1100 * dt; p.vx *= Math.exp(-dt * 2);
       p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
       g.save(); g.globalAlpha = Math.min(1, (p.life / p.max) * 1.6);

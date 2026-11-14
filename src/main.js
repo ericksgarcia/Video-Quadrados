@@ -69,7 +69,7 @@ if (RENDER_MODE) {
       await loadTeamImages(made.teams);
       await attachCrests(made.teams, cfg.crests);
       try { await document.fonts.ready; } catch { /* ok */ }
-      const renderer = new Renderer(canvas, { title: cfg.title, subtitle: cfg.subtitle, handle: cfg.handle, theme: cfg.theme, cta: cfg.cta });
+      const renderer = new Renderer(canvas, { title: cfg.title, subtitle: cfg.subtitle, handle: cfg.handle, theme: cfg.theme, cta: cfg.cta, efeitos: cfg.efeitos });
       renderer.attach(made.game);
       made.game.onEvent = (n, p) => renderer.onEvent(n, p);
       cur = { ...made, renderer, cfg };
