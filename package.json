@@ -8,6 +8,7 @@
     "start": "node tools/serve.mjs",
     "render": "node tools/render.mjs",
     "novo": "node tools/novo.mjs",
+    "gerar": "node tools/gerador.mjs",
     "test": "node tools/simtest.mjs 20",
     "fisica": "node tools/fisica.mjs todas 12"
   },

@@ -1,0 +1,30 @@
+[
+  {
+    "seed": 2,
+    "id": "gen-2",
+    "digital": "1abbac80137d7f89",
+    "tipo": "lado",
+    "espelhada": true,
+    "tamanho": "16x21",
+    "elementos": [
+      "bolsinho sem saída no canto de cima",
+      "chegada de 2x3 unid. atrás de 3 tijolos escuros",
+      "1 pistão(ões) de 6s",
+      "portal de mão única que pula um trecho (atalho)"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 60,
+      "esmagados": 0.03,
+      "vitorias": [
+        8,
+        4,
+        9,
+        8
+      ]
+    },
+    "seedRender": 14
+  }
+]

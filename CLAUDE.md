@@ -469,6 +469,42 @@ iteração. Se ele pedir mudança, atualize esta lista.
   ("QUAL SELEÇÃO VENCE?" / "QUAL TIME VENCE?").
 - Áudio todo sintetizado, ~-14 LUFS.
 
+## Gerador de fases inéditas — `tools/gerador.mjs` (`npm run gerar`)
+
+Cria fases **novas** (não são cópia de vídeo) no estilo das referências. **Só gera a fase**: não renderiza nem publica; depois
+vale o fluxo normal (`tools/render.mjs` → conferir → `publicar.py`). Use quando o usuário pedir "gera um mapa novo/aleatório",
+"cria uma fase com o gerador" (isto é diferente de "próximo vídeo", que copia a fila `pendente/`).
+
+    node tools/gerador.mjs --seed 123            # mostra a planta, a corrente e as estatísticas (mesma seed = mesma fase)
+    node tools/gerador.mjs --seed 123 --salvar   # grava a fase `gen-123` (levels.js, levelgen.py, novo.mjs, este arquivo, gerados.json)
+    # opções: --tipo baixo|lado|topo|juntos, --n 3 (seeds N..N+2), --tentativas 50, --forcar (regrava a seed)
+
+- **Famílias da largada** (sorteadas; todas podem sair espelhadas): `baixo` (4 baias verticais embaixo, saída lateral — Pilares/Serra/
+  Coroa), `lado` (4 baias horizontais empilhadas, saída em cima, faixa do topo — Gaiola/Escadaria/Degraus), `topo` (4 baias penduradas
+  no topo — Teto/Balcão) e `juntos` (~15%: sem prisão, os 4 juntos com a massa logo atrás — Zigue-zague).
+- **Caminho**: serpentina única de corredores de 2–3 unidades com paredes de 1 unidade, horizontais (zigue-zague) ou verticais ("M");
+  na família `lado`, às vezes um corredor final por baixo da prisão. Bolsinhos sem saída em `baixo` e `lado`.
+- **Elementos** (com moderação): tijolos escuros fechando curvas e soltos nas paredes, 0–3 pistões (6/8/10s, atravessam o corredor),
+  no máximo 1 entre faca, lilás (`growScale 1.3`), martelo e portal (atalho ou "volta para o começo"); raramente (8%) portões de cor
+  nas curvas. Chegada no fim do último corredor (1–2 unidades de fundo) atrás de 2–6 tijolos escuros.
+- **Justiça embutida**: a saída já nasce do quadrado mais longe (os dígitos do mapa já são os donos finais; **não usa `ownerPerm`**) e
+  cada parede entre baias fica, de preferência, com o vizinho do lado da saída; `stage2After` = dono da saída. O gerador resolve a
+  corrente por busca própria (inclusive portões e portal) e mostra a ordem; ao salvar, roda também o `tools/justica.mjs`.
+- **Massa**: `massTrack` montado junto com a planta (fundo das baias → varredura da prisão depois que a saída abre → cada trecho do
+  caminho na ordem; bolsinhos ficam livres). A velocidade é afinada sozinha: é a massa que dita a duração da corrida.
+- **Validação (a fase só vale se passar)**: corrente solucionável; 30 corridas com ≥27 vencedores, duração média 50–80s, ≤1 esmagado
+  por corrida e nenhuma baia com mais de 50% das vitórias; física de 10 corridas sem quadrado dentro de parede/fora do mapa/travado.
+  Reprovou: ajusta massa/folga e, se não der, troca de planta (até 50 por seed). Planta repetida (impressão digital em `gerados.json`,
+  comparada também com todas as fases de `levels.js`, espelho incluso) é descartada.
+- Render de uma fase gerada: `node tools/render.mjs --level gen-<seed> --teams vermelho,azul,amarelo,verde --crests sorteio --theme
+  concreto --best 30 --out videos/gen-<seed>-concreto.mp4` (o gerador imprime o comando e uma seed boa). As fases salvas entram no
+  sorteio do `npm run novo`.
+
+Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
+
+- `gen-2` — 4 baias horizontais empilhadas com barras de cor de 4 unidades e saída em cima; faixa do topo e serpentina de corredores verticais; bolsinho sem saída no canto de cima; chegada de 2x3 unid. atrás de 3 tijolos escuros; 1 pistão(ões) de 6s; portal de mão única que pula um trecho (atalho). Saída do quadrado 4 (o mais longe); massa 3.2 bloco/s. Sim.: 1/30 sem vencedor, ~60s, 0.03 esmagados/corrida.
+<!-- gerador:fases -->
+
 ## Regra de justiça e área segura do TikTok (pedidos do usuário)
 
 - **Justiça**: quem nasce mais longe da saída é o dono da parede que libera todos. `tools/justica.mjs` acha a parede de saída,
@@ -559,5 +595,6 @@ horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `pytho
   e chama o render; `tools/levelgen.py` gera os mapas (`derby()`, `serpente()`, `arena8()`) cavando retângulos; `gaiola()`, `cofre()` e `ponte()` são desenhadas em unidades (helper `unitmap`); `escada()` em blocos; `pocos()` e `colunas()` em unidades.
 - Ao mexer em fases/física, rode `npm test` (simula corridas; mire 100% com vencedor) e
   `npm run fisica` (acusa quadrado dentro de parede/massa/pistão/outro quadrado ou travado). Use prints (Playwright em `?render=1`) para conferir o visual antes de renderizar.
+- `tools/gerador.mjs` (`npm run gerar`) cria fases inéditas validadas (ver a seção do gerador); `gerados.json` guarda as impressões digitais.
 - `tools/fisica.mjs` (`npm run fisica`) verifica a física. `tools/levelgen.py` tem uma função por fase.
 - `npm start` abre o painel interativo em http://localhost:5173.

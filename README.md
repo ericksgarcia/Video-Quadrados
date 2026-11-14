@@ -182,6 +182,7 @@ src/levels.js       fases em ASCII
 tools/render.mjs    exportação MP4 quadro a quadro (Playwright + ffmpeg)
 tools/simtest.mjs   simulação em massa para balancear fases
 tools/levelgen.py   gerador dos mapas a partir de retângulos
+tools/gerador.mjs   cria fases INÉDITAS validadas (npm run gerar -- --seed 123 --salvar); não renderiza nem publica
 ```
 
 Dicas para o TikTok: corridas de 35–60s performam melhor; use o subtítulo para pedir palpites

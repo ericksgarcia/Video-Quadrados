@@ -1505,7 +1505,41 @@ def espelho():
     m.put(R0 + 2, C0 + 24, '!')   # faca (unidade 1,12)
     return m.lines()
 
+def gen_2():
+    """GERADA por tools/gerador.mjs --seed 2: 4 baias horizontais empilhadas com barras de cor de 4 unidades e saída em cima; faixa do topo e serpentina de corredores verticais. bolsinho sem saída no canto de cima; chegada de 2x3 unid. atrás de 3 tijolos escuros; 1 pistão(ões) de 6s; portal de mão única que pula um trecho (atalho)."""
+    U = [
+        '................',
+        '................',
+        '..#######....###',
+        '..#.....#....###',
+        '..#.....#4444###',
+        '..#.....#.......',
+        '..#..#..#.......',
+        '..#..#..#1111###',
+        '..#..#..#.......',
+        '..#..#..#.......',
+        '..#..#..#2222###',
+        '..#..#..#.......',
+        '..#..#..#.......',
+        '..#..#..#3333###',
+        '..#..#..#.......',
+        '..#..#..#.......',
+        '..#..#..########',
+        '..#..#..########',
+        '..#..#.......BFF',
+        '.....#.......BFF',
+        '.....#.......BFF',
+    ]
+    m = unitmap(U, {}, 3, 2)
+    m.put(3, 11, 'P')
+    m.put(14, 31, 'S')
+    m.put(20, 31, 'S')
+    m.put(26, 31, 'S')
+    m.put(32, 31, 'S')
+    m.put(37, 15, 'p')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('gen-2', gen_2), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
