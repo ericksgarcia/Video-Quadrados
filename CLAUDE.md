@@ -503,6 +503,9 @@ vale o fluxo normal (`tools/render.mjs` → conferir → `publicar.py`). Use qua
 Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
 
 - `gen-2` — 4 baias horizontais empilhadas com barras de cor de 4 unidades e saída em cima; faixa do topo e serpentina de corredores verticais; bolsinho sem saída no canto de cima; chegada de 2x3 unid. atrás de 3 tijolos escuros; 1 pistão(ões) de 6s; portal de mão única que pula um trecho (atalho). Saída do quadrado 4 (o mais longe); massa 3.2 bloco/s. Sim.: 1/30 sem vencedor, ~60s, 0.03 esmagados/corrida.
+- `gen-3` — 4 baias verticais embaixo com tijolos de cor de 3 unidades e saída lateral; serpentina de corredores verticais ("M"); bolsinho sem saída embaixo da saída; chegada de 2x2 unid. atrás de 2 tijolos escuros; 2 curva(s) fechada(s) por tijolos escuros; 1 tijolo(s) escuro(s) solto(s) na parede. Saída do quadrado 1 (o mais longe); massa 3.2 bloco/s. Sim.: 0/30 sem vencedor, ~66s, 0.00 esmagados/corrida.
+- `gen-13` — 4 baias penduradas no topo, cada uma com um tijolo de cor de 4 unidades ao lado, saída lateral; serpentina de corredores verticais; chegada de 1x2 unid. atrás de 4 tijolos escuros; 1 curva(s) fechada(s) por tijolos escuros; 3 pistão(ões) de 6s; 2 tijolo(s) escuro(s) solto(s) na parede. Saída do quadrado 1 (o mais longe); massa 3.2 bloco/s. Sim.: 0/30 sem vencedor, ~79s, 0.00 esmagados/corrida.
+- `gen-4` — sem prisão: os 4 nascem juntos com a massa logo atrás; serpentina de corredores horizontais; chegada de 2x2 unid. atrás de 2 tijolos escuros; 2 curva(s) fechada(s) por tijolos escuros; 2 tijolo(s) escuro(s) solto(s) na parede; quadrado lilás (quem encosta cresce). Justiça não se aplica; massa 2.4 bloco/s. Sim.: 0/30 sem vencedor, ~52s, 0.00 esmagados/corrida.
 <!-- gerador:fases -->
 
 ## Regra de justiça e área segura do TikTok (pedidos do usuário)
