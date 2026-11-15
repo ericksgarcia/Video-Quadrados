@@ -588,10 +588,18 @@ horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `pytho
 - Sem zoom no final. Quando o 1º chega: ~0,5s e o vídeo acaba (sem placar).
 - **Efeitos visuais discretos** (`src/render.js`, só desenho: não mexem na física, na velocidade nem no estilo chapado). Ligados nas
   fases do gerador (`efeitos: true` na fase) e, em qualquer outra, com `node tools/render.mjs ... --efeitos` (`--sem-efeitos` desliga).
-  As cópias aprovadas continuam como estavam. São: sombra interna chapada nas paredes (7px, 7,5% de preto), linha mais escura na frente
-  da massa, listras diagonais nos pistões, anel quadrado fino na cor do quadrado quando ele bate na parede, onda quadrada na cor do
-  tijolo que quebra, quadrado achata ~13% na batida e volta em ~0,2s, redemoinho girando nos portais (+ anel ao teleportar), lilás
-  pulsando de leve, faca/martelo balançando, estilhaços na cor do quadrado esmagado. Nada de flash, tremida, brilho, gradiente ou texto.
+  As cópias aprovadas continuam como estavam. Nada de flash, tremida, brilho, gradiente ou texto. Dois grupos:
+  - **"História" da corrida** (o que prende o espectador): **cadeado** branco na parede de saída e **chave** dourada balançando em cima
+    do quadrado que é o dono dela (mostra quem vai libertar todo mundo; achados sozinhos: a fase do gerador grava `saida`, nas outras é a
+    parede de cor que separa a prisão do caminho); quando a saída quebra, o cadeado abre, pula e cai. **Coroa** dourada no líder (o mais
+    perto da chegada), só depois que a saída abre, trocando de dono só se a liderança durar 0,35s; no fim fica com o vencedor.
+    **Gotinhas azuis** saindo de quem está com a massa a menos de ~1,5 unidade (perigo). **Chegada acende** em ondas douradas quando o
+    líder chega perto (cada vez mais forte) e é **pintada com a cor do vencedor** a partir do ponto onde ele entrou. **Marcas** curtinhas
+    na parede, na cor de quem bateu (a parede "guarda" a corrida; ficam por baixo da massa).
+  - **Acabamento**: sombra interna chapada nas paredes (7px, 7,5% de preto), linha mais escura e poeirinha na frente da massa, listras
+    diagonais nos pistões, anel fino na batida, onda quadrada no tijolo que quebra, quadrado achata ~13% na batida, faísca branca no
+    choque entre quadrados, contorno vermelho pulsando em quem está com a faca, redemoinho nos portais, lilás pulsando, faca/martelo
+    balançando, estilhaços de quem é esmagado.
 
 ## Como o projeto funciona
 

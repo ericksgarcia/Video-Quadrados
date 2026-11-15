@@ -103,6 +103,36 @@ function drawKnife(g, x, y, s, rot = -Math.PI / 4) {
   g.restore();
 }
 
+// ícones chapados dos efeitos narrativos (contorno escuro, sem gradiente)
+function drawLock(g, x, y, sz, open) {
+  g.save(); g.translate(x, y);
+  g.lineWidth = sz * 0.16; g.strokeStyle = '#16191c'; g.lineCap = 'round';
+  g.beginPath(); // argola (aberta: gira para o lado)
+  if (open) g.arc(sz * 0.2, -sz * 0.2, sz * 0.24, Math.PI * 0.9, Math.PI * 2.1);
+  else g.arc(0, -sz * 0.16, sz * 0.24, Math.PI, Math.PI * 2);
+  g.stroke();
+  g.strokeStyle = '#f1efe9'; g.lineWidth = sz * 0.07; g.stroke();
+  g.fillStyle = '#f1efe9'; g.strokeStyle = '#16191c'; g.lineWidth = sz * 0.07;
+  g.fillRect(-sz * 0.36, -sz * 0.14, sz * 0.72, sz * 0.56); g.strokeRect(-sz * 0.36, -sz * 0.14, sz * 0.72, sz * 0.56);
+  g.fillStyle = '#16191c'; g.beginPath(); g.arc(0, sz * 0.08, sz * 0.08, 0, Math.PI * 2); g.fill(); g.fillRect(-sz * 0.035, sz * 0.1, sz * 0.07, sz * 0.17);
+  g.restore();
+}
+function drawKey(g, x, y, sz, ang) {
+  g.save(); g.translate(x, y); g.rotate(ang);
+  const path = () => { g.beginPath(); g.arc(-sz * 0.3, 0, sz * 0.2, 0, Math.PI * 2); g.moveTo(-sz * 0.1, 0); g.lineTo(sz * 0.5, 0); g.moveTo(sz * 0.28, 0); g.lineTo(sz * 0.28, sz * 0.18); g.moveTo(sz * 0.46, 0); g.lineTo(sz * 0.46, sz * 0.2); };
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.strokeStyle = '#16191c'; g.lineWidth = sz * 0.26; path(); g.stroke();
+  g.strokeStyle = '#ffd23f'; g.lineWidth = sz * 0.12; path(); g.stroke();
+  g.restore();
+}
+function drawCrown(g, x, y, sz) {
+  g.save(); g.translate(x, y);
+  g.beginPath();
+  g.moveTo(-sz * 0.5, sz * 0.3); g.lineTo(-sz * 0.5, -sz * 0.25); g.lineTo(-sz * 0.22, sz * 0.02); g.lineTo(0, -sz * 0.4); g.lineTo(sz * 0.22, sz * 0.02); g.lineTo(sz * 0.5, -sz * 0.25); g.lineTo(sz * 0.5, sz * 0.3); g.closePath();
+  g.fillStyle = '#ffd23f'; g.fill(); g.strokeStyle = '#16191c'; g.lineWidth = sz * 0.1; g.lineJoin = 'round'; g.stroke();
+  g.restore();
+}
+
 export class Renderer {
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
@@ -158,6 +188,41 @@ export class Renderer {
     this.fx = this.opts.efeitos ?? !!game.level.efeitos;
     this.applyTheme();
     this.buildStatic();
+    this.setupStory();
+  }
+
+  // estado dos efeitos "de história": cadeado na saída + chave no dono, coroa no líder, marcas nas paredes, perigo da massa
+  setupStory() {
+    const game = this.game;
+    this.story = { lock: null, crown: null, cand: null, candT: 0, sweatT: {}, win: null, dustT: 0 };
+    if (!this.fx) return;
+    // parede de saída: a fase do gerador traz 'saida'; nas outras, a parede de cor que encosta no lado da chegada
+    let cells = [];
+    const sd = game.level.saida;
+    if (sd) { for (let r = sd[0]; r <= sd[2]; r++) for (let c = sd[1]; c <= sd[3]; c++) if (game.grid[r][c].k === 'brick' && game.grid[r][c].owner != null) cells.push(game.grid[r][c]); }
+    else if (game.finishTiles.length) {
+      const seen = new Set(), q = game.finishTiles.map((k) => k), hit = new Map();
+      for (const k of q) seen.add(k.r * COLS + k.c);
+      for (let h = 0; h < q.length; h++) for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const k = game.cell(q[h].r + dr, q[h].c + dc);
+        if (!k || k.k === 'wall' || seen.has(k.r * COLS + k.c)) continue;
+        seen.add(k.r * COLS + k.c);
+        if (k.k === 'brick' && k.owner != null) { hit.set(k.owner, [...(hit.get(k.owner) || []), k]); continue; }
+        q.push(k);
+      }
+      if (hit.size === 1) { // uma só cor separa a prisão do caminho: é a saída (junta os tijolos vizinhos da mesma cor)
+        const [owner, first] = [...hit.entries()][0];
+        const st = [...first], ok = new Set(first.map((k) => k.r * COLS + k.c));
+        while (st.length) { const k = st.pop(); cells.push(k); for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = game.cell(k.r + dr, k.c + dc); if (n && n.k === 'brick' && n.owner === owner && !ok.has(n.r * COLS + n.c)) { ok.add(n.r * COLS + n.c); st.push(n); } } }
+      }
+    }
+    if (cells.length) {
+      const rs = cells.map((k) => k.r), cs = cells.map((k) => k.c);
+      this.story.lock = { owner: cells[0].owner, keys: new Set(cells.map((k) => k.r * COLS + k.c)), x: ((Math.min(...cs) + Math.max(...cs) + 1) / 2) * TILE, y: ((Math.min(...rs) + Math.max(...rs) + 1) / 2) * TILE, openT: null, vy: 0, dy: 0 };
+    }
+    // marcas de batida: camada própria (fica por baixo da massa)
+    const c = document.createElement('canvas'); c.width = AW + 40; c.height = AH + 40;
+    this.marks = c; this.marksG = c.getContext('2d'); this.marksG.translate(20, 20);
   }
 
   colorOf(i) { return this.colors?.[i] || '#888'; }
@@ -230,18 +295,38 @@ export class Renderer {
         const xs = p.cells.map(([c]) => c), ys = p.cells.map(([, r]) => r);
         const cx = ((Math.min(...xs) + Math.max(...xs) + 1) / 2) * TILE, cy = ((Math.min(...ys) + Math.max(...ys) + 1) / 2) * TILE;
         this.ring(cx, cy, (Math.max(...xs) - Math.min(...xs) + 1) * TILE * 0.5, col, 0.35, 5);
+        const lk = this.story.lock;
+        if (lk && lk.openT == null && p.cells.some(([c, r]) => lk.keys.has(r * COLS + c))) {
+          lk.openT = 0; lk.vy = -260;
+          this.ring(lk.x, lk.y, U * 0.5, '#ffd23f', 0.5, 5);
+          const o = this.game.racers[lk.owner]; if (o) this.ring(o.x, o.y, o.size * 0.7, '#ffd23f', 0.45, 4);
+        }
         break;
       }
-      case 'bounce': { // marquinha de impacto na parede (anel fino na cor do quadrado)
+      case 'bounce': { // anel fino de impacto + marca permanente na parede, na cor de quem bateu (a parede "guarda" a corrida)
         const r = this.game.racers[p.i];
-        if (r) this.ring(p.x, p.y, r.size * 0.5, this.colorOf(p.i), 0.22, 3);
+        if (!r) break;
+        this.ring(p.x, p.y, r.size * 0.5, this.colorOf(p.i), 0.22, 3);
+        const h = r.size / 2 + 4, m = this.marksG, wall = (x, y) => { const k = this.game.cell(Math.floor(y / TILE), Math.floor(x / TILE)); return !k || k.k === 'wall'; };
+        m.fillStyle = this.colorOf(p.i); m.globalAlpha = 0.4;
+        if (wall(p.x, p.y - h)) m.fillRect(p.x - 7, Math.round((p.y - h) / TILE + 0.5) * TILE + 2, 14, 4);
+        if (wall(p.x, p.y + h)) m.fillRect(p.x - 7, Math.round((p.y + h) / TILE - 0.5) * TILE - 6, 14, 4);
+        if (wall(p.x - h, p.y)) m.fillRect(Math.round((p.x - h) / TILE + 0.5) * TILE + 2, p.y - 7, 4, 14);
+        if (wall(p.x + h, p.y)) m.fillRect(Math.round((p.x + h) / TILE - 0.5) * TILE - 6, p.y - 7, 4, 14);
         break;
       }
       case 'eliminate': if (p.crushed) this.debris(p.x, p.y, 8, this.colorOf(p.i)); break;
+      case 'clack': this.spark(p.x, p.y); break;
+      case 'finish': if (!this.story.win) this.story.win = { i: p.i, x: p.x, y: p.y, t: 0 }; break;
       case 'portal': this.ring(p.x, p.y, U * 0.4, '#b01fb8', 0.35, 4); this.ring(p.x2, p.y2, U * 0.4, '#b01fb8', 0.35, 4); break;
       case 'pickup': this.ring(p.x, p.y, U * 0.45, p.kind === 'grow' ? '#9d7bf5' : '#5ad1e8', 0.4, 4); break;
       default: break;
     }
+  }
+
+  // faísca branca quando dois quadrados se chocam
+  spark(x, y) {
+    for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI * 2 + Math.PI / 4; this.particles.push({ x, y, vx: Math.cos(a) * 190, vy: Math.sin(a) * 190, life: 0.22, max: 0.22, size: 6, color: '#ffffff', rot: Math.PI / 4, vr: 0, light: true }); }
   }
 
   ring(x, y, r0, color, life, lw) { this.particles.push({ ring: true, x, y, r0, color, life, max: life, lw }); }
@@ -268,6 +353,7 @@ export class Renderer {
     g.save();
     g.translate(this.screenC.x, this.screenC.y); g.scale(z, z); g.translate(-cx, -cy);
     g.drawImage(this.floorLayer, -20, -20);
+    if (this.fx) { g.drawImage(this.marks, -20, -20); this.drawFinishFx(dt); }
     this.drawFlood();
     this.drawPads();
     this.drawBricks();
@@ -280,6 +366,7 @@ export class Renderer {
     this.drawRacers('under');
     this.drawSpinners();
     this.drawRacers('over');
+    if (this.fx) this.drawStory(dt);
     this.drawParticles(dt);
     g.restore();
 
@@ -364,6 +451,11 @@ export class Renderer {
           else if (d === 1) g.rect(x - 0.5, y + TILE - k, TILE + 1, E);
           else if (d === 2) g.rect(x + k - E, y - 0.5, E, TILE + 1);
           else g.rect(x + TILE - k, y - 0.5, E, TILE + 1);
+          if (Math.random() < 0.035) { // poeirinha levantada pela frente
+            const fx = d === 2 ? x + k : d === 3 ? x + TILE - k : x + Math.random() * TILE, fy = d === 0 ? y + k : d === 1 ? y + TILE - k : y + Math.random() * TILE;
+            const vx = d === 2 ? 90 : d === 3 ? -90 : (Math.random() - 0.5) * 50, vy = d === 0 ? 90 : d === 1 ? -90 : (Math.random() - 0.5) * 50;
+            this.particles.push({ x: fx, y: fy, vx, vy, life: 0.4, max: 0.4, size: 4 + Math.random() * 4, color: shade(this.theme.water, 0.25), rot: 0, vr: 3, light: true });
+          }
         }
       }
     } else {
@@ -552,9 +644,92 @@ export class Renderer {
       g.strokeStyle = LINE; g.lineWidth = 3;
       g.beginPath(); g.moveTo(-s / 2 + 5, -s / 2 + 5); g.lineTo(s / 2 - 5, s / 2 - 5); g.moveTo(s / 2 - 5, -s / 2 + 5); g.lineTo(-s / 2 + 5, s / 2 - 5); g.stroke();
     }
+    if (this.fx && r.state === 'alive' && r.knife) { g.save(); g.globalAlpha = 0.45 + 0.4 * Math.sin(this.time * 9); g.strokeStyle = '#d50000'; g.lineWidth = 4; g.strokeRect(-s / 2 - 5, -s / 2 - 5, s + 10, s + 10); g.restore(); }
     if (r.state === 'alive' && r.knife) drawKnife(g, s / 2 + 10, -2, 34, Math.PI / 4 + Math.sin(this.time * 10) * 0.2);
     if (r.state === 'alive' && r.hammer) drawHammer(g, s / 2 + 8, -s / 2 - 4, 34, -Math.PI / 4 + Math.sin(this.time * 10) * 0.2);
     g.restore();
+  }
+
+  // chegada "acorda" quando o líder chega perto (onda dourada) e pinta com a cor de quem chegou
+  drawFinishFx(dt) {
+    const g = this.g, game = this.game, S = this.story;
+    if (!game.finishTiles.length) return;
+    if (S.win) {
+      S.win.t += dt;
+      const R = S.win.t * 900;
+      g.fillStyle = this.colorOf(S.win.i);
+      for (const k of game.finishTiles) {
+        const d = Math.hypot((k.c + 0.5) * TILE - S.win.x, (k.r + 0.5) * TILE - S.win.y);
+        if (d < R) { g.globalAlpha = (k.r + k.c) % 2 ? 0.85 : 0.45; g.fillRect(k.c * TILE, k.r * TILE, TILE, TILE); }
+      }
+      g.globalAlpha = 1;
+      return;
+    }
+    let best = Infinity;
+    for (const r of game.racers) if (r.state === 'alive') best = Math.min(best, game.distOf(r));
+    const near = Math.max(0, Math.min(1, (22 - best) / 14)); // 0 longe ... 1 colado
+    if (near <= 0) return;
+    g.fillStyle = '#ffd23f';
+    for (const k of game.finishTiles) {
+      const w = 0.5 + 0.5 * Math.sin(this.time * (5 + near * 6) - (k.r + k.c) * 0.8);
+      g.globalAlpha = near * 0.42 * w;
+      g.fillRect(k.c * TILE, k.r * TILE, TILE, TILE);
+    }
+    g.globalAlpha = 1;
+  }
+
+  // cadeado/chave, coroa do líder e gotinhas de quem está com a massa nos calcanhares
+  drawStory(dt) {
+    const g = this.g, game = this.game, S = this.story, lk = S.lock;
+    if (lk) {
+      if (lk.openT == null) {
+        const pulse = 1 + 0.05 * Math.sin(this.time * 4);
+        drawLock(g, lk.x, lk.y, U * 0.85 * pulse, false);
+        const o = game.racers[lk.owner];
+        if (o && o.state === 'alive') drawKey(g, o.x + o.size / 2 + 2, o.y - o.size / 2 - 2, 26, -0.6 + Math.sin(this.time * 5) * 0.18);
+      } else if (lk.openT < 0.9) { // cadeado abre, pula e cai
+        lk.openT += dt; lk.vy += 1500 * dt; lk.dy += lk.vy * dt;
+        g.save(); g.globalAlpha = Math.max(0, 1 - lk.openT / 0.9);
+        drawLock(g, lk.x, lk.y + lk.dy, U * 0.85, true);
+        g.restore();
+      }
+    }
+    // coroa: só depois que a saída abriu (antes não há corrida); troca de dono só se a liderança durar 0,35s
+    if (!lk || lk.openT != null) {
+      let lead = null, bd = Infinity;
+      if (S.win) lead = game.racers[S.win.i]; // chegou: a coroa fica com o vencedor
+      else for (const r of game.racers) { if (r.state !== 'alive') continue; const d = game.distOf(r); if (d < bd) { bd = d; lead = r; } }
+      if (lead) {
+        if (!S.crown) S.crown = { i: lead.i, x: lead.x, y: lead.y - lead.size, pop: 1 };
+        if (S.win && S.crown.i !== lead.i) { S.crown.i = lead.i; S.crown.pop = 1; }
+        if (lead.i !== S.crown.i) { if (S.cand === lead.i) { S.candT += dt; if (S.candT > 0.35) { S.crown.i = lead.i; S.crown.pop = 1; S.cand = null; } } else { S.cand = lead.i; S.candT = 0; } } else S.cand = null;
+        const own = game.racers[S.crown.i];
+        if (own && (own.state === 'alive' || (S.win && own.i === S.win.i))) {
+          const k = 1 - Math.exp(-dt * 16), ty = own.y - own.size / 2 - 13;
+          S.crown.x += (own.x - S.crown.x) * k; S.crown.y += (ty - S.crown.y) * k;
+          S.crown.pop *= Math.exp(-dt * 7);
+          drawCrown(g, S.crown.x, S.crown.y - S.crown.pop * 10, 24 * (1 + S.crown.pop * 0.45));
+        } else S.crown.i = lead.i;
+      }
+    }
+    // perigo: massa a menos de ~1,5 unidade -> gotinhas saindo do quadrado
+    const F = game.flood, DL = F.disp;
+    for (const r of game.racers) {
+      if (r.state !== 'alive') continue;
+      S.sweatT[r.i] = (S.sweatT[r.i] || 0) - dt;
+      if (S.sweatT[r.i] > 0) continue;
+      const c0 = Math.floor(r.x / TILE), r0 = Math.floor(r.y / TILE);
+      let perto = false;
+      for (let dr = -3; dr <= 3 && !perto; dr++) for (let dc = -3; dc <= 3; dc++) {
+        const rr = r0 + dr, cc = c0 + dc;
+        if (rr < 0 || cc < 0 || rr >= ROWS || cc >= COLS || Math.abs(dr) + Math.abs(dc) > 4) continue;
+        if (DL[rr * COLS + cc] > 0.3) { perto = true; break; }
+      }
+      if (!perto) { S.sweatT[r.i] = 0.1; continue; }
+      S.sweatT[r.i] = 0.16;
+      const sx = Math.random() < 0.5 ? -1 : 1;
+      this.particles.push({ x: r.x + sx * r.size * 0.45, y: r.y - r.size * 0.45, vx: sx * (60 + Math.random() * 50), vy: -150 - Math.random() * 60, life: 0.38, max: 0.38, size: 5, color: '#7fd0ff', rot: Math.PI / 4, vr: 0 });
+    }
   }
 
   drawParticles(dt) {
@@ -568,7 +743,7 @@ export class Renderer {
         g.strokeRect(p.x - h, p.y - h, 2 * h, 2 * h); g.restore();
         return true;
       }
-      p.vy += 1100 * dt; p.vx *= Math.exp(-dt * 2);
+      if (!p.light) p.vy += 1100 * dt; p.vx *= Math.exp(-dt * 2); if (p.light) p.vy *= Math.exp(-dt * 2);
       p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
       g.save(); g.globalAlpha = Math.min(1, (p.life / p.max) * 1.6);
       g.translate(p.x, p.y); g.rotate(p.rot);

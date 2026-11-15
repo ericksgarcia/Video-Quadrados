@@ -53,6 +53,7 @@ export const LEVELS = [
     pistons: [
       { c: 14, r: 25, dir: 'right', w: 2, max: 4, period: 6, phase: 0 },
     ],
+    saida: [11, 20, 12, 27], // parede de saída (blocos): cadeado no render
     map: [
       '####################################',
       '####################################',

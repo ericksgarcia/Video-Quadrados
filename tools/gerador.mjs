@@ -331,6 +331,9 @@ function montar(P, rng, seed) {
     corrente = resolver(B, donos);
   } else if (!resolver(B, {}).ok) throw new Error('sem caminho até a chegada');
   const dist = donos ? distancias(B) : null;
+  // retângulo (em blocos) da parede de saída: o render desenha o cadeado nela e a chave no dono
+  let saida = null;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (B[r][c] === 'e') saida = saida ? [Math.min(saida[0], r), Math.min(saida[1], c), Math.max(saida[2], r), Math.max(saida[3], c)] : [r, c, r, c];
   const map = B.map((row) => row.map((ch) => (donos && donos[ch] != null ? String(donos[ch] + 1) : ch)).join(''));
   // massa: velocidade base pelo comprimento do caminho (a massa empurra o pelotão: é ela que dita a duração)
   const blocos = P.path.reduce((a, s) => a + 2 * (s.dir === 'up' || s.dir === 'down' ? s.rect[2] - s.rect[0] + 1 : s.rect[3] - s.rect[1] + 1), 0);
@@ -344,6 +347,7 @@ function montar(P, rng, seed) {
       : { delay: 0.5, zoneRate: 0.8, delay2: 8, stage2After: donos.e, stage2Gap: 1, rate: v0, accel: 0 },
     massTrack: { unit: 2, origin: [R0, C0], stage1: P.stage1.map(piece), stage2: [...P.sweep.map((p) => piece([...p, 2.4])), ...P.path.map((s) => piece([...s.rect, s.dir, v0]))] },
     ...(pistons.length ? { pistons } : {}),
+    ...(saida ? { saida } : {}),
     map,
   };
   return { level, P, mirror, donos, corrente, dist, spawns, v0, nSweep: P.sweep.length, blocos };
@@ -575,6 +579,7 @@ function fonteLevel(R, seed) {
   for (const p of L.massTrack.stage2) o.push(`        ${js(p)},`);
   o.push('      ],', '    },');
   if (L.pistons) { o.push('    pistons: ['); for (const p of L.pistons) o.push(`      ${js(p)},`); o.push('    ],'); }
+  if (L.saida) o.push(`    saida: ${js(L.saida)}, // parede de saída (blocos): cadeado no render`);
   o.push('    map: [', ...L.map.map((l) => `      '${l}',`), '    ],', '  },');
   return o.join('\n') + '\n';
 }
