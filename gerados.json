@@ -110,5 +110,112 @@
       ]
     },
     "seedRender": 23
+  },
+  {
+    "seed": 21,
+    "id": "gen-21",
+    "digital": "b0cbd0edc4944458",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "18x22",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 6 tijolos escuros",
+      "1 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 72,
+      "esmagados": 0,
+      "vitorias": [
+        5,
+        7,
+        12,
+        6
+      ]
+    },
+    "seedRender": 14
+  },
+  {
+    "seed": 22,
+    "id": "gen-22",
+    "digital": "123e703b69c2279b",
+    "tipo": "baixo",
+    "espelhada": true,
+    "tamanho": "14x22",
+    "elementos": [
+      "bolsinho sem saída embaixo da saída",
+      "chegada de 2x2 unid. atrás de 4 tijolos escuros",
+      "2 pistão(ões) de 8s"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 73,
+      "esmagados": 0,
+      "vitorias": [
+        10,
+        5,
+        7,
+        8
+      ]
+    },
+    "seedRender": 2
+  },
+  {
+    "seed": 23,
+    "id": "gen-23",
+    "digital": "aa1016e8681c7817",
+    "tipo": "topo",
+    "espelhada": true,
+    "tamanho": "15x21",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 2 tijolos escuros",
+      "3 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 4.16,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 78,
+      "esmagados": 0,
+      "vitorias": [
+        7,
+        6,
+        5,
+        11
+      ]
+    },
+    "seedRender": 5
+  },
+  {
+    "seed": 24,
+    "id": "gen-24",
+    "digital": "d40f7feb2d23d1d7",
+    "tipo": "topo",
+    "espelhada": false,
+    "tamanho": "15x22",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 2 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 6s",
+      "portal de mão única que pula um trecho (atalho)"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 70,
+      "esmagados": 0,
+      "vitorias": [
+        10,
+        8,
+        3,
+        9
+      ]
+    },
+    "seedRender": 7
   }
 ]
