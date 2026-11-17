@@ -330,5 +330,32 @@
       ]
     },
     "seedRender": 9
+  },
+  {
+    "seed": 29,
+    "id": "gen-29",
+    "digital": "2ae3c5b3c12b7880",
+    "tipo": "baixo",
+    "espelhada": false,
+    "tamanho": "14x18",
+    "elementos": [
+      "chegada de 1x3 unid. atrás de 3 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "1 pistão(ões) de 8s"
+    ],
+    "massa": 2.33,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 73,
+      "esmagados": 0.03,
+      "vitorias": [
+        11,
+        6,
+        5,
+        8
+      ]
+    },
+    "seedRender": 16
   }
 ]
