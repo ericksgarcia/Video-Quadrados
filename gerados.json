@@ -302,5 +302,33 @@
       ]
     },
     "seedRender": 21
+  },
+  {
+    "seed": 28,
+    "id": "gen-28",
+    "digital": "0fcc1c809bf663ad",
+    "tipo": "juntos",
+    "espelhada": true,
+    "tamanho": "14x19",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 4 tijolos escuros",
+      "2 curva(s) fechada(s) por tijolos escuros",
+      "2 tijolo(s) escuro(s) solto(s) na parede",
+      "faca permanente no caminho"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 53,
+      "esmagados": 0,
+      "vitorias": [
+        7,
+        7,
+        9,
+        7
+      ]
+    },
+    "seedRender": 9
   }
 ]
