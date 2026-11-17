@@ -245,5 +245,34 @@
       ]
     },
     "seedRender": 20
+  },
+  {
+    "seed": 26,
+    "id": "gen-26",
+    "digital": "190d0585e539ccf6",
+    "tipo": "baixo",
+    "espelhada": false,
+    "tamanho": "14x20",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 4 tijolos escuros",
+      "2 curva(s) fechada(s) por tijolos escuros",
+      "1 pistão(ões) de 10s",
+      "1 tijolo(s) escuro(s) solto(s) na parede",
+      "faca permanente no caminho"
+    ],
+    "massa": 3.05,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 74,
+      "esmagados": 0.03,
+      "vitorias": [
+        13,
+        5,
+        6,
+        6
+      ]
+    },
+    "seedRender": 20
   }
 ]
