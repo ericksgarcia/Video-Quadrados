@@ -413,5 +413,34 @@
       ]
     },
     "seedRender": 1
+  },
+  {
+    "seed": 32,
+    "id": "gen-32",
+    "digital": "20a0361235446b2c",
+    "tipo": "baixo",
+    "espelhada": false,
+    "tamanho": "14x19",
+    "elementos": [
+      "bolsinho sem saída embaixo da saída",
+      "chegada de 1x2 unid. atrás de 2 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 8s",
+      "faca permanente no caminho"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 73,
+      "esmagados": 0,
+      "vitorias": [
+        11,
+        7,
+        6,
+        6
+      ]
+    },
+    "seedRender": 23
   }
 ]
