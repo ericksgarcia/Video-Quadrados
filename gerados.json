@@ -550,5 +550,32 @@
       ]
     },
     "seedRender": 4
+  },
+  {
+    "seed": 37,
+    "id": "gen-37",
+    "digital": "46298755c0d72d7c",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "18x18",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 3 tijolos escuros",
+      "1 pistão(ões) de 8s",
+      "1 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 3,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 60,
+      "esmagados": 0,
+      "vitorias": [
+        11,
+        9,
+        4,
+        6
+      ]
+    },
+    "seedRender": 3
   }
 ]
