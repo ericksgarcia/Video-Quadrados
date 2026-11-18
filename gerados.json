@@ -521,5 +521,34 @@
       ]
     },
     "seedRender": 1
+  },
+  {
+    "seed": 36,
+    "id": "gen-36",
+    "digital": "0eb83bae6c3bc9fe",
+    "tipo": "topo",
+    "espelhada": false,
+    "tamanho": "15x21",
+    "elementos": [
+      "chegada de 2x2 unid. atrás de 4 tijolos escuros",
+      "3 curva(s) fechada(s) por tijolos escuros",
+      "1 pistão(ões) de 6s",
+      "2 tijolo(s) escuro(s) solto(s) na parede",
+      "martelo (quem pega quebra qualquer tijolo)"
+    ],
+    "massa": 4.16,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 73,
+      "esmagados": 0,
+      "vitorias": [
+        8,
+        7,
+        9,
+        6
+      ]
+    },
+    "seedRender": 4
   }
 ]

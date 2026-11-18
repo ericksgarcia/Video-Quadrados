@@ -2107,7 +2107,40 @@ def gen_35():
     m.put(39, 31, 'S')
     return m.lines()
 
+def gen_36():
+    """GERADA por tools/gerador.mjs --seed 36: 4 baias penduradas no topo, cada uma com um tijolo de cor de 3 unidades ao lado, saída lateral; serpentina de corredores verticais. chegada de 2x2 unid. atrás de 4 tijolos escuros; 3 curva(s) fechada(s) por tijolos escuros; 1 pistão(ões) de 6s; 2 tijolo(s) escuro(s) solto(s) na parede; martelo (quem pega quebra qualquer tijolo)."""
+    U = [
+        '#..#..#..#..###',
+        '#..#..#..#..###',
+        '#..2..3..4..1..',
+        '#..2..3..4..1..',
+        '#..2..3..4..1..',
+        '#############..',
+        '.....#...B..#..',
+        '.....#...B..#..',
+        '.....#...#..#..',
+        '..#..#...#..#..',
+        '..#..#...#..#..',
+        '..#..#B..#..#..',
+        '..#..#...#..#..',
+        '..#..#...#..#..',
+        '..#..#...#..#..',
+        '..#..#...#..#..',
+        '..#..#B..#..#..',
+        'BB#..#...#..#..',
+        'BB#..B...#..B..',
+        'FF#..B...#..B..',
+        'FF#..B...#..B..',
+    ]
+    m = unitmap(U, {}, 3, 3)
+    m.put(5, 6, 'S')
+    m.put(5, 12, 'S')
+    m.put(5, 18, 'S')
+    m.put(5, 24, 'S')
+    m.put(29, 9, 'H')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('gen-2', gen_2), ('gen-3', gen_3), ('gen-13', gen_13), ('gen-4', gen_4), ('gen-21', gen_21), ('gen-22', gen_22), ('gen-23', gen_23), ('gen-24', gen_24), ('gen-25', gen_25), ('gen-26', gen_26), ('gen-27', gen_27), ('gen-28', gen_28), ('gen-29', gen_29), ('gen-30', gen_30), ('gen-31', gen_31), ('gen-32', gen_32), ('gen-33', gen_33), ('gen-34', gen_34), ('gen-35', gen_35), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('gen-2', gen_2), ('gen-3', gen_3), ('gen-13', gen_13), ('gen-4', gen_4), ('gen-21', gen_21), ('gen-22', gen_22), ('gen-23', gen_23), ('gen-24', gen_24), ('gen-25', gen_25), ('gen-26', gen_26), ('gen-27', gen_27), ('gen-28', gen_28), ('gen-29', gen_29), ('gen-30', gen_30), ('gen-31', gen_31), ('gen-32', gen_32), ('gen-33', gen_33), ('gen-34', gen_34), ('gen-35', gen_35), ('gen-36', gen_36), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
