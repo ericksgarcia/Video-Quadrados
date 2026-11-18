@@ -385,5 +385,33 @@
       ]
     },
     "seedRender": 17
+  },
+  {
+    "seed": 31,
+    "id": "gen-31",
+    "digital": "21396393129449f7",
+    "tipo": "topo",
+    "espelhada": false,
+    "tamanho": "16x19",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 3 tijolos escuros",
+      "2 curva(s) fechada(s) por tijolos escuros",
+      "3 pistão(ões) de 10s",
+      "2 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 4.16,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 76,
+      "esmagados": 0,
+      "vitorias": [
+        6,
+        8,
+        8,
+        8
+      ]
+    },
+    "seedRender": 1
   }
 ]
