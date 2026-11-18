@@ -577,5 +577,34 @@
       ]
     },
     "seedRender": 3
+  },
+  {
+    "seed": 38,
+    "id": "gen-38",
+    "digital": "23f6022e6b787cdf",
+    "tipo": "baixo",
+    "espelhada": false,
+    "tamanho": "15x20",
+    "elementos": [
+      "bolsinho sem saída embaixo da saída",
+      "chegada de 2x2 unid. atrás de 4 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 6s",
+      "portal de mão única que pula um trecho (atalho)"
+    ],
+    "massa": 3.19,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 28,
+      "tempo": 77,
+      "esmagados": 0,
+      "vitorias": [
+        8,
+        5,
+        5,
+        10
+      ]
+    },
+    "seedRender": 9
   }
 ]
