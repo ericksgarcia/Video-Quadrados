@@ -442,5 +442,32 @@
       ]
     },
     "seedRender": 23
+  },
+  {
+    "seed": 33,
+    "id": "gen-33",
+    "digital": "641945f0006deeef",
+    "tipo": "juntos",
+    "espelhada": false,
+    "tamanho": "14x20",
+    "elementos": [
+      "chegada de 1x3 unid. atrás de 6 tijolos escuros",
+      "2 curva(s) fechada(s) por tijolos escuros",
+      "2 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 2.4,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 58,
+      "esmagados": 0,
+      "vitorias": [
+        9,
+        10,
+        6,
+        5
+      ]
+    },
+    "seedRender": 5
   }
 ]
