@@ -495,5 +495,31 @@
       ]
     },
     "seedRender": 27
+  },
+  {
+    "seed": 35,
+    "id": "gen-35",
+    "digital": "848389e2382f06ec",
+    "tipo": "baixo",
+    "espelhada": true,
+    "tamanho": "15x19",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 2 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros"
+    ],
+    "massa": 3.19,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 63,
+      "esmagados": 0,
+      "vitorias": [
+        2,
+        8,
+        7,
+        12
+      ]
+    },
+    "seedRender": 1
   }
 ]
