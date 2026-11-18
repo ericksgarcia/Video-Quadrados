@@ -606,5 +606,33 @@
       ]
     },
     "seedRender": 9
+  },
+  {
+    "seed": 39,
+    "id": "gen-39",
+    "digital": "e17b5a7b2775afbf",
+    "tipo": "topo",
+    "espelhada": true,
+    "tamanho": "15x19",
+    "elementos": [
+      "chegada de 1x3 unid. atrás de 3 tijolos escuros",
+      "2 pistão(ões) de 8s",
+      "3 tijolo(s) escuro(s) solto(s) na parede",
+      "faca permanente no caminho"
+    ],
+    "massa": 2.48,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 64,
+      "esmagados": 0,
+      "vitorias": [
+        6,
+        8,
+        7,
+        9
+      ]
+    },
+    "seedRender": 23
   }
 ]
