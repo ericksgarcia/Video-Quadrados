@@ -357,5 +357,33 @@
       ]
     },
     "seedRender": 16
+  },
+  {
+    "seed": 30,
+    "id": "gen-30",
+    "digital": "2eeb96e1c23c8c0e",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "17x18",
+    "elementos": [
+      "bolsinho sem saída no canto de cima",
+      "chegada de 1x3 unid. atrás de 6 tijolos escuros",
+      "3 curva(s) fechada(s) por tijolos escuros",
+      "1 pistão(ões) de 8s"
+    ],
+    "massa": 3.34,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 74,
+      "esmagados": 0.07,
+      "vitorias": [
+        3,
+        11,
+        8,
+        8
+      ]
+    },
+    "seedRender": 17
   }
 ]

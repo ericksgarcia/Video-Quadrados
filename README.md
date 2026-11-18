@@ -194,9 +194,9 @@ Coloque `.mp4` em `pendente/` e, numa janela nova do Claude, escreva **"faça o 
 vídeo, cria a fase igual na paleta Concreto, renderiza, entrega e remove o arquivo
 da fila. Os prints dos vídeos já vistos estão em `referencias/`.
 
-## Publicar (TikTok + Instagram)
+## Publicar (só Instagram, desde 18/11/2026)
 
-    python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt   # envia ao R2 e agenda nas duas redes
+    python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt   # envia ao R2 e agenda no Instagram
     python3 publicar.py --fila | --status <slug> | --lista | --arruma
 
 Detalhes na seção "Publicação" do `CLAUDE.md`.

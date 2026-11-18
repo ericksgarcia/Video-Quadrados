@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Publicação dos vídeos prontos: Cloudflare R2 -> Buffer (TikTok + Instagram, mesmo horário).
+"""Publicação dos vídeos prontos: Cloudflare R2 -> Buffer (SÓ Instagram desde 18/11/2026; o TikTok saiu do sistema).
 
 Só publica o que já existe; não gera vídeo, voz, imagem nem roteiro.
 
 Uso:
-  python3 publicar.py --fila                      posts agendados no TikTok + próximo horário livre
-  python3 publicar.py VIDEO.mp4 --legenda L.txt   agenda (padrão: as duas redes, próximo horário livre)
-      [--capa-s 1.2] [--quando AAAA-MM-DDTHH:MM] [--agora] [--redes tiktok,instagram]
+  python3 publicar.py --fila                      posts agendados no Instagram + próximo horário livre
+  python3 publicar.py VIDEO.mp4 --legenda L.txt   agenda no Instagram (próximo horário livre)
+      [--capa-s 1.2] [--quando AAAA-MM-DDTHH:MM] [--agora]
   python3 publicar.py --status SLUG               status dos posts do vídeo
   python3 publicar.py --lista                     o que está em pendentes/ e enviados/ no R2
   python3 publicar.py --arruma                    move para enviados/ o que já foi publicado
@@ -43,6 +43,11 @@ CANAIS = {  # rede -> (service, nome do canal). Os NOMES são a referência; os 
     'tiktok': ('tiktok', 'aprendendo.facil99'),
     'instagram': ('instagram', 'disputadostimes'),
 }
+# Redes em uso (pedido do dono em 18/11/2026: "exclua o tiktok do buffer, deixe só o Instagram").
+# O TikTok continua em CANAIS só para --status/--cancela de posts antigos; NÃO é usado para postar.
+REDES_ATIVAS = ['instagram']
+REDE_FILA = 'instagram'          # rede que define a fila e o próximo horário livre
+META_FILA = 10                   # quantos vídeos manter agendados (regra do dono em 18/11/2026)
 REGISTRO = Path(__file__).with_name('publicados.json')
 MARGEM = timedelta(minutes=5)
 
@@ -83,10 +88,12 @@ def gql_ok(query, variables=None):
     return d['data']
 
 
-def canais():
+def canais(redes=None):
+    redes = redes or REDES_ATIVAS
     data = gql_ok('query($o: OrganizationId!){ channels(input:{organizationId:$o}) { id name service isDisconnected } }', {'o': BUFFER_ORG})
     out = {}
-    for rede, (service, nome) in CANAIS.items():
+    for rede in redes:
+        service, nome = CANAIS[rede]
         achados = [c for c in data['channels'] if c['service'] == service and c['name'] == nome]
         if not achados:
             falha(f'canal {rede} "{nome}" não existe no Buffer. Parei (não posto em outro canal).')
@@ -253,9 +260,9 @@ def br(t):
 
 # ------------------------------------------------------------------ comandos
 def cmd_fila():
-    ids = canais()
-    fila = posts_agendados(ids['tiktok'])
-    print(f'TikTok "{CANAIS["tiktok"][1]}": {len(fila)} post(s) agendado(s)')
+    ids = canais([REDE_FILA])
+    fila = posts_agendados(ids[REDE_FILA])
+    print(f'Instagram "{CANAIS[REDE_FILA][1]}": {len(fila)} post(s) agendado(s) (meta: {META_FILA})')
     for p in fila:
         print(f'  {br(dt(p["dueAt"]))}  post {p["id"]}  {p["status"]}  {p["text"][:60]!r}')
     ultimo = max((dt(p['dueAt']) for p in fila if p.get('dueAt')), default=None)
@@ -417,8 +424,8 @@ def cmd_publicar(a):
         falha('a legenda está vazia')
     redes = [r.strip() for r in a.redes.split(',') if r.strip()]
     for r in redes:
-        if r not in CANAIS:
-            falha(f'rede desconhecida: {r} (use tiktok,instagram)')
+        if r not in REDES_ATIVAS:
+            falha(f'rede fora do sistema: {r} (só posto em: {", ".join(REDES_ATIVAS)})')
     capa_ms = int(round(a.capa_s * 1000))
     slug = slug_de(video)
     chave = PASTA_PEND + slug + '.mp4'
@@ -432,7 +439,7 @@ def cmd_publicar(a):
     if not faltam:
         return
 
-    ids = canais()
+    ids = canais(faltam)
 
     # horário
     agora = datetime.now(timezone.utc)
@@ -443,12 +450,8 @@ def cmd_publicar(a):
         quando = (q if q.tzinfo else q.replace(tzinfo=TZ)).astimezone(timezone.utc)
         if quando < agora + MARGEM:
             falha(f'--quando {a.quando} não está pelo menos 5 minutos no futuro')
-    elif 'tiktok' in ja:  # Instagram avulso: mesmo horário do TikTok já registrado
-        quando = dt(ja['tiktok']['agendado'])
-        if quando < agora + MARGEM:
-            falha(f'o horário do TikTok ({br(quando)}) já passou; use --quando para escolher outro')
     else:
-        fila = posts_agendados(ids['tiktok'])
+        fila = posts_agendados(canais([REDE_FILA])[REDE_FILA])
         quando = proximo_horario(max((dt(p['dueAt']) for p in fila if p.get('dueAt')), default=None))
     print(f'Vídeo: {video}  slug: {slug}  capa: {capa_ms} ms')
     print('Horário:', 'AGORA' if quando is None else br(quando))
@@ -477,13 +480,13 @@ def cmd_publicar(a):
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Publica vídeos prontos: R2 -> Buffer (TikTok + Instagram).')
+    ap = argparse.ArgumentParser(description='Publica vídeos prontos: R2 -> Buffer (só Instagram).')
     ap.add_argument('video', nargs='?')
     ap.add_argument('--legenda')
     ap.add_argument('--capa-s', type=float, default=1.2)
     ap.add_argument('--agora', action='store_true')
     ap.add_argument('--quando')
-    ap.add_argument('--redes', default='tiktok,instagram')
+    ap.add_argument('--redes', default=','.join(REDES_ATIVAS))
     ap.add_argument('--fila', action='store_true')
     ap.add_argument('--status')
     ap.add_argument('--lista', action='store_true')

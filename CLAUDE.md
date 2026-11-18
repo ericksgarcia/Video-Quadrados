@@ -147,7 +147,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
    quadro de 1,2s (capa): mapa inteiro, nada nas zonas do app, escudos legíveis, final sem placar.
    Envie o `.mp4` ao usuário (SendUserFile) e mostre a legenda do `.txt` (sem revelar o vencedor).
 4. **AGENDE SEMPRE** (pedido do usuário: todo vídeo feito é agendado, sem perguntar): `python3 publicar.py videos/<arquivo>.mp4`
-   (usa o `.txt` ao lado como legenda, sobe no R2 e agenda TikTok + Instagram no próximo horário livre) e mostre
+   (usa o `.txt` ao lado como legenda, sobe no R2 e agenda no Instagram no próximo horário livre; o TikTok saiu em 18/11) e mostre
    `python3 publicar.py --fila`, `--status <slug>` e `--lista`. Detalhes na seção "Publicação". Para trocar um agendado:
    `--cancela <slug>` e agende o novo com `--quando`.
 5. Commit de `historico.json` (e `publicados.json` se agendou) — os vídeos ficam fora do git — e push na branch da sessão
@@ -515,6 +515,7 @@ Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
 - `gen-27` — 4 baias penduradas no topo, cada uma com um tijolo de cor de 4 unidades ao lado, saída lateral; serpentina de corredores horizontais; chegada de 2x2 unid. atrás de 4 tijolos escuros; 1 curva(s) fechada(s) por tijolos escuros; 1 tijolo(s) escuro(s) solto(s) na parede; faca permanente no caminho. Saída do quadrado 4 (o mais longe); massa 3.2 bloco/s. Sim.: 0/30 sem vencedor, ~68s, 0.03 esmagados/corrida.
 - `gen-28` — sem prisão: os 4 nascem juntos com a massa logo atrás; serpentina de corredores horizontais; chegada de 1x2 unid. atrás de 4 tijolos escuros; 2 curva(s) fechada(s) por tijolos escuros; 2 tijolo(s) escuro(s) solto(s) na parede; faca permanente no caminho. Justiça não se aplica; massa 3.2 bloco/s. Sim.: 0/30 sem vencedor, ~53s, 0.00 esmagados/corrida.
 - `gen-29` — 4 baias verticais embaixo com tijolos de cor de 4 unidades e saída lateral; serpentina de corredores horizontais; chegada de 1x3 unid. atrás de 3 tijolos escuros; 1 curva(s) fechada(s) por tijolos escuros; 1 pistão(ões) de 8s. Saída do quadrado 1 (o mais longe); massa 2.33 bloco/s. Sim.: 0/30 sem vencedor, ~73s, 0.03 esmagados/corrida.
+- `gen-30` — 4 baias horizontais empilhadas com barras de cor de 4 unidades e saída em cima; faixa do topo e serpentina de corredores horizontais; bolsinho sem saída no canto de cima; chegada de 1x3 unid. atrás de 6 tijolos escuros; 3 curva(s) fechada(s) por tijolos escuros; 1 pistão(ões) de 8s. Saída do quadrado 4 (o mais longe); massa 3.34 bloco/s. Sim.: 0/30 sem vencedor, ~74s, 0.07 esmagados/corrida.
 <!-- gerador:fases -->
 
 ## Regra de justiça e área segura do TikTok (pedidos do usuário)
@@ -550,10 +551,15 @@ Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
   escudo na moldura da cor do clube, o nome e uma barra na cor do clube.
 - No "próximo vídeo" use `--crests sorteio` no passo 4 (e cite os escudos sorteados na legenda).
 
-## Publicação (TikTok + Instagram via R2 e Buffer) — `publicar.py`
+## Publicação (SÓ Instagram via R2 e Buffer) — `publicar.py`
 
-Só publica vídeo que JÁ existe e que o dono aprovou (não gera nada). Canais: TikTok **aprendendo.facil99** e Instagram
-**disputadostimes**, sempre no MESMO horário. Chaves: nunca no git/chat; o proxy do ambiente injeta o `Authorization: Bearer`
+**Regras do dono (18/11/2026)**: "exclua o tiktok do buffer, deixe só o Instagram" e "ver quantos tem e fazer o restante até
+ficar um número de **10 agendados**". Então: o TikTok **não** é mais usado (`REDES_ATIVAS = ['instagram']` no script; o canal
+aprendendo.facil99 só aparece no `--status` de posts antigos). Sempre que o dono pedir para completar a fila: `python3 publicar.py
+--fila` (mostra quantos há no Instagram e a meta 10), faça os vídeos que faltam (gerador → render → conferir) e agende um por
+horário. (Os pedidos antigos de "5 agendados em cada canal" valiam para TikTok+Instagram e foram substituídos por este.)
+
+Só publica vídeo que JÁ existe e que o dono aprovou (não gera nada). Canal: Instagram **disputadostimes**. Chaves: nunca no git/chat; o proxy do ambiente injeta o `Authorization: Bearer`
 em api.buffer.com e api.cloudflare.com (sem variável: valor fictício). 401/403 = falta o segredo → pare e avise.
 
 Comando para publicar um vídeo novo (próximo horário livre de 07:50, 11:50, 16:50, 20:30 em Brasília, capa no quadro de 1,2s):
@@ -564,8 +570,7 @@ Cancelar um agendado (apaga os posts no Buffer e o vídeo de pendentes/): `pytho
 Se um post der ERRO no Buffer (ex.: 06/11 11:50 o TikTok respondeu "Something went wrong"; o Instagram saiu): veja com
 `--status <slug>` e reenvie SÓ o que falhou com `python3 publicar.py --reenvia <slug>` (agora) ou `--reenvia <slug> --quando
 AAAA-MM-DDTHH:MM` — **pergunte ao dono antes** (é publicação pública; o ambiente bloqueia o reenvio imediato sem confirmação).
-Opções: `--capa-s 1.2`, `--quando 2026-11-07T11:50` (Brasília), `--agora`, `--redes tiktok,instagram` (Instagram avulso usa o
-horário já registrado do TikTok, se ainda estiver no futuro). Conferir: `python3 publicar.py --fila`, `--status <slug>`
+Opções: `--capa-s 1.2`, `--quando 2026-11-07T11:50` (Brasília), `--agora`. Conferir: `python3 publicar.py --fila`, `--status <slug>`
 (slug = nome do arquivo sem `.mp4`), `--lista` (R2). Depois que os posts saírem: `python3 publicar.py --arruma` (move
 `aprendendo-facil/pendentes/<slug>.mp4` → `enviados/`; NUNCA antes, quebraria o post agendado).
 
