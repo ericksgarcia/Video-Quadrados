@@ -469,5 +469,31 @@
       ]
     },
     "seedRender": 5
+  },
+  {
+    "seed": 34,
+    "id": "gen-34",
+    "digital": "0e8f21ac3c412973",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "16x18",
+    "elementos": [
+      "chegada de 2x2 unid. atrás de 4 tijolos escuros",
+      "martelo (quem pega quebra qualquer tijolo)"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 59,
+      "esmagados": 0,
+      "vitorias": [
+        6,
+        7,
+        11,
+        6
+      ]
+    },
+    "seedRender": 27
   }
 ]
