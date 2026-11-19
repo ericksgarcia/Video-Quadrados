@@ -87,7 +87,7 @@ const hadKnife = Number((out.match(/(\d+) eliminado/) || [])[1] || 0) > 0; // sÃ
 const lista = names.length > 2 ? `${names.slice(0, -1).join(', ')} ou ${names[names.length - 1]}` : names.join(' ou ');
 const cores = cfg.category === 'cores' && !cfg.crests;
 const escudos = !!cfg.crests; // vÃ­deo com escudos: legenda de futebol (os quadrados levam os escudos sorteados)
-const tags = escudos ? ['#futebol', '#brasileirao', '#satisfying', '#corrida', '#oddlysatisfying', '#fyp', '#viral'] : cores ? ['#satisfying', '#corrida', '#cores', '#oddlysatisfying', '#fyp', '#viral']
+const tags = escudos ? ['#futebol', '#championsleague', '#premierleague', '#satisfying', '#corrida', '#oddlysatisfying', '#fyp', '#viral'] : cores ? ['#satisfying', '#corrida', '#cores', '#oddlysatisfying', '#fyp', '#viral']
   : ['#futebol', ...cfg.teams.slice(0, 4).map((id) => '#' + (TEAMS[id]?.name || id).toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '')),
     cfg.category === 'clubes' ? '#brasileirao' : '#copadomundo', '#satisfying', '#fyp', '#viral'];
 const ganchos = escudos ? [

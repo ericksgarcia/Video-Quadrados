@@ -41,6 +41,8 @@ EU = [  # id, nome, liga, arquivo
 S = 256
 CORES = {"flamengo": "#c8102e", "palmeiras": "#006b3f", "corinthians": "#111111", "sao-paulo": "#e4002b", "santos": "#111111", "fluminense": "#7b1e3a", "botafogo": "#111111", "vasco": "#111111", "cruzeiro": "#1d3f94", "atletico-mg": "#111111", "gremio": "#0d80bf", "internacional": "#d0021b", "bahia": "#1e4c9a", "vitoria": "#d4202b", "bragantino": "#e20e1d", "athletico-pr": "#c8102e", "mirassol": "#f5cf00", "chapecoense": "#00a04e", "coritiba": "#00544d", "remo": "#0b2a5b", "real-madrid": "#febe10", "barcelona": "#a50044", "bayern": "#dc052d", "psg": "#004170", "man-city": "#6cabdd"}  # cor principal de cada clube do sorteio (preto/branco -> preto)
 
+CORES_EU = {"man-city": "#6cabdd", "liverpool": "#c8102e", "arsenal": "#ef0107", "man-united": "#da291c", "chelsea": "#034694", "tottenham": "#132257", "real-madrid": "#febe10", "barcelona": "#a50044", "atletico-madrid": "#cb3524", "inter": "#0068a8", "milan": "#fb090b", "juventus": "#111111", "napoli": "#12a0d7", "roma": "#8e1f2f", "bayern": "#dc052d", "dortmund": "#fde100", "leverkusen": "#e32221", "psg": "#004170", "marseille": "#2faee0", "lyon": "#1a4c9c"}  # os 20 do sorteio e a cor de cada um
+
 def conv(src, dst):
     im = Image.open(src).convert('RGBA')
     bb = im.getchannel('A').point(lambda a: 255 if a > 8 else 0).getbbox()
@@ -58,10 +60,11 @@ def main(br, eu, out):
         conv(f'{br}/{f}.png', f'{out}/{i}.png'); lib.append({'id': i, 'name': n, 'group': 'br', 'src': f'assets/escudos/{i}.png'})
     for i, n, lg, f in EU:
         conv(f'{eu}/{lg}/{f}.png', f'{out}/{i}.png'); lib.append({'id': i, 'name': n, 'group': 'eu', 'league': lg.split(' - ')[1], 'src': f'assets/escudos/{i}.png'})
-    SORTEIO_EU = {'real-madrid', 'barcelona', 'bayern', 'psg', 'man-city'}  # sorteio: só brasileiros + estes
-    for c in lib: c['sorteio'] = c['group'] == 'br' or c['id'] in SORTEIO_EU
+    # sorteio (pedido do dono em 19/11/2026): SÓ os 20 maiores das 5 grandes ligas da Europa; brasileiros fora
+    for c in lib: c['sorteio'] = c['id'] in CORES_EU
     for c in lib:
-        if c['id'] in CORES: c['cor'] = CORES[c['id']]  # cor do quadrado/tijolos = cor do clube
+        if c['id'] in CORES: c['cor'] = CORES[c['id']]
+        if c['id'] in CORES_EU: c['cor'] = CORES_EU[c['id']]  # cor do quadrado/tijolos = cor do clube
     json.dump(lib, open(os.path.join(os.path.dirname(out.rstrip('/')), '..', 'src', 'escudos.json'), 'w'), ensure_ascii=False, indent=1)
     print(len(lib), 'escudos')
 

@@ -140,8 +140,7 @@ já existe. "Próximo vídeo" / "da pendente" = procedimento completo no topo de
      específico, repasse: `--level gaiola|cofre|ponte|escada|pocos|colunas|derby|serpente|arena8`,
      `--teams vermelho,azul,amarelo,verde`, `--category clubes|selecoes` (bandeiras/escudos),
      `--theme concreto|pedra|geleira|roxo` (padrão: concreto), `--no-music`.
-   O `novo` já aplica TUDO o que foi decidido: só fases copiadas, 4 escudos sorteados (brasileiros + Real Madrid, Barcelona,
-   Bayern, PSG, Man. City) com quadrado na cor do clube e sem cores repetidas, sem texto no vídeo, mapa na área segura do
+   O `novo` já aplica TUDO o que foi decidido: só fases copiadas, 4 escudos sorteados (só os 20 maiores da Europa, desde 19/11) com quadrado na cor do clube e sem cores repetidas, sem texto no vídeo, mapa na área segura do
    TikTok, quique perfeito, regra de justiça (`ownerPerm` nas fases) e legenda de futebol no `.txt`.
 3. Confira antes de entregar: contact sheet (`ffmpeg -i V -vf "fps=1/5,scale=216:-1,tile=6x2" -frames:v 1 folha.png`) e o
    quadro de 1,2s (capa): mapa inteiro, nada nas zonas do app, escudos legíveis, final sem placar.
@@ -548,8 +547,11 @@ Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
 
 - Biblioteca em `assets/escudos/*.png` (PNG sem fundo, 256x256) + `src/escudos.json`, gerada por `tools/escudos_build.py`
   (fontes no cabeçalho do script): 20 clubes da Série A 2026 e 36 grandes de Inglaterra, Espanha, Itália, Alemanha e França.
-- **Sorteio só entre 25 escudos** (pedido do usuário): os 20 brasileiros + Real Madrid, Barcelona, Bayern, PSG e Man. City
-  (campo `sorteio: true` em `src/escudos.json`; os outros 31 PNGs continuam na biblioteca, fora do sorteio).
+- **Sorteio só entre os 20 MAIORES DA EUROPA** (pedido do dono em 19/11/2026: "pare com os escudos brasileiros e coloque os dos
+  maiores times das 5 maiores ligas da Europa, aleatoriamente a cada vídeo"): Man. City, Liverpool, Arsenal, Man. United, Chelsea,
+  Tottenham, Real Madrid, Barcelona, Atlético Madrid, Inter, Milan, Juventus, Napoli, Roma, Bayern, Dortmund, Leverkusen, PSG,
+  Marseille e Lyon (campo `sorteio: true` + `cor` em `src/escudos.json`; `CORES_EU` em `tools/escudos_build.py`). Os brasileiros e os
+  outros europeus continuam na biblioteca, FORA do sorteio. Legenda sem #brasileirao.
 - **Cada vídeo sorteia 4 escudos** (`novo` faz isso sozinho; no render manual use `--crests sorteio` ou `--crests id1,id2,id3,id4`
   na ordem dos índices dos quadrados). O `--teams` só define a ordem dos índices; com escudo, a cor vem do clube.
 - **Quadrado na COR DO CLUBE** (pedido do usuário): campo `cor` em `src/escudos.json` (preto/branco → preto). O quadrado tem moldura

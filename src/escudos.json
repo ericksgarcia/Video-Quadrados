@@ -4,7 +4,7 @@
   "name": "FLAMENGO",
   "group": "br",
   "src": "assets/escudos/flamengo.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#c8102e"
  },
  {
@@ -12,7 +12,7 @@
   "name": "PALMEIRAS",
   "group": "br",
   "src": "assets/escudos/palmeiras.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#006b3f"
  },
  {
@@ -20,7 +20,7 @@
   "name": "CORINTHIANS",
   "group": "br",
   "src": "assets/escudos/corinthians.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#111111"
  },
  {
@@ -28,7 +28,7 @@
   "name": "SÃO PAULO",
   "group": "br",
   "src": "assets/escudos/sao-paulo.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#e4002b"
  },
  {
@@ -36,7 +36,7 @@
   "name": "SANTOS",
   "group": "br",
   "src": "assets/escudos/santos.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#111111"
  },
  {
@@ -44,7 +44,7 @@
   "name": "FLUMINENSE",
   "group": "br",
   "src": "assets/escudos/fluminense.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#7b1e3a"
  },
  {
@@ -52,7 +52,7 @@
   "name": "BOTAFOGO",
   "group": "br",
   "src": "assets/escudos/botafogo.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#111111"
  },
  {
@@ -60,7 +60,7 @@
   "name": "VASCO",
   "group": "br",
   "src": "assets/escudos/vasco.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#111111"
  },
  {
@@ -68,7 +68,7 @@
   "name": "CRUZEIRO",
   "group": "br",
   "src": "assets/escudos/cruzeiro.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#1d3f94"
  },
  {
@@ -76,7 +76,7 @@
   "name": "ATLÉTICO-MG",
   "group": "br",
   "src": "assets/escudos/atletico-mg.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#111111"
  },
  {
@@ -84,7 +84,7 @@
   "name": "GRÊMIO",
   "group": "br",
   "src": "assets/escudos/gremio.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#0d80bf"
  },
  {
@@ -92,7 +92,7 @@
   "name": "INTERNACIONAL",
   "group": "br",
   "src": "assets/escudos/internacional.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#d0021b"
  },
  {
@@ -100,7 +100,7 @@
   "name": "BAHIA",
   "group": "br",
   "src": "assets/escudos/bahia.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#1e4c9a"
  },
  {
@@ -108,7 +108,7 @@
   "name": "VITÓRIA",
   "group": "br",
   "src": "assets/escudos/vitoria.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#d4202b"
  },
  {
@@ -116,7 +116,7 @@
   "name": "BRAGANTINO",
   "group": "br",
   "src": "assets/escudos/bragantino.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#e20e1d"
  },
  {
@@ -124,7 +124,7 @@
   "name": "ATHLETICO-PR",
   "group": "br",
   "src": "assets/escudos/athletico-pr.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#c8102e"
  },
  {
@@ -132,7 +132,7 @@
   "name": "MIRASSOL",
   "group": "br",
   "src": "assets/escudos/mirassol.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#f5cf00"
  },
  {
@@ -140,7 +140,7 @@
   "name": "CHAPECOENSE",
   "group": "br",
   "src": "assets/escudos/chapecoense.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#00a04e"
  },
  {
@@ -148,7 +148,7 @@
   "name": "CORITIBA",
   "group": "br",
   "src": "assets/escudos/coritiba.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#00544d"
  },
  {
@@ -156,7 +156,7 @@
   "name": "REMO",
   "group": "br",
   "src": "assets/escudos/remo.png",
-  "sorteio": true,
+  "sorteio": false,
   "cor": "#0b2a5b"
  },
  {
@@ -165,7 +165,8 @@
   "group": "eu",
   "league": "Premier League",
   "src": "assets/escudos/arsenal.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#ef0107"
  },
  {
   "id": "chelsea",
@@ -173,7 +174,8 @@
   "group": "eu",
   "league": "Premier League",
   "src": "assets/escudos/chelsea.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#034694"
  },
  {
   "id": "liverpool",
@@ -181,7 +183,8 @@
   "group": "eu",
   "league": "Premier League",
   "src": "assets/escudos/liverpool.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#c8102e"
  },
  {
   "id": "man-city",
@@ -198,7 +201,8 @@
   "group": "eu",
   "league": "Premier League",
   "src": "assets/escudos/man-united.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#da291c"
  },
  {
   "id": "tottenham",
@@ -206,7 +210,8 @@
   "group": "eu",
   "league": "Premier League",
   "src": "assets/escudos/tottenham.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#132257"
  },
  {
   "id": "newcastle",
@@ -248,7 +253,8 @@
   "group": "eu",
   "league": "LaLiga",
   "src": "assets/escudos/atletico-madrid.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#cb3524"
  },
  {
   "id": "sevilla",
@@ -296,7 +302,8 @@
   "group": "eu",
   "league": "Serie A",
   "src": "assets/escudos/milan.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#fb090b"
  },
  {
   "id": "inter",
@@ -304,7 +311,8 @@
   "group": "eu",
   "league": "Serie A",
   "src": "assets/escudos/inter.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#0068a8"
  },
  {
   "id": "juventus",
@@ -312,7 +320,8 @@
   "group": "eu",
   "league": "Serie A",
   "src": "assets/escudos/juventus.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#111111"
  },
  {
   "id": "roma",
@@ -320,7 +329,8 @@
   "group": "eu",
   "league": "Serie A",
   "src": "assets/escudos/roma.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#8e1f2f"
  },
  {
   "id": "napoli",
@@ -328,7 +338,8 @@
   "group": "eu",
   "league": "Serie A",
   "src": "assets/escudos/napoli.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#12a0d7"
  },
  {
   "id": "lazio",
@@ -369,7 +380,8 @@
   "group": "eu",
   "league": "Bundesliga",
   "src": "assets/escudos/dortmund.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#fde100"
  },
  {
   "id": "leverkusen",
@@ -377,7 +389,8 @@
   "group": "eu",
   "league": "Bundesliga",
   "src": "assets/escudos/leverkusen.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#e32221"
  },
  {
   "id": "leipzig",
@@ -418,7 +431,8 @@
   "group": "eu",
   "league": "Ligue 1",
   "src": "assets/escudos/marseille.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#2faee0"
  },
  {
   "id": "lyon",
@@ -426,7 +440,8 @@
   "group": "eu",
   "league": "Ligue 1",
   "src": "assets/escudos/lyon.png",
-  "sorteio": false
+  "sorteio": true,
+  "cor": "#1a4c9c"
  },
  {
   "id": "monaco",
