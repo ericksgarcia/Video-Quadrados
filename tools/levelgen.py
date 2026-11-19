@@ -2328,7 +2328,41 @@ def gen_42():
     m.put(32, 3, 'S')
     return m.lines()
 
+def gen_43():
+    """GERADA por tools/gerador.mjs --seed 43: 4 baias penduradas no topo, cada uma com um tijolo de cor de 4 unidades ao lado, saída lateral; serpentina de corredores horizontais. chegada de 1x2 unid. atrás de 2 tijolos escuros; portal de mão única que pula um trecho (atalho)."""
+    U = [
+        '#..#..#..#..###',
+        '#..#..#..#..###',
+        '#..2..3..4..1..',
+        '#..2..3..4..1..',
+        '#..2..3..4..1..',
+        '#..2..3..4..1..',
+        '#############..',
+        '...............',
+        '...............',
+        '..#############',
+        '...............',
+        '...............',
+        '############...',
+        '...............',
+        '...............',
+        '..#############',
+        '...............',
+        '...............',
+        '#############..',
+        'FB.............',
+        'FB.............',
+    ]
+    m = unitmap(U, {}, 3, 3)
+    m.put(5, 6, 'S')
+    m.put(5, 12, 'S')
+    m.put(5, 18, 'S')
+    m.put(5, 24, 'S')
+    m.put(17, 17, 'P')
+    m.put(31, 9, 'p')
+    return m.lines()
+
 if __name__ == '__main__':
-    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('gen-2', gen_2), ('gen-3', gen_3), ('gen-13', gen_13), ('gen-4', gen_4), ('gen-21', gen_21), ('gen-22', gen_22), ('gen-23', gen_23), ('gen-24', gen_24), ('gen-25', gen_25), ('gen-26', gen_26), ('gen-27', gen_27), ('gen-28', gen_28), ('gen-29', gen_29), ('gen-30', gen_30), ('gen-31', gen_31), ('gen-32', gen_32), ('gen-33', gen_33), ('gen-34', gen_34), ('gen-35', gen_35), ('gen-36', gen_36), ('gen-37', gen_37), ('gen-38', gen_38), ('gen-39', gen_39), ('gen-40', gen_40), ('gen-41', gen_41), ('gen-42', gen_42), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
+    for name, fn in [('gaiola', gaiola), ('cofre', cofre), ('ponte', ponte), ('escada', escada), ('pocos', pocos), ('colunas', colunas), ('pente', pente), ('pilares', pilares), ('meandro', meandro), ('portais', portais), ('grade', grade), ('trilha', trilha), ('corredor', corredor), ('salao', salao), ('teto', teto), ('xadrez', xadrez), ('portoes', portoes), ('bolsao', bolsao), ('escadaria', escadaria), ('cortina', cortina), ('mirante', mirante), ('lilas', lilas), ('martelo', martelo), ('degraus', degraus), ('jaula', jaula), ('serra', serra), ('lamina', lamina), ('prensa', prensa), ('cruz', cruz), ('bigorna', bigorna), ('caracol', caracol), ('gancho', gancho), ('catraca', catraca), ('coroa', coroa), ('atalho', atalho), ('chamine', chamine), ('zigue', zigue), ('galeria', galeria), ('balcao', balcao), ('estufa', estufa), ('espelho', espelho), ('gen-2', gen_2), ('gen-3', gen_3), ('gen-13', gen_13), ('gen-4', gen_4), ('gen-21', gen_21), ('gen-22', gen_22), ('gen-23', gen_23), ('gen-24', gen_24), ('gen-25', gen_25), ('gen-26', gen_26), ('gen-27', gen_27), ('gen-28', gen_28), ('gen-29', gen_29), ('gen-30', gen_30), ('gen-31', gen_31), ('gen-32', gen_32), ('gen-33', gen_33), ('gen-34', gen_34), ('gen-35', gen_35), ('gen-36', gen_36), ('gen-37', gen_37), ('gen-38', gen_38), ('gen-39', gen_39), ('gen-40', gen_40), ('gen-41', gen_41), ('gen-42', gen_42), ('gen-43', gen_43), ('derby', derby), ('serpente', serpente), ('arena8', arena8)]:
         print(f'// {name}')
         print('    map: [\n' + ''.join(f"      '{l}',\n" for l in fn()) + '    ],')
