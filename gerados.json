@@ -773,5 +773,34 @@
       ]
     },
     "seedRender": 13
+  },
+  {
+    "seed": 45,
+    "id": "gen-45",
+    "digital": "8ab7421737d46474",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "18x21",
+    "elementos": [
+      "bolsinho sem saída no canto de cima",
+      "chegada de 1x3 unid. atrás de 6 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 6s",
+      "2 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 78,
+      "esmagados": 0,
+      "vitorias": [
+        6,
+        6,
+        8,
+        10
+      ]
+    },
+    "seedRender": 13
   }
 ]
