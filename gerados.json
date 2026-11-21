@@ -830,5 +830,33 @@
       ]
     },
     "seedRender": 30
+  },
+  {
+    "seed": 47,
+    "id": "gen-47",
+    "digital": "94d75554ca1faad4",
+    "tipo": "juntos",
+    "espelhada": true,
+    "tamanho": "14x20",
+    "elementos": [
+      "chegada de 1x2 unid. atrás de 2 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 6/8s",
+      "1 tijolo(s) escuro(s) solto(s) na parede"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 51,
+      "esmagados": 0,
+      "vitorias": [
+        10,
+        4,
+        10,
+        6
+      ]
+    },
+    "seedRender": 30
   }
 ]
