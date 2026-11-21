@@ -858,5 +858,32 @@
       ]
     },
     "seedRender": 30
+  },
+  {
+    "seed": 48,
+    "id": "gen-48",
+    "digital": "2d9d0196743b09e5",
+    "tipo": "baixo",
+    "espelhada": true,
+    "tamanho": "14x18",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 3 tijolos escuros",
+      "2 pistão(ões) de 8s",
+      "portal de mão única que manda de volta para o começo"
+    ],
+    "massa": 2.33,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 63,
+      "esmagados": 0.73,
+      "vitorias": [
+        9,
+        6,
+        3,
+        11
+      ]
+    },
+    "seedRender": 20
   }
 ]
