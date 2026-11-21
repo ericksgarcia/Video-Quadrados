@@ -885,5 +885,33 @@
       ]
     },
     "seedRender": 20
+  },
+  {
+    "seed": 49,
+    "id": "gen-49",
+    "digital": "bc94ac8b6e3c1cac",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "16x22",
+    "elementos": [
+      "chegada de 1x3 unid. atrás de 6 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "3 pistão(ões) de 6/8s",
+      "portal de mão única que pula um trecho (atalho)"
+    ],
+    "massa": 3.2,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 65,
+      "esmagados": 0,
+      "vitorias": [
+        3,
+        8,
+        10,
+        9
+      ]
+    },
+    "seedRender": 16
   }
 ]
