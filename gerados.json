@@ -970,5 +970,32 @@
       ]
     },
     "seedRender": 12
+  },
+  {
+    "seed": 52,
+    "id": "gen-52",
+    "digital": "54041d32ba48cb3f",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "16x22",
+    "elementos": [
+      "bolsinho sem saída no canto de cima",
+      "chegada de 1x3 unid. atrás de 6 tijolos escuros",
+      "1 pistão(ões) de 8s"
+    ],
+    "massa": 4.16,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 74,
+      "esmagados": 0.03,
+      "vitorias": [
+        9,
+        6,
+        9,
+        6
+      ]
+    },
+    "seedRender": 7
   }
 ]

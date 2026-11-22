@@ -30,7 +30,7 @@ import requests
 
 # ------------------------------------------------------------------ configuração fixa
 TZ = ZoneInfo('America/Sao_Paulo')
-HORARIOS = ['07:50', '11:50', '16:50', '20:30']           # horários de postagem (Brasília)
+HORARIOS = ['04:40', '10:10', '12:10', '13:50']           # Brasília = 13:10, 18:40, 20:40, 22:20 na Índia (público principal desde 22/11/2026)
 CF_CONTA = '255764ef4414e924c3f8b3e571f7435e'
 R2_BUCKET = 'xlaudebuffer'
 R2_PUBLICO = 'https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev'
