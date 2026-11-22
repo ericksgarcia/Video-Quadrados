@@ -997,5 +997,31 @@
       ]
     },
     "seedRender": 7
+  },
+  {
+    "seed": 53,
+    "id": "gen-53",
+    "digital": "0747d945f0babbc2",
+    "tipo": "juntos",
+    "espelhada": true,
+    "tamanho": "14x18",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 6 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros"
+    ],
+    "massa": 1.8,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 52,
+      "esmagados": 0,
+      "vitorias": [
+        9,
+        8,
+        9,
+        4
+      ]
+    },
+    "seedRender": 20
   }
 ]
