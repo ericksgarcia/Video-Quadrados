@@ -577,6 +577,16 @@ Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
 
 ## Publicação (SÓ Instagram via R2 e Buffer) — `publicar.py`
 
+**Público da ÍNDIA (pedido do dono em 22/11/2026: "minha maior audiência virou Índia... mude a legenda para o idioma deles e altere
+mais coisas se ajudar o engajamento")**:
+- **Legenda** feita por `tools/legenda.py <ids dos escudos> "<descrição da fase>" [saida.txt]`: Hinglish (hindi em letras latinas, o
+  jeito que se escreve nos Reels indianos) com gancho "kaun jeetega?", linha da mecânica (chaabi/chaaku/portal/piston/hammer), pedido
+  de comentário antes do fim, uma linha em inglês, convite para seguir e hashtags de futebol + #reelsindia. O `npm run novo` usa o
+  mesmo script nos vídeos com escudo. Nunca revela o vencedor.
+- **Horários** (`HORARIOS` em `publicar.py`): 04:40, 10:10, 12:10 e 13:50 de Brasília = 13:10, 18:40, 20:40 e 22:20 na Índia
+  (picos do Instagram de lá). Antes eram 07:50/11:50/16:50/20:30, e dois caíam de madrugada na Índia. Os posts já agendados antes
+  da mudança ficaram como estavam.
+
 **Regras do dono (18/11/2026)**: "exclua o tiktok do buffer, deixe só o Instagram" e "ver quantos tem e fazer o restante até
 ficar um número de **10 agendados**". Então: o TikTok **não** é mais usado (`REDES_ATIVAS = ['instagram']` no script; o canal
 aprendendo.facil99 só aparece no `--status` de posts antigos). Sempre que o dono pedir para completar a fila: `python3 publicar.py
@@ -586,7 +596,7 @@ horário. (Os pedidos antigos de "5 agendados em cada canal" valiam para TikTok+
 Só publica vídeo que JÁ existe e que o dono aprovou (não gera nada). Canal: Instagram **disputadostimes**. Chaves: nunca no git/chat; o proxy do ambiente injeta o `Authorization: Bearer`
 em api.buffer.com e api.cloudflare.com (sem variável: valor fictício). 401/403 = falta o segredo → pare e avise.
 
-Comando para publicar um vídeo novo (próximo horário livre de 07:50, 11:50, 16:50, 20:30 em Brasília, capa no quadro de 1,2s):
+Comando para publicar um vídeo novo (próximo horário livre de 04:40, 10:10, 12:10, 13:50 em Brasília, capa no quadro de 1,2s):
 
     python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt
 

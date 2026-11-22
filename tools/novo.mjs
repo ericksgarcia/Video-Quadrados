@@ -104,7 +104,12 @@ const ganchos = escudos ? [
   `${cfg.category === 'clubes' ? 'Seu time' : 'Sua seleção'} chega ou fica pelo caminho? 🌊👀`,
 ];
 const extra = hadKnife ? ' Cuidado com quem pegar a faca 🔪' : '';
-const legenda = `${pick(ganchos)}${extra} Comenta seu palpite ANTES do final! 👇\n\n${tags.join(' ')}\n`;
+let legenda = `${pick(ganchos)}${extra} Comenta seu palpite ANTES do final! 👇\n\n${tags.join(' ')}\n`;
+if (escudos) { // público da Índia (22/11/2026): legenda em Hinglish + hindi + inglês, feita por tools/legenda.py
+  const { execFileSync } = await import('node:child_process');
+  legenda = execFileSync('python3', [path.join(ROOT, 'tools', 'legenda.py'), cfg.crests.join ? cfg.crests.join(',') : String(cfg.crests),
+    hadKnife ? 'faca' : ''], { encoding: 'utf8' });
+}
 fs.writeFileSync(path.join(ROOT, `${base}.txt`), legenda);
 
 hist.push({ data: new Date().toISOString(), category: cfg.category, level: cfg.level, teams: cfg.teams, crests: cfg.crests, theme: cfg.theme, seed, winner, arquivo: `${base}.mp4` });
