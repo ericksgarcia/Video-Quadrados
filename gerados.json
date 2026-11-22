@@ -913,5 +913,62 @@
       ]
     },
     "seedRender": 16
+  },
+  {
+    "seed": 50,
+    "id": "gen-50",
+    "digital": "3417f4db9431da35",
+    "tipo": "topo",
+    "espelhada": false,
+    "tamanho": "15x18",
+    "elementos": [
+      "chegada de 2x3 unid. atrás de 3 tijolos escuros",
+      "3 pistão(ões) de 10s",
+      "martelo (quem pega quebra qualquer tijolo)"
+    ],
+    "massa": 2.48,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 58,
+      "esmagados": 0.07,
+      "vitorias": [
+        10,
+        1,
+        8,
+        11
+      ]
+    },
+    "seedRender": 24
+  },
+  {
+    "seed": 51,
+    "id": "gen-51",
+    "digital": "1bdb02cccb11bc7e",
+    "tipo": "baixo",
+    "espelhada": false,
+    "tamanho": "14x20",
+    "elementos": [
+      "bolsinho sem saída embaixo da saída",
+      "chegada de 1x3 unid. atrás de 3 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "2 pistão(ões) de 10s",
+      "1 tijolo(s) escuro(s) solto(s) na parede",
+      "faca permanente no caminho"
+    ],
+    "massa": 3.9,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 30,
+      "tempo": 76,
+      "esmagados": 0,
+      "vitorias": [
+        11,
+        8,
+        6,
+        5
+      ]
+    },
+    "seedRender": 12
   }
 ]
