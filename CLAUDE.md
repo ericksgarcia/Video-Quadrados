@@ -592,8 +592,9 @@ marque locais dos EUA se conseguir... já pode editar os prontos")** — substit
 - **Editar posts já agendados**: `python3 publicar.py --edita <slug> [--legenda arquivo.txt] [--quando AAAA-MM-DDTHH:MM]` (legenda,
   horário e metadados; o vídeo continua o mesmo). Em 23/11 os 10 agendados foram passados para inglês e para os horários dos EUA.
 - **Localização**: o Buffer aceita `geolocation {id, text}` (id do lugar no Facebook), mas não tem busca de lugares. Teste em 23/11:
-  "New York, New York" (`108424279189115`) nos posts gen-48 (23/11 10:10) e gen-57. Confira com `--status` se saíram sem erro; se
-  saírem, ponha a lista de cidades em `GEO` (publicar.py) para marcar todos. **1º comentário** (`firstComment`): o Buffer só libera
+  "New York, New York" (`108424279189115`) no post gen-48 (23/11 10:10): saiu SEM erro, então `GEO` (publicar.py) já marca NY em
+  todos os posts (os agendados foram reeditados). Para alternar cidades, acrescente outros `{id, text}` em `GEO` só depois de testar
+  cada id num post. **1º comentário** (`firstComment`): o Buffer só libera
   no plano pago (deu erro), então `PRIMEIRO_COMENTARIO = ''`.
 
 **Público da ÍNDIA (pedido do dono em 22/11/2026: "minha maior audiência virou Índia... mude a legenda para o idioma deles e altere

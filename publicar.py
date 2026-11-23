@@ -49,7 +49,7 @@ REDES_ATIVAS = ['instagram']
 # Instagram: 1º comentário automático (puxa comentários) e localização opcional. GEO = [] não marca local; para marcar,
 # ponha {'id': '<id do lugar no Facebook>', 'text': '<nome>'} (os posts alternam entre os itens). Ver CLAUDE.md (Publicação).
 PRIMEIRO_COMENTARIO = ''  # o Buffer só aceita 1º comentário no plano pago (testado em 23/11/2026)
-GEO = []
+GEO = [{'id': '108424279189115', 'text': 'New York, New York'}]  # confirmado em 23/11/2026 (post gen-48 saiu sem erro)
 REDE_FILA = 'instagram'          # rede que define a fila e o próximo horário livre
 META_FILA = 10                   # quantos vídeos manter agendados (regra do dono em 18/11/2026)
 REGISTRO = Path(__file__).with_name('publicados.json')
