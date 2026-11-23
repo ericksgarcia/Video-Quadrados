@@ -1023,5 +1023,34 @@
       ]
     },
     "seedRender": 20
+  },
+  {
+    "seed": 54,
+    "id": "gen-54",
+    "digital": "356081f7e7893b66",
+    "tipo": "lado",
+    "espelhada": false,
+    "tamanho": "16x22",
+    "elementos": [
+      "bolsinho sem saída no canto de cima",
+      "chegada de 2x3 unid. atrás de 6 tijolos escuros",
+      "2 curva(s) fechada(s) por tijolos escuros",
+      "1 tijolo(s) escuro(s) solto(s) na parede",
+      "quadrado lilás (quem encosta cresce)"
+    ],
+    "massa": 3.14,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 69,
+      "esmagados": 0.03,
+      "vitorias": [
+        3,
+        7,
+        9,
+        10
+      ]
+    },
+    "seedRender": 18
   }
 ]
