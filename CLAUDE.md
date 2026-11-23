@@ -582,6 +582,20 @@ Fases geradas e salvas (uma linha por fase, escrita pelo gerador):
 
 ## Publicação (SÓ Instagram via R2 e Buffer) — `publicar.py`
 
+**Público dos EUA (pedido do dono em 23/11/2026: "quero que esse conteúdo chegue em pessoas dos EUA, altere legendas para inglês,
+marque locais dos EUA se conseguir... já pode editar os prontos")** — substitui o bloco da Índia abaixo:
+- **Legenda em inglês americano** (`tools/legenda.py`, padrão `--lang en`; a versão Hinglish ficou em `--lang hi`): gancho "who wins?",
+  linha da mecânica (KEY/KNIFE/PORTAL/HAMMER/PISTONS/purple block), "comment before the end", "watch till the end", "follow for a new
+  race every day" e hashtags #soccer #football #premierleague #ucl #mls #usa...
+- **Horários dos EUA** (`HORARIOS` em `publicar.py`): 10:10, 14:20, 19:40, 22:50 de Brasília = 08:10, 12:20, 17:40, 20:50 no leste
+  (05:10–17:50 no Pacífico). Com horário de verão nos EUA (mar–nov) a diferença cai de 2 h para 1 h: reveja a lista em março.
+- **Editar posts já agendados**: `python3 publicar.py --edita <slug> [--legenda arquivo.txt] [--quando AAAA-MM-DDTHH:MM]` (legenda,
+  horário e metadados; o vídeo continua o mesmo). Em 23/11 os 10 agendados foram passados para inglês e para os horários dos EUA.
+- **Localização**: o Buffer aceita `geolocation {id, text}` (id do lugar no Facebook), mas não tem busca de lugares. Teste em 23/11:
+  "New York, New York" (`108424279189115`) nos posts gen-48 (23/11 10:10) e gen-57. Confira com `--status` se saíram sem erro; se
+  saírem, ponha a lista de cidades em `GEO` (publicar.py) para marcar todos. **1º comentário** (`firstComment`): o Buffer só libera
+  no plano pago (deu erro), então `PRIMEIRO_COMENTARIO = ''`.
+
 **Público da ÍNDIA (pedido do dono em 22/11/2026: "minha maior audiência virou Índia... mude a legenda para o idioma deles e altere
 mais coisas se ajudar o engajamento")**:
 - **Legenda** feita por `tools/legenda.py <ids dos escudos> "<descrição da fase>" [saida.txt]`: Hinglish (hindi em letras latinas, o
@@ -601,7 +615,7 @@ horário. (Os pedidos antigos de "5 agendados em cada canal" valiam para TikTok+
 Só publica vídeo que JÁ existe e que o dono aprovou (não gera nada). Canal: Instagram **disputadostimes**. Chaves: nunca no git/chat; o proxy do ambiente injeta o `Authorization: Bearer`
 em api.buffer.com e api.cloudflare.com (sem variável: valor fictício). 401/403 = falta o segredo → pare e avise.
 
-Comando para publicar um vídeo novo (próximo horário livre de 04:40, 10:10, 12:10, 13:50 em Brasília, capa no quadro de 1,2s):
+Comando para publicar um vídeo novo (próximo horário livre de 10:10, 14:20, 19:40, 22:50 em Brasília, capa no quadro de 1,2s):
 
     python3 publicar.py videos/<arquivo>.mp4 --legenda videos/<arquivo>.txt
 

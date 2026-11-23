@@ -30,7 +30,7 @@ import requests
 
 # ------------------------------------------------------------------ configuração fixa
 TZ = ZoneInfo('America/Sao_Paulo')
-HORARIOS = ['04:40', '10:10', '12:10', '13:50']           # Brasília = 13:10, 18:40, 20:40, 22:20 na Índia (público principal desde 22/11/2026)
+HORARIOS = ['10:10', '14:20', '19:40', '22:50']           # Brasília = 08:10, 12:20, 17:40, 20:50 no leste dos EUA (público-alvo desde 23/11/2026)
 CF_CONTA = '255764ef4414e924c3f8b3e571f7435e'
 R2_BUCKET = 'xlaudebuffer'
 R2_PUBLICO = 'https://pub-cd071ac800384b009eaf3ddab42583fe.r2.dev'
@@ -46,6 +46,10 @@ CANAIS = {  # rede -> (service, nome do canal). Os NOMES são a referência; os 
 # Redes em uso (pedido do dono em 18/11/2026: "exclua o tiktok do buffer, deixe só o Instagram").
 # O TikTok continua em CANAIS só para --status/--cancela de posts antigos; NÃO é usado para postar.
 REDES_ATIVAS = ['instagram']
+# Instagram: 1º comentário automático (puxa comentários) e localização opcional. GEO = [] não marca local; para marcar,
+# ponha {'id': '<id do lugar no Facebook>', 'text': '<nome>'} (os posts alternam entre os itens). Ver CLAUDE.md (Publicação).
+PRIMEIRO_COMENTARIO = ''  # o Buffer só aceita 1º comentário no plano pago (testado em 23/11/2026)
+GEO = []
 REDE_FILA = 'instagram'          # rede que define a fila e o próximo horário livre
 META_FILA = 10                   # quantos vídeos manter agendados (regra do dono em 18/11/2026)
 REGISTRO = Path(__file__).with_name('publicados.json')
@@ -138,9 +142,18 @@ CRIA = '''mutation($input: CreatePostInput!){ createPost(input:$input){
   ... on RestProxyError { message } ... on LimitReachedError { message } ... on InvalidInputError { message } } }'''
 
 
-def cria_post(rede, canal_id, texto, link, capa_ms, quando_utc):
+def meta_instagram(chave=''):
+    m = {'type': 'reel', 'shouldShareToFeed': True, 'isAiGenerated': False}
+    if PRIMEIRO_COMENTARIO:
+        m['firstComment'] = PRIMEIRO_COMENTARIO
+    if GEO:
+        m['geolocation'] = GEO[sum(map(ord, chave)) % len(GEO)]
+    return m
+
+
+def cria_post(rede, canal_id, texto, link, capa_ms, quando_utc, chave=''):
     meta = {'tiktok': {'tiktok': {'isAiGenerated': False}},
-            'instagram': {'instagram': {'type': 'reel', 'shouldShareToFeed': True, 'isAiGenerated': False}}}[rede]
+            'instagram': {'instagram': meta_instagram(chave)}}[rede]
     inp = {
         'channelId': canal_id, 'text': texto,
         'assets': [{'video': {'url': link, 'metadata': {'thumbnailOffset': capa_ms}}}],
@@ -409,6 +422,39 @@ def cmd_reenvia(slug, quando_txt=None):
         print('Nenhum post com erro para reenviar.')
 
 
+def cmd_edita(slug, texto=None, quando_txt=None, geo=None):
+    """Edita um post AGENDADO do Instagram: legenda, horário (Brasília) e metadados (1º comentário/localização)."""
+    reg = le_registro()
+    itens = [x for x in reg if x['slug'] == slug and x['rede'] == 'instagram' and not x.get('cancelado')]
+    if not itens:
+        falha(f'nenhum post de Instagram ativo para "{slug}"')
+    x = itens[0]
+    p = post_por_id(x['post_id'])
+    if p is None or p['status'] != 'scheduled':
+        falha(f'post {x["post_id"]} está "{p["status"] if p else "não encontrado"}"; só edito post agendado')
+    if texto is None:
+        texto = gql_ok('query($i: PostId!){ post(input:{id:$i}) { text } }', {'i': x['post_id']})['post']['text']
+    quando = dt(p['dueAt'])
+    if quando_txt:
+        q = datetime.fromisoformat(quando_txt)
+        quando = (q if q.tzinfo else q.replace(tzinfo=TZ)).astimezone(timezone.utc)
+        if quando < datetime.now(timezone.utc) + MARGEM:
+            falha(f'--quando {quando_txt} não está pelo menos 5 minutos no futuro')
+    meta = meta_instagram(slug)
+    if geo:
+        meta['geolocation'] = geo
+    inp = {'id': x['post_id'], 'mode': 'customScheduled', 'text': texto, 'dueAt': quando.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+           'assets': [{'video': {'url': x['link'], 'metadata': {'thumbnailOffset': x.get('capa_ms') or 1200}}}],
+           'metadata': {'instagram': meta}, 'schedulingType': 'automatic'}
+    res = gql_ok(EDITA, {'input': inp})['editPost']
+    if res['__typename'] != 'PostActionSuccess':
+        falha(f'Buffer recusou a edição ({res["__typename"]}): {res.get("message")}')
+    x['agendado'] = res['post'].get('dueAt') or x['agendado']
+    x.setdefault('edicoes', []).append(datetime.now(timezone.utc).isoformat(timespec='seconds'))
+    grava_registro(reg)
+    print(f'instagram: post {x["post_id"]} editado -> {res["post"].get("status")} {br(dt(x["agendado"]))}')
+
+
 def cmd_publicar(a):
     video = Path(a.video)
     if not video.is_file():
@@ -470,7 +516,7 @@ def cmd_publicar(a):
 
     # 2) Buffer: um post por rede, mesmo horário/vídeo/legenda/capa
     for r in faltam:
-        p = cria_post(r, ids[r], texto, link, capa_ms, quando)
+        p = cria_post(r, ids[r], texto, link, capa_ms, quando, slug)
         item = {'slug': slug, 'rede': r, 'post_id': p['id'], 'canal': CANAIS[r][1],
                 'agendado': p.get('dueAt') or (quando.isoformat() if quando else agora.isoformat()),
                 'link': link, 'chave_r2': chave, 'capa_ms': capa_ms, 'status': p.get('status')}
@@ -493,6 +539,7 @@ def main():
     ap.add_argument('--arruma', action='store_true')
     ap.add_argument('--cancela', metavar='SLUG')
     ap.add_argument('--reenvia', metavar='SLUG')
+    ap.add_argument('--edita', metavar='SLUG')
     a = ap.parse_args()
     if a.fila:
         cmd_fila()
@@ -504,6 +551,11 @@ def main():
         cmd_arruma()
     elif a.cancela:
         cmd_cancela(a.cancela)
+    elif a.edita:
+        txt = None
+        if a.legenda:
+            txt = Path(a.legenda).read_text().strip() if Path(a.legenda).is_file() else a.legenda.strip()
+        cmd_edita(a.edita, txt, a.quando)
     elif a.reenvia:
         cmd_reenvia(a.reenvia, a.quando)
     elif a.video:
