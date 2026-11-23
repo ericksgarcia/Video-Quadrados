@@ -1080,5 +1080,35 @@
       ]
     },
     "seedRender": 25
+  },
+  {
+    "seed": 56,
+    "id": "gen-56",
+    "digital": "b4a98375e783efb2",
+    "tipo": "baixo",
+    "espelhada": true,
+    "tamanho": "15x22",
+    "elementos": [
+      "bolsinho sem saída embaixo da saída",
+      "chegada de 1x3 unid. atrás de 3 tijolos escuros",
+      "1 curva(s) fechada(s) por tijolos escuros",
+      "1 pistão(ões) de 10s",
+      "3 tijolo(s) escuro(s) solto(s) na parede",
+      "faca permanente no caminho"
+    ],
+    "massa": 4.15,
+    "sim": {
+      "corridas": 30,
+      "comVencedor": 29,
+      "tempo": 67,
+      "esmagados": 0,
+      "vitorias": [
+        3,
+        9,
+        5,
+        12
+      ]
+    },
+    "seedRender": 26
   }
 ]
